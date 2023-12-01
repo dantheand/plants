@@ -1,0 +1,4 @@
+PLANTS_TABLE_NAME = "plants"
+IMAGES_TABLE_NAME = "images"
+
+PLANT_IMAGES_BUCKET_NAME = "0bf665f0db5b-backend"
