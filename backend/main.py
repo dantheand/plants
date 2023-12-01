@@ -1,9 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from mangum import Mangum
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 
 from backend.utils.constants import PLANTS_TABLE_NAME
@@ -12,8 +11,17 @@ from backend.utils.dynamodb import get_plant_by_id, scan_table
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="./static"), name="static")
-templates = Jinja2Templates(directory="templates")
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -27,10 +35,10 @@ def get_all_plants():
     return {"message": plants}
 
 
-@app.get("/plants/{plant_id}", response_class=HTMLResponse)
+@app.get("/plants/{plant_id}")
 def get_plant(request: Request, plant_id: str):
     plant = get_plant_by_id(plant_id)
-    return templates.TemplateResponse("plant.html", {"request": request, "id": plant_id})
+    return plant.json()
 
 
 handler = Mangum(app)

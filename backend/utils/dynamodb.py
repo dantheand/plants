@@ -32,6 +32,7 @@ def scan_table(table_name):
     session = _get_db_connection()
     table = session.Table(table_name)
     response = table.scan()
+    # TODO: convert this to List[Plants] or validate in some way
     return response["Items"]
 
 

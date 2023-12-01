@@ -59,8 +59,16 @@ aws lambda update-function-code \
 --zip-file fileb://backend.zip \
 --function-name plant-app
 
-# Running FastAPI locally
+####################################################################################################
+################################## Local Development Environment ###################################
+####################################################################################################
+
+# Running FastAPI
 cd ~/projects/plants
 uvicorn backend.main:app --reload
+
+# Running react app
+cd ~/projects/plants/plant-app
+npm start
 
 
