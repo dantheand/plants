@@ -179,3 +179,7 @@ pyrightconfig.json
 
 # Data folders
 data/
+
+# Lambda config stuff
+backend_deps/
+backend.zip
