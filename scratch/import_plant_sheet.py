@@ -8,6 +8,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
+from backend.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, PLANT_IMAGES_BUCKET_NAME
+
 load_dotenv()
 
 # Pull in secrets
@@ -16,11 +18,6 @@ aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 google_client_id = os.getenv("GOOGLE_CLIENT_ID")
 google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
 google_project_id = os.getenv("GOOGLE_PROJECT_ID")
-
-PLANTS_TABLE_NAME = "plants"
-IMAGES_TABLE_NAME = "images"
-
-PLANT_IMAGES_BUCKET_NAME = "0bf665f0db5b-backend"
 
 
 def get_db_connection():

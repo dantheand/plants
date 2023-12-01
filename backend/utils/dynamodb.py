@@ -1,6 +1,9 @@
 import boto3
 import os
 
+from backend.utils.constants import PLANTS_TABLE_NAME
+from backend.utils.schema import Plant
+
 
 def _get_db_connection():
     # Check if running in AWS Lambda environment
@@ -26,7 +29,14 @@ def _get_db_connection():
 
 
 def scan_table(table_name):
-    dynamodb = _get_db_connection()
-    table = dynamodb.Table(table_name)
+    session = _get_db_connection()
+    table = session.Table(table_name)
     response = table.scan()
     return response["Items"]
+
+
+def get_plant_by_id(plant_id: str):
+    session = _get_db_connection()
+    table = session.Table(PLANTS_TABLE_NAME)
+    response = table.get_item(Key={"PlantID": plant_id})
+    return Plant(**response.get("Item"))
