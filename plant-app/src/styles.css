@@ -1,0 +1,6 @@
+/* styles.css */
+.clickable-item:hover {
+    cursor: pointer;
+    background-color: #f0f0f0; /* Light grey background on hover */
+    color: #0366d6; /* Change text color */
+}

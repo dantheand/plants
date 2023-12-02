@@ -30,7 +30,7 @@ def root():
 
 
 @app.get("/plants")
-def get_all_plants():
+def get_all_plants(request: Request):
     plants = scan_table(PLANTS_TABLE_NAME)
     return {"message": plants}
 
@@ -38,7 +38,7 @@ def get_all_plants():
 @app.get("/plants/{plant_id}")
 def get_plant(request: Request, plant_id: str):
     plant = get_plant_by_id(plant_id)
-    return plant.json()
+    return {"message": plant}
 
 
 handler = Mangum(app)
