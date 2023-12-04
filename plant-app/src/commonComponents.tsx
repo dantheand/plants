@@ -21,7 +21,7 @@ export function ImageComponent ({s3Url}: {s3Url: string}) {
     return (
         <div>
             <Container className="p-5 mb-4 bg-light rounded-3">
-                <h3>Timestamp</h3>
+                <h5>Timestamp</h5>
                 <img src={s3Url} alt="From S3" style={{ width: '100%', height: 'auto' }} />
             </Container>
         </div>
