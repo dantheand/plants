@@ -52,5 +52,6 @@ def get_plant_images(request: Request, plant_id: str):
 
 handler = Mangum(app)
 
+# For debugging, run this instead of from console
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)

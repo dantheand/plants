@@ -23,6 +23,11 @@ interface Plant {
     Notes?: string;
 }
 
+interface PlantImage {
+    Timestamp: string;
+    ImageUrl: string;
+}
+
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
     navigate(`/plants/${plantID}`);
 };
@@ -63,7 +68,6 @@ export function PlantList () : JSX.Element  {
                     </ListGroup>
                 ))}
             </ul>
-                <ImageComponent s3Url={"https://0bf665f0db5b-plant-app.s3.amazonaws.com/images/88.jpg?AWSAccessKeyId=AKIAYUNXSUZDJERAZFH6&Signature=Y9uLOlJy9cs96nWmpzXaw81R3KE%3D&Expires=1701670838"}/>
             </Container>
         </div>
     );
@@ -147,6 +151,11 @@ export function PlantDetails () {
                 <Card.Body>
                     {plant.Notes || 'N/A'}
                 </Card.Body>
+            </Card>
+            {/* Image Section */}
+            <Card>
+                <Card.Header as="h4">Images</Card.Header>
+                <ImageComponent s3Url={"https://0bf665f0db5b-plant-app.s3.amazonaws.com/images/88.jpg?AWSAccessKeyId=AKIAYUNXSUZDJERAZFH6&Signature=Y9uLOlJy9cs96nWmpzXaw81R3KE%3D&Expires=1701670838"}/>
             </Card>
         </Container>
     );
