@@ -1,8 +1,10 @@
 import boto3
 import os
 
-from backend.utils.constants import PLANTS_TABLE_NAME
-from backend.utils.schema import Plant
+from boto3.dynamodb.conditions import Key
+
+from backend.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
+from backend.utils.schema import Image, Plant
 
 
 def _get_db_connection():
@@ -36,8 +38,16 @@ def scan_table(table_name):
     return response["Items"]
 
 
-def get_plant_by_id(plant_id: str):
+def get_plant_by_id(plant_id: str) -> Plant:
     session = _get_db_connection()
     table = session.Table(PLANTS_TABLE_NAME)
     response = table.get_item(Key={"PlantID": plant_id})
     return Plant(**response.get("Item"))
+
+
+def get_images_for_plant(plant_id: str) -> list[Image]:
+    session = _get_db_connection()
+    table = session.Table(IMAGES_TABLE_NAME)
+    # TODO: sort by timestamp
+    response = table.scan(FilterExpression=Key("PlantID").eq(plant_id))
+    return [Image.model_validate(image) for image in response["Items"]]

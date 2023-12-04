@@ -29,4 +29,6 @@ class Image(MyBaseModel):
     ImageID: str
     PlantID: str
     S3Url: str
-    Timestamp: datetime
+    SignedUrl: Optional[str] = None
+    Timestamp: str
+    # Timestamp: datetime

@@ -3,9 +3,10 @@ import React, {useState, useEffect, JSX} from 'react';
 import { ListGroup } from 'react-bootstrap';
 
 import {BASE_API_URL} from "./constants";
-import {Container, Row, Col, Card} from "react-bootstrap";
+import {Container,  Card, } from "react-bootstrap";
 
 import {useParams, useNavigate, NavigateFunction} from 'react-router-dom';
+import {BackButton, ImageComponent} from "./commonComponents";
 
 
 
@@ -62,7 +63,8 @@ export function PlantList () : JSX.Element  {
                     </ListGroup>
                 ))}
             </ul>
-                </Container>
+                <ImageComponent s3Url={"https://0bf665f0db5b-plant-app.s3.amazonaws.com/images/88.jpg?AWSAccessKeyId=AKIAYUNXSUZDJERAZFH6&Signature=Y9uLOlJy9cs96nWmpzXaw81R3KE%3D&Expires=1701670838"}/>
+            </Container>
         </div>
     );
 };
@@ -72,6 +74,7 @@ export function PlantList () : JSX.Element  {
 export function PlantDetails () {
     const { plantId } = useParams<{ plantId: string }>();
     const navigate = useNavigate();
+
 
     // Fetch plant details using plantId or other logic
     const [plant, setPlant] = useState<Plant | null>(null);
@@ -93,7 +96,7 @@ export function PlantDetails () {
     }, [plantId]);
 
     if (isLoading) {
-        return <p>Loading plants...</p>;
+        return <p>Loading plant...</p>;
     }
 
     if (!plant || error){
@@ -101,7 +104,9 @@ export function PlantDetails () {
     }
 
     return (
+
         <Container className="my-4">
+            <BackButton />
             {/* Basic Information Section */}
             <Card className="mb-3">
                 <Card.Header as="h4">Basic Information</Card.Header>

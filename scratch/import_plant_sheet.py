@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
-from backend.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, PLANT_IMAGES_BUCKET_NAME
+from backend.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
 
 load_dotenv()
 
@@ -133,8 +133,8 @@ def transfer_images_from_gdrive_to_s3():
         fh = download_file_from_drive(gdrive, gdrive_url)
         # Upload the image to s3
         s3_key = f"images/{image_id}.jpg"
-        s3.upload_fileobj(fh, PLANT_IMAGES_BUCKET_NAME, s3_key)
-        s3_url = f"https://{PLANT_IMAGES_BUCKET_NAME}.s3-us-west-2.amazonaws.com/{s3_key}"
+        s3.upload_fileobj(fh, S3_BUCKET_NAME, s3_key)
+        s3_url = f"https://{S3_BUCKET_NAME}.s3-us-west-2.amazonaws.com/{s3_key}"
 
         # Update the database entry with the s3 url
         table.update_item(

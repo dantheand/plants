@@ -6,8 +6,8 @@ from mangum import Mangum
 from fastapi.requests import Request
 
 from backend.utils.constants import PLANTS_TABLE_NAME
-from backend.utils.dynamodb import get_plant_by_id, scan_table
-
+from backend.utils.db import get_images_for_plant, get_plant_by_id, scan_table
+from backend.utils.s3 import assign_presigned_url_to_img
 
 app = FastAPI()
 
@@ -39,6 +39,15 @@ def get_all_plants(request: Request):
 def get_plant(request: Request, plant_id: str):
     plant = get_plant_by_id(plant_id)
     return {"message": plant}
+
+
+# Make a function to get all images for a plant
+@app.get("/plants/{plant_id}/images")
+def get_plant_images(request: Request, plant_id: str):
+    images = get_images_for_plant(plant_id)
+    for image in images:
+        assign_presigned_url_to_img(image)
+    return {"message": images}
 
 
 handler = Mangum(app)
