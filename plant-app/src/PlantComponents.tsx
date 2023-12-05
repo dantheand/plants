@@ -8,6 +8,7 @@ import {Container,  Card, Row, Col, Image} from "react-bootstrap";
 import {useParams, useNavigate, NavigateFunction} from 'react-router-dom';
 import {BackButton} from "./commonComponents";
 
+import './timeline.css';
 
 
 interface Plant {
@@ -178,18 +179,42 @@ export function PlantImages({plant_id}: {plant_id: string}){
         <Card className="mb-3">
             <Card.Header as="h4">Images</Card.Header>
             <Card.Body>
-               <Container>
-                   <Row>
-                       {plantImages.map(plant_image => (
-                           <Col key={plant_image.Timestamp} sm={12} md={6} lg={4} xl={3}>
-                               <PlantImageContainer plant_image={plant_image}/>
-                           </Col>
-                       ))}
-                   </Row>
-               </Container>
+                <PlantImagesTimeline plant_images={plantImages}/>
             </Card.Body>
         </Card>
     )
+}
+
+export function PlantImagesTimeline({plant_images}: {plant_images: PlantImage[]}){
+    return (
+        <Container>
+            {plant_images.map((image, index) => (
+                <Row key={image.ImageID} className={index % 2 === 0 ? 'timeline-row' : 'timeline-row timeline-row-alternate'}>
+                    <Col md={6} className="timeline-date">
+                        <p>{image.Timestamp}</p>
+                    </Col>
+                    <Col md={6} className="timeline-image-col">
+                        <Image src={image.SignedUrl} alt={`Plant taken on ${image.Timestamp}`}
+                               fluid rounded className="timeline-img" />
+                    </Col>
+                </Row>
+            ))}
+        </Container>
+    );
+}
+
+export function PlantImagesOriginal({plant_images}: {plant_images: PlantImage[]}){
+    return(
+        <Container>
+            <Row>
+                {plant_images.map(plant_image => (
+                    <Col key={plant_image.Timestamp} sm={12} md={6} lg={4} xl={3}>
+                        <PlantImageContainer plant_image={plant_image}/>
+                    </Col>
+                ))}
+            </Row>
+        </Container>
+        )
 }
 
 export function PlantImageContainer({plant_image}: {plant_image: PlantImage}){
