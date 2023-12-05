@@ -3,7 +3,7 @@ import React, {useState, useEffect, JSX} from 'react';
 import { ListGroup } from 'react-bootstrap';
 
 import {BASE_API_URL} from "./constants";
-import {Container,  Card, Row, Col, Image} from "react-bootstrap";
+import {Container,  Card, Row, Col, Image, Modal} from "react-bootstrap";
 
 import {useParams, useNavigate, NavigateFunction} from 'react-router-dom';
 import {BackButton} from "./commonComponents";
@@ -81,6 +81,10 @@ export function PlantDetails () {
     const { plantId } = useParams<{ plantId: string }>() ;
     const safePlantId = plantId ?? '';
     const navigate = useNavigate();
+    // Modal stuff
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
 
     // Fetch plant details using plantId or other logic
@@ -165,6 +169,17 @@ export function PlantDetails () {
 export function PlantImages({plant_id}: {plant_id: string}){
     const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
 
+    // Modal Stuff
+    const [showModal, setShowModal] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState('');
+    const handleThumbnailClick = (imageUrl:string) => {
+        setSelectedImageUrl(imageUrl);
+        setShowModal(true);
+    };
+    const handleCloseModal = () => setShowModal(false);
+
+
+
     useEffect(() => {
         fetch(`${BASE_API_URL}/plants/${plant_id}/images`)
             .then(response => response.json())
@@ -179,13 +194,23 @@ export function PlantImages({plant_id}: {plant_id: string}){
         <Card className="mb-3">
             <Card.Header as="h4">Images</Card.Header>
             <Card.Body>
-                <PlantImagesTimeline plant_images={plantImages}/>
+                <PlantImagesTimeline plant_images={plantImages} onThumbnailClick={handleThumbnailClick}/>
             </Card.Body>
+
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                  </Modal.Header>
+                <Modal.Body>
+                    <Image src={selectedImageUrl} alt="Plant" fluid />
+                </Modal.Body>
+            </Modal>
         </Card>
+
     )
 }
 
-export function PlantImagesTimeline({plant_images}: {plant_images: PlantImage[]}){
+export function PlantImagesTimeline({plant_images, onThumbnailClick}:
+                                        {plant_images: PlantImage[], onThumbnailClick: (imageUrl: string) => void}){
     return (
         <Container>
             {plant_images.map((image, index) => (
@@ -195,7 +220,9 @@ export function PlantImagesTimeline({plant_images}: {plant_images: PlantImage[]}
                     </Col>
                     <Col md={6} className="timeline-image-col">
                         <Image src={image.SignedUrl} alt={`Plant taken on ${image.Timestamp}`}
-                               fluid rounded className="timeline-img" />
+                               fluid rounded className="timeline-img clickable-item"
+                               onClick={() => onThumbnailClick(image.SignedUrl)}
+                        />
                     </Col>
                 </Row>
             ))}
@@ -222,8 +249,19 @@ export function PlantImageContainer({plant_image}: {plant_image: PlantImage}){
         <Container>
             <Card>
                 <h5 className="text-center">{plant_image.Timestamp}</h5>
-                <Card.Img variant="top" src={plant_image.SignedUrl} className="img-fluid" alt="Plant" />
+                <Card.Img variant="top" src={plant_image.SignedUrl} className="img-fluid" alt="Plant"
+                           />
             </Card>
         </Container>
     )
 }
+
+// function PlantModalonClick({image, show}: {image: PlantImage, show: boolean}){
+//     <Modal show={show} onHide={handleClose}>
+//         <Modal.Header closeButton>
+//           <Modal.Title>Modal heading</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+//       </Modal>
+//
+// }
