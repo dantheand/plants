@@ -3,10 +3,10 @@ import React, {useState, useEffect, JSX} from 'react';
 import { ListGroup } from 'react-bootstrap';
 
 import {BASE_API_URL} from "./constants";
-import {Container,  Card, } from "react-bootstrap";
+import {Container,  Card, Row, Col, Image} from "react-bootstrap";
 
 import {useParams, useNavigate, NavigateFunction} from 'react-router-dom';
-import {BackButton, ImageComponent} from "./commonComponents";
+import {BackButton} from "./commonComponents";
 
 
 
@@ -24,8 +24,9 @@ interface Plant {
 }
 
 interface PlantImage {
+    ImageID: string;
     Timestamp: string;
-    ImageUrl: string;
+    SignedUrl: string;
 }
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
@@ -76,7 +77,8 @@ export function PlantList () : JSX.Element  {
 
 
 export function PlantDetails () {
-    const { plantId } = useParams<{ plantId: string }>();
+    const { plantId } = useParams<{ plantId: string }>() ;
+    const safePlantId = plantId ?? '';
     const navigate = useNavigate();
 
 
@@ -146,17 +148,57 @@ export function PlantDetails () {
             </Card>
 
             {/* Notes Section */}
-            <Card>
+            <Card className="mb-3">
                 <Card.Header as="h4">Notes</Card.Header>
                 <Card.Body>
                     {plant.Notes || 'N/A'}
                 </Card.Body>
             </Card>
-            {/* Image Section */}
-            <Card>
-                <Card.Header as="h4">Images</Card.Header>
-                <ImageComponent s3Url={"https://0bf665f0db5b-plant-app.s3.amazonaws.com/images/88.jpg?AWSAccessKeyId=AKIAYUNXSUZDJERAZFH6&Signature=Y9uLOlJy9cs96nWmpzXaw81R3KE%3D&Expires=1701670838"}/>
-            </Card>
+            {/* Images Section */}
+                <PlantImages plant_id={safePlantId}/>
         </Container>
     );
 };
+
+
+export function PlantImages({plant_id}: {plant_id: string}){
+    const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
+
+    useEffect(() => {
+        fetch(`${BASE_API_URL}/plants/${plant_id}/images`)
+            .then(response => response.json())
+            .then(data => {
+                setPlantImages(data.message);
+            });
+    }, [plant_id]);
+
+    if (!plantImages) return <div>Loading images...</div>;
+
+    return (
+        <Card className="mb-3">
+            <Card.Header as="h4">Images</Card.Header>
+            <Card.Body>
+               <Container>
+                   <Row>
+                       {plantImages.map(plant_image => (
+                           <Col key={plant_image.Timestamp} sm={12} md={6} lg={4} xl={3}>
+                               <PlantImageContainer plant_image={plant_image}/>
+                           </Col>
+                       ))}
+                   </Row>
+               </Container>
+            </Card.Body>
+        </Card>
+    )
+}
+
+export function PlantImageContainer({plant_image}: {plant_image: PlantImage}){
+    return (
+        <Container>
+            <Card>
+                <h5 className="text-center">{plant_image.Timestamp}</h5>
+                <Card.Img variant="top" src={plant_image.SignedUrl} className="img-fluid" alt="Plant" />
+            </Card>
+        </Container>
+    )
+}

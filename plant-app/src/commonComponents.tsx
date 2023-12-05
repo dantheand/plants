@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Container } from "react-bootstrap";
+import { Button, Container, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 export function BackButton() {
     const navigate = useNavigate();
@@ -16,14 +16,10 @@ export function BackButton() {
     );
 }
 
-
 export function ImageComponent ({s3Url}: {s3Url: string}) {
     return (
         <div>
-            <Container className="p-5 mb-4 bg-light rounded-3">
-                <h5>Timestamp</h5>
-                <img src={s3Url} alt="From S3" style={{ width: '100%', height: 'auto' }} />
-            </Container>
+            <Image src={s3Url} roundedCircle />
         </div>
     );
 }

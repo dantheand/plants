@@ -5,16 +5,14 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
 } from "react-router-dom";
-
-
 
 function App() {
       return (
     <Router basename="/">
         <Routes>
             <Route path="/" element={<PlantList />} />
+            <Route path="/plants/" element={<PlantList />} />
             <Route path="/plants/:plantId" element={<PlantDetails />} />
         </Routes>
     </Router>
