@@ -2,3 +2,6 @@ boto3
 fastapi[all]
 uvicorn
 mangum
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
