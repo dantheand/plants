@@ -17,6 +17,9 @@ JWT_SECRET_KEY = os.getenv("JWT_SIGNING_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+TOKEN_URL = "login"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
+
 
 class Token(BaseModel):
     access_token: str
@@ -36,10 +39,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     # Encode the token
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-TOKEN_URL = "token"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
 
 
 # Password hashing stuff

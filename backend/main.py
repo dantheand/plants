@@ -10,13 +10,11 @@ from fastapi.requests import Request
 
 from backend.utils.auth import (
     TOKEN_URL,
+    Token,
     User,
-    UserInDB,
     authenticate_user_password,
     create_access_token,
-    fake_hash_password,
     fake_users_db,
-    get_current_active_user,
     get_current_user,
     oauth2_scheme,
 )
@@ -40,7 +38,7 @@ app.add_middleware(
 )
 
 
-@app.post(f"/{TOKEN_URL}")
+@app.post(f"/{TOKEN_URL}", response_model=Token)
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """API call to get token for a user from a username and password"""
     user = authenticate_user_password(fake_users_db, form_data.username, form_data.password)
