@@ -2,7 +2,7 @@ import React, {useState, useEffect, JSX} from 'react';
 
 import { ListGroup } from 'react-bootstrap';
 
-import {BASE_API_URL} from "./constants";
+import {BASE_API_URL, JWT_TOKEN_STORAGE} from "./constants";
 import {Container,  Card, Row, Col, Image, Modal} from "react-bootstrap";
 
 import {useParams, useNavigate, NavigateFunction} from 'react-router-dom';
@@ -41,7 +41,11 @@ export function PlantList () : JSX.Element  {
 
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/plants`)
+        fetch(`${BASE_API_URL}/plants`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 const sortedPlants = data.message.sort((a: Plant, b: Plant) => {
@@ -93,7 +97,13 @@ export function PlantDetails () {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/plants/${plantId}`)
+        fetch(`${BASE_API_URL}/plants/${plantId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`
+                }
+
+            })
             .then(response => response.json())
             .then(data => {
                 setPlant(data.message);
@@ -181,7 +191,14 @@ export function PlantImages({plant_id}: {plant_id: string}){
 
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/plants/${plant_id}/images`)
+        fetch(`${BASE_API_URL}/plants/${plant_id}/images`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`
+                }
+
+
+            })
             .then(response => response.json())
             .then(data => {
                 setPlantImages(data.message);

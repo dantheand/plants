@@ -13,6 +13,7 @@ function App() {
     <Router basename="/">
         <Routes>
             <Route path="/" element={<AuthenticatorComponent />} />
+            <Route path="/login" element={<AuthenticatorComponent />} />
             <Route path="/plants/" element={<PlantList />} />
             <Route path="/plants/:plantId" element={<PlantDetails />} />
         </Routes>

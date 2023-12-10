@@ -53,32 +53,26 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me")
-def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
-    """API call to gets the current user from the token"""
-    return current_user
-
-
 @app.get("/")
 def root(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
 
 
 @app.get("/plants")
-def get_all_plants(request: Request):
+def get_all_plants(token: Annotated[Token, Depends(get_current_user)]):
     plants = scan_table(PLANTS_TABLE_NAME)
     return {"message": plants}
 
 
 @app.get("/plants/{plant_id}")
-def get_plant(request: Request, plant_id: str):
+def get_plant(token: Annotated[Token, Depends(get_current_user)], plant_id: str):
     plant = get_plant_by_id(plant_id)
     return {"message": plant}
 
 
 # Make a function to get all images for a plant
 @app.get("/plants/{plant_id}/images")
-def get_plant_images(request: Request, plant_id: str):
+def get_plant_images(token: Annotated[Token, Depends(get_current_user)], plant_id: str):
     images = get_images_for_plant(plant_id)
     for image in images:
         assign_presigned_url_to_img(image)
