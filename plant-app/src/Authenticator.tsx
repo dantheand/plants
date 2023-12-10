@@ -15,13 +15,7 @@ export function AuthenticatorComponent(){
         event.preventDefault();
 
         try {
-            const response = await fetch(BASE_API_URL + '/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `username=${username}&password=${password}`
-            });
+            const response = await fetch(BASE_API_URL + '/login');
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Login failed:', errorData.message || `Error: ${response.status}`);

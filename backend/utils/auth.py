@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Annotated, Optional, Union
 
+from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -9,6 +10,8 @@ from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from starlette import status
+
+from backend.utils.constants import BASE_URL
 
 load_dotenv()
 

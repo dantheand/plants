@@ -5,3 +5,4 @@ mangum
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
+authlib
