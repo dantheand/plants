@@ -2,7 +2,7 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-from backend.utils.constants import S3_BUCKET_NAME, PLANT_IMAGES_FOLDER
+from backend.constants import S3_BUCKET_NAME, PLANT_IMAGES_FOLDER
 from backend.utils.schema import Image
 
 

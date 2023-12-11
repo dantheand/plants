@@ -3,7 +3,7 @@ import os
 
 from boto3.dynamodb.conditions import Key
 
-from backend.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
+from backend.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
 from backend.utils.schema import Image, Plant
 
 
