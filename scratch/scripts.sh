@@ -18,7 +18,6 @@ aws lambda create-function \
 # Install AWS compatible dependencies
 cd ~/projects/plants
 pip install \
-# This is needed to make sure we build the correct packages for the AWS lambda environment
 --platform manylinux2014_x86_64 \
 --target=api_deps \
 --implementation cp \

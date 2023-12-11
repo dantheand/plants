@@ -7,7 +7,7 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { AuthenticatorComponent, AuthFromFrontEnd } from "./Authenticator";
+import { AuthFromFrontEnd } from "./Authenticator";
 import { JWT_TOKEN_STORAGE } from "./constants";
 
 const ProtectedRoute = () => {
