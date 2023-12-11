@@ -4,6 +4,9 @@ import {Alert, Button, Card, Form} from "react-bootstrap";
 import {FormEvent, useState} from "react";
 import {BASE_API_URL, JWT_TOKEN_STORAGE} from "./constants";
 import {useNavigate} from "react-router-dom";
+import {CredentialResponse, GoogleLogin} from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 
 export function AuthenticatorComponent(){
     const [username, setUsername] = useState('');
@@ -65,3 +68,44 @@ export function AuthenticatorComponent(){
 
     );
 }
+
+async function responseGoogle(response: CredentialResponse) {
+    console.log(response);
+    try {
+        const tokenId = response.credential;
+        const backendUrl = BASE_API_URL + '/auth';
+        const res = await fetch(backendUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({token: tokenId})
+        });
+        const data = await res.json();
+        localStorage.setItem(JWT_TOKEN_STORAGE, data);
+        console.log('Access Token: ', data);
+    } catch (error) {
+        console.error('Error authenticating with backend:', error);
+    }
+}
+export function AuthFromFrontEnd() {
+    return (
+
+<GoogleOAuthProvider clientId="323044269310-jpacaee5fqigd05rolak62uto6mfnmcb.apps.googleusercontent.com"
+nonce="asdf"
+>
+        <GoogleLogin
+          onSuccess={responseGoogle}
+          onError={() => {
+    console.log('Login Failed');}}
+        />
+    </GoogleOAuthProvider>
+    );
+}
+
+        // window.google.accounts.id.initialize({
+        //     client_id: "342776470883-sqvl625cg3da5bjsam592n9t0c07ift4.apps.googleusercontent.com",
+        //     callback: ({ credential }) => logIn(credential),
+        //     ux_mode: "popup",
+        //     auto_select: true,
+        // });

@@ -6,7 +6,7 @@ import {
     Routes,
     Route, Navigate, Outlet,
 } from "react-router-dom";
-import {AuthenticatorComponent} from "./Authenticator";
+import {AuthenticatorComponent, AuthFromFrontEnd} from "./Authenticator";
 import {JWT_TOKEN_STORAGE} from "./constants";
 
 const ProtectedRoute = () => {
@@ -21,8 +21,8 @@ function App() {
       return (
     <Router basename="/">
         <Routes>
-            <Route path="/" element={<AuthenticatorComponent />} />
-            <Route path="/login" element={<AuthenticatorComponent />} />
+            <Route path="/" element={<AuthFromFrontEnd />} />
+            <Route path="/login" element={<AuthFromFrontEnd />} />
             <Route element={<ProtectedRoute />}>
                 <Route path="/plants/" element={<PlantList />} />
                 <Route path="/plants/:plantId" element={<PlantDetails />} />

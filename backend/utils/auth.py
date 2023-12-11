@@ -5,7 +5,7 @@ from typing import Annotated, Optional, Union
 from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -20,13 +20,28 @@ JWT_SECRET_KEY = os.getenv("JWT_SIGNING_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-TOKEN_URL = "login"
+TOKEN_URL = "auth"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
+
+FAKE_DB = ["dan.the.anderson@gmail.com"]
+
+
+class User(BaseModel):
+    email: Optional[str] = None
+    disabled: Optional[bool] = None
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+# Error
+CREDENTIALS_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -44,71 +59,26 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-# Password hashing stuff
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def create_token_for_email(email: str):
+    return create_access_token(data={"sub": email})
 
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def valid_email_from_db(email):
+    return email in FAKE_DB
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-# User management
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
-
-
-class User(BaseModel):
-    username: str
-    email: Optional[str] = None
-    disabled: Optional[bool] = None
-
-
-class UserInDB(User):
-    hashed_password: str
-
-
-def authenticate_user_password(fake_db, username: str, password: str) -> Union[bool, UserInDB]:
-    user = get_user(fake_db, username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
-
-
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
-    creds_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid authentication credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+async def get_current_user_email(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+    """Returns the user from the token"""
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise creds_exception
+        email: str = payload.get("sub")
+        if email is None:
+            raise CREDENTIALS_EXCEPTION
     except jwt.JWTError:
-        raise creds_exception
+        raise CREDENTIALS_EXCEPTION
 
-    user = get_user(fake_users_db, username)
-    if user is None:
-        raise creds_exception
+    user = User(email=email)
+    if not valid_email_from_db(email):
+        raise CREDENTIALS_EXCEPTION
 
     return user
