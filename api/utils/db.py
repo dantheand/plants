@@ -3,8 +3,8 @@ import os
 
 from boto3.dynamodb.conditions import Key
 
-from backend.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
-from backend.utils.schema import Image, Plant
+from api.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
+from api.utils.schema import Image, Plant
 
 
 def _get_db_connection():

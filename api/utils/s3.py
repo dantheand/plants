@@ -2,8 +2,8 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-from backend.constants import S3_BUCKET_NAME, PLANT_IMAGES_FOLDER
-from backend.utils.schema import Image
+from api.constants import S3_BUCKET_NAME, PLANT_IMAGES_FOLDER
+from api.utils.schema import Image
 
 
 def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600):

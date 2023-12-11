@@ -13,7 +13,7 @@ from starlette import status
 from starlette.config import Config
 from starlette.requests import Request
 
-from backend.constants import GOOGLE_CLIENT_ID
+from api.constants import GOOGLE_CLIENT_ID
 
 # TODO: store these credentials in S3 for production use
 load_dotenv(".env")

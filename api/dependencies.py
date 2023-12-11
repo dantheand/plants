@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 
-from backend.routers.auth import ALGORITHM, CREDENTIALS_EXCEPTION, JWT_SECRET_KEY, User
+from api.routers.auth import ALGORITHM, CREDENTIALS_EXCEPTION, JWT_SECRET_KEY, User
 
 TOKEN_URL = "auth"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)

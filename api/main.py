@@ -6,8 +6,8 @@ from mangum import Mangum
 from starlette.middleware.sessions import SessionMiddleware
 
 
-from backend.routers import auth, plants
-from backend.routers.auth import JWT_SECRET_KEY
+from api.routers import auth, plants
+from api.routers.auth import JWT_SECRET_KEY
 
 
 app = FastAPI()

@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
-from backend.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
+from api.utils.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
 
 load_dotenv()
 

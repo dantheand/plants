@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from backend.constants import PLANTS_TABLE_NAME
-from backend.dependencies import get_current_user_email
-from backend.utils.db import get_images_for_plant, get_plant_by_id, scan_table
-from backend.utils.s3 import assign_presigned_url_to_img
+from api.constants import PLANTS_TABLE_NAME
+from api.dependencies import get_current_user_email
+from api.utils.db import get_images_for_plant, get_plant_by_id, scan_table
+from api.utils.s3 import assign_presigned_url_to_img
 
 router = APIRouter(
     prefix="/plants",
