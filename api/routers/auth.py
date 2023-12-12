@@ -15,7 +15,7 @@ from starlette.requests import Request
 
 from api.constants import GOOGLE_CLIENT_ID
 
-# TODO: store these credentials in S3 for production use
+# TODO: store all credentials except AWS credentials in S3 and pull them using aws sdk
 load_dotenv(".env")
 config = Config(".env")
 oauth = OAuth(config)
@@ -46,7 +46,6 @@ router = APIRouter()
 
 @router.post("/auth")
 async def auth(request: Request):
-
     body = await request.json()
     token = body.get("token")
     nonce = body.get("nonce")

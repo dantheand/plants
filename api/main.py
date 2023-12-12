@@ -16,6 +16,7 @@ app.include_router(auth.router)
 app.include_router(plants.router)
 
 # TODO: change/handle this in production
+# TODO: check if in AWS, if so, allow the front-end URL
 origins = ["http://localhost", "http://localhost:3000", "localhost:3000", "localhost", "http://localhost:3000/"]
 app.add_middleware(
     CORSMiddleware,
