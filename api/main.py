@@ -17,7 +17,14 @@ app.include_router(plants.router)
 
 # TODO: change/handle this in production
 # TODO: check if in AWS, if so, allow the front-end URL
-origins = ["http://localhost", "http://localhost:3000", "localhost:3000", "localhost", "http://localhost:3000/"]
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "localhost:3000",
+    "localhost",
+    "http://localhost:3000/",
+    "https://master.d1g3nlvs6mpirt.amplifyapp.com",
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
