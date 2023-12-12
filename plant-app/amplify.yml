@@ -1,3 +1,21 @@
-env:
-  variables:
-    REACT_APP_BASE_API_URL: https://kc6fhyf8n1.execute-api.us-west-2.amazonaws.com/prod/
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          env:
+            variables:
+              REACT_APP_BASE_API_URL: https://kc6fhyf8n1.execute-api.us-west-2.amazonaws.com/prod/
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: build
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: plant-app
