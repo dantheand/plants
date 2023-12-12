@@ -11,7 +11,8 @@ applications:
         build:
           commands:
             - echo "Creating .env file..."
-            - echo "REACT_APP_BASE_API_URL=$REACT_APP_BASE_API_URL" >> .env
+            - echo $REACT_APP_BASE_API_URL
+            - echo "REACT_APP_BASE_API_URL=${REACT_APP_BASE_API_URL}" >> .env
             - npm run build
       artifacts:
         baseDirectory: build
