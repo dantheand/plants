@@ -7,7 +7,6 @@ applications:
             - npm ci
         build:
           commands:
-            - export REACT_APP_BASE_API_URL="https://kc6fhyf8n1.execute-api.us-west-2.amazonaws.com/prod/"
             - echo "Creating .env file..."
             - echo $REACT_APP_BASE_API_URL
             - echo "REACT_APP_BASE_API_URL=${REACT_APP_BASE_API_URL}" >> .env
