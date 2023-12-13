@@ -13,8 +13,6 @@ from api.routers.auth import JWT_SECRET_KEY
 app = FastAPI()
 
 
-# TODO: change/handle this in production
-# TODO: check if in AWS, if so, allow the front-end URL
 origins = [
     "http://localhost",
     "http://localhost:3000",

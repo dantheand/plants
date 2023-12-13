@@ -4,6 +4,7 @@ import { BASE_API_URL, GOOGLE_CLIENT_ID, JWT_TOKEN_STORAGE } from "./constants";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import React, { useEffect } from "react";
 
 function generateNonce(length = 32) {
   let result = "";
@@ -21,7 +22,11 @@ function generateNonce(length = 32) {
   return result;
 }
 
-async function responseGoogle(response: CredentialResponse, nonce: string) {
+async function responseGoogle(
+  response: CredentialResponse,
+  nonce: string,
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+) {
   try {
     const tokenId = response.credential;
     const backendUrl = BASE_API_URL + "/auth";
@@ -35,7 +40,7 @@ async function responseGoogle(response: CredentialResponse, nonce: string) {
 
     const data = await res.json();
     localStorage.setItem(JWT_TOKEN_STORAGE, data);
-    console.log(data);
+    setIsLoggedIn(true);
     console.log("Logged in successfully");
   } catch (error) {
     console.error("Error authenticating with backend:", error);
@@ -43,14 +48,24 @@ async function responseGoogle(response: CredentialResponse, nonce: string) {
 }
 export function AuthFromFrontEnd() {
   const nonce = generateNonce();
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const handleLogout = () => {
     localStorage.removeItem(JWT_TOKEN_STORAGE);
     console.log("Logged out successfully.");
   };
 
   const handleGoogleSuccess = (response: CredentialResponse) => {
-    responseGoogle(response, nonce);
+    responseGoogle(response, nonce, setIsLoggedIn);
   };
+
+  // If we're logged in, redirect to the plants page
+  const navigate = useNavigate();
+  // Redirect if logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/plants/");
+    }
+  }, [isLoggedIn, navigate]);
   return (
     <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
