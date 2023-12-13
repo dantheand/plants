@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -33,8 +34,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def get_aws_secret():
-    secret_name = "jwt_signing_key"
+def get_aws_secret(secret_name: str):
     region_name = "us-west-2"
 
     # Create a Secrets Manager client
@@ -44,14 +44,13 @@ def get_aws_secret():
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
+        logging.error("Could not get secret from AWS Secrets Manager.")
         raise e
 
-    # Decrypts secret using the associated KMS key.
-    secret = get_secret_value_response["SecretString"]
-    return secret
+    return get_secret_value_response["SecretString"]
 
 
-JWT_SECRET_KEY = get_aws_secret()
+JWT_SECRET_KEY = get_aws_secret("jwt_signing_key")
 
 
 class User(BaseModel):

@@ -12,33 +12,36 @@ from api.routers.auth import JWT_SECRET_KEY
 
 app = FastAPI()
 
-app.include_router(auth.router)
-app.include_router(plants.router)
 
 # TODO: change/handle this in production
 # TODO: check if in AWS, if so, allow the front-end URL
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "localhost:3000",
-    "localhost",
-    "http://localhost:3000/",
     "https://master.d1g3nlvs6mpirt.amplifyapp.com",
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.add_middleware(SessionMiddleware, secret_key=JWT_SECRET_KEY)
 
+app.include_router(auth.router)
+app.include_router(plants.router)
+
 
 @app.get("/")
 def root():
     return {"message": "Hello World"}
+
+
+@app.get("/test")
+def test():
+    return {"message": "I'm working"}
 
 
 handler = Mangum(app)
