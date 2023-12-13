@@ -1,3 +1,11 @@
+## Deployment environment specific things
+Ways of setting deployment environment specific things:
+ - FastAPI: `if "AWS_EXECUTION_ENV" in os.environ:`
+ - React: setting environment variables on build with `REACT_APP_` prefix
+### Things that are deployment-environment specific
+- BASE_API_URL
+- 
+
 # plant
 ## Planned features
 - DB-driven plant tracking

@@ -46,7 +46,7 @@ export function PlantList(): JSX.Element {
     })
       .then((response) => response.json())
       .then((data) => {
-        const sortedPlants = data.message.sort((a: Plant, b: Plant) => {
+        const sortedPlants = data.sort((a: Plant, b: Plant) => {
           return parseInt(a.PlantID) - parseInt(b.PlantID);
         });
         setPlants(sortedPlants);
@@ -102,7 +102,7 @@ export function PlantDetails() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setPlant(data.message);
+        setPlant(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -194,7 +194,7 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        setPlantImages(data.message);
+        setPlantImages(data);
       });
   }, [plant_id]);
 
