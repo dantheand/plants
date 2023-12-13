@@ -25,7 +25,7 @@ function App() {
         <Route path="/" element={<AuthFromFrontEnd />} />
         <Route path="/login" element={<AuthFromFrontEnd />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/plants/" element={<PlantList />} />
+          <Route path="/plants" element={<PlantList />} />
           <Route path="/plants/:plantId" element={<PlantDetails />} />
         </Route>
       </Routes>

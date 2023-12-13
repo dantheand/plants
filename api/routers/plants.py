@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends
 
 from api.constants import PLANTS_TABLE_NAME
@@ -14,6 +16,7 @@ router = APIRouter(
 
 @router.get("/")
 def get_all_plants():
+    logging.info("Getting all plants...")
     plants_list = scan_table(PLANTS_TABLE_NAME)
     return {"message": plants_list}
 
