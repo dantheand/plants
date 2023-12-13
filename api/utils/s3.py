@@ -18,7 +18,6 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600
         logging.error(e)
         return None
 
-    # The response contains the presigned URL
     return response
 
 

@@ -20,15 +20,6 @@ from botocore.exceptions import ClientError
 
 from api.constants import DEPLOYED_BASE_URL, GOOGLE_CLIENT_ID
 
-# TODO: store all credentials except AWS credentials in S3 and pull them using aws sdk
-load_dotenv(".env")
-config = Config(".env")
-oauth = OAuth(config)
-oauth.register(
-    name="google",
-    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-    client_kwargs={"scope": "openid email profile"},
-)
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -44,7 +35,7 @@ def get_aws_secret(secret_name: str):
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
-        logging.error("Could not get secret from AWS Secrets Manager.")
+        logging.error("Could not get secret %s from AWS Secrets Manager.", secret_name)
         raise e
 
     return get_secret_value_response["SecretString"]
@@ -69,6 +60,7 @@ router = APIRouter()
 
 @router.post("/auth")
 async def auth(request: Request):
+    """Authenticates a users oauth2 token and returns a JWT token with their email encoded in it"""
     body = await request.json()
     token = body.get("token")
     nonce = body.get("nonce")
@@ -89,17 +81,13 @@ async def auth(request: Request):
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Creates a signed JWT token with the given data and expiration time"""
     to_encode = data.copy()
-    # Set the expiration time
     if expires_delta is None:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     else:
         expire = datetime.utcnow() + expires_delta
-    # Add the expiration time to the token
     to_encode.update({"exp": expire})
-    # Encode the token
     try:
         encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
-    # Catch jwt encoding error
     except jwt.JWTError as e:
         logging.error(e)
         raise e

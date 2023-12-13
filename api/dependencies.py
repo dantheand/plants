@@ -15,8 +15,6 @@ async def get_current_user_email(token: Annotated[str, Depends(oauth2_scheme)]) 
     """Returns the user from the token"""
     try:
         logging.info("Attempting to validate credentials...")
-        logging.info("Token: %s", token)
-        logging.info("JWT_SECRET_KEY: %s", JWT_SECRET_KEY)
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
@@ -27,7 +25,7 @@ async def get_current_user_email(token: Annotated[str, Depends(oauth2_scheme)]) 
 
     user = User(email=email)
     if not valid_email_from_db(email):
-        logging.error("Email not found in database.")
+        logging.error("Credentialed email not an authorized user in database.")
         raise CREDENTIALS_EXCEPTION
 
     return user
