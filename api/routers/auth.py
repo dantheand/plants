@@ -1,64 +1,30 @@
 import logging
-import os
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Annotated, Optional
 
-from authlib.integrations.starlette_client import OAuth
-from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from jose import jwt
-from pydantic import BaseModel
-from starlette import status
-from starlette.config import Config
 from starlette.requests import Request
 
+from api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, GOOGLE_CLIENT_ID, JWT_SECRET_KEY, TOKEN_URL
+from api.dependencies import get_current_user
+from api.utils.schema import User
 
-import boto3
-from botocore.exceptions import ClientError
-
-from api.constants import DEPLOYED_BASE_URL, GOOGLE_CLIENT_ID
-
-
-ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-
-def get_aws_secret(secret_name: str):
-    region_name = "us-west-2"
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=region_name)
-
-    try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
-    except ClientError as e:
-        logging.error("Could not get secret %s from AWS Secrets Manager.", secret_name)
-        raise e
-
-    return get_secret_value_response["SecretString"]
-
-
-JWT_SECRET_KEY = get_aws_secret("jwt_signing_key")
-
-
-class User(BaseModel):
-    email: Optional[str] = None
-    disabled: Optional[bool] = None
-
-
-CREDENTIALS_EXCEPTION = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"},
-)
 
 router = APIRouter()
 
 
-@router.post("/auth")
+@router.get("/check_token")
+async def check_valid_user_token(user: Annotated[User, Depends(get_current_user)]) -> bool:
+    if user:
+        return True
+    return False
+
+
+@router.post(f"/{TOKEN_URL}")
 async def auth(request: Request):
     """Authenticates a users oauth2 token and returns a JWT token with their email encoded in it"""
     body = await request.json()

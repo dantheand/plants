@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { PlantList, PlantDetails } from "./PlantComponents";
 import {
   BrowserRouter as Router,
@@ -8,11 +8,54 @@ import {
   Outlet,
 } from "react-router-dom";
 import { AuthFromFrontEnd } from "./Authenticator";
-import { JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 
+// TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
+//
 const ProtectedRoute = () => {
-  const token = localStorage.getItem(JWT_TOKEN_STORAGE);
-  if (!token) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkTokenValidity = async () => {
+      const token = localStorage.getItem(JWT_TOKEN_STORAGE);
+      if (!token) {
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${BASE_API_URL}/check_token`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
+        const data = await res.json();
+        if (data === true) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Error authenticating with backend:", error);
+        setIsAuthenticated(false);
+      }
+      setIsLoading(false);
+    };
+    checkTokenValidity();
+  }, []);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace={true} />;
   }
   return <Outlet />;

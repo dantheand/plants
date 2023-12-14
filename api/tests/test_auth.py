@@ -1,4 +1,4 @@
-from api.routers.auth import get_aws_secret
+from api.utils.aws import get_aws_secret
 
 
 class TestAWSAccess:

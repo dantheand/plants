@@ -32,3 +32,8 @@ class Image(MyBaseModel):
     SignedUrl: Optional[str] = None
     Timestamp: str
     # Timestamp: datetime
+
+
+class User(BaseModel):
+    email: Optional[str] = None
+    disabled: Optional[bool] = None

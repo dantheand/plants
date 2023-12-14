@@ -29,7 +29,7 @@ async function responseGoogle(
 ) {
   try {
     const tokenId = response.credential;
-    const backendUrl = BASE_API_URL + "/auth";
+    const backendUrl = BASE_API_URL + "/token";
     const res = await fetch(backendUrl, {
       method: "POST",
       headers: {

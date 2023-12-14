@@ -5,14 +5,14 @@ from fastapi import APIRouter, Depends
 from pydantic import TypeAdapter
 
 from api.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
-from api.dependencies import get_current_user_email
+from api.dependencies import get_current_user
 from api.utils.db import get_db_connection, scan_table
 from api.utils.s3 import assign_presigned_url_to_img
 from api.utils.schema import Image, Plant
 
 router = APIRouter(
     prefix="/plants",
-    dependencies=[Depends(get_current_user_email)],
+    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
