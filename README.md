@@ -1,3 +1,13 @@
+## Development environment setup
+### Dependencies
+- Python >=3.9
+- node 18?
+
+### AWS stuff
+- aws CLI
+- aws credentials setup
+- 
+
 ## Deployment environment specific things
 Ways of setting deployment environment specific things:
  - FastAPI: `if "AWS_EXECUTION_ENV" in os.environ:`
