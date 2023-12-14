@@ -203,16 +203,18 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
       });
   }, [plant_id]);
 
-  if (isLoading) return <div>Loading images...</div>;
-
   return (
     <Card className="mb-3">
       <Card.Header as="h4">Images</Card.Header>
       <Card.Body>
-        <PlantImagesTimeline2
-          plant_images={plantImages}
-          onThumbnailClick={handleThumbnailClick}
-        />
+        {isLoading ? (
+          <div>Loading images...</div>
+        ) : (
+          <PlantImagesTimeline2
+            plant_images={plantImages}
+            onThumbnailClick={handleThumbnailClick}
+          />
+        )}
       </Card.Body>
 
       <Modal show={showModal} onHide={handleCloseModal} centered>
