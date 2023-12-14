@@ -9,6 +9,7 @@ import { useParams, useNavigate, NavigateFunction } from "react-router-dom";
 import { BackButton } from "./commonComponents";
 
 import "./timeline.css";
+import { Chrono, TimelineItem } from "react-chrono";
 
 interface Plant {
   PlantID: string;
@@ -176,6 +177,7 @@ export function PlantDetails() {
 
 export function PlantImages({ plant_id }: { plant_id: string }) {
   const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Modal Stuff
   const [showModal, setShowModal] = useState(false);
@@ -195,16 +197,19 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
       .then((response) => response.json())
       .then((data) => {
         setPlantImages(data);
+      })
+      .then(() => {
+        setIsLoading(false);
       });
   }, [plant_id]);
 
-  if (!plantImages) return <div>Loading images...</div>;
+  if (isLoading) return <div>Loading images...</div>;
 
   return (
     <Card className="mb-3">
       <Card.Header as="h4">Images</Card.Header>
       <Card.Body>
-        <PlantImagesTimeline
+        <PlantImagesTimeline2
           plant_images={plantImages}
           onThumbnailClick={handleThumbnailClick}
         />
@@ -217,6 +222,79 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
         </Modal.Body>
       </Modal>
     </Card>
+  );
+}
+
+// Create a Chronos timeline objects from plant image
+// data. This is a React component that can be rendered
+// in the PlantDetails component.
+export function PlantTimelineObj({
+  plant_img,
+}: {
+  plant_img: PlantImage;
+}): TimelineItem {
+  return {
+    title: plant_img.Timestamp,
+    media: {
+      type: "IMAGE",
+      source: {
+        url: plant_img.SignedUrl,
+      },
+    },
+  };
+}
+
+// const createImageHTML = ({ plant_img }: { plant_img: PlantImage }) => {
+//   return (
+//     <div style="width: 100%;">
+//       <img
+//         src="${plant_img.SignedUrl}"
+//         style="object-fit: contain; max-height: 300px; width: 100%;"
+//         alt="Plant"
+//       />
+//       <div>
+//         <h5>${plant_img.Timestamp}</h5>
+//       </div>
+//     </div>
+//   );
+// };
+
+export function PlantImagesTimeline2({
+  plant_images,
+  onThumbnailClick,
+}: {
+  plant_images: PlantImage[];
+  onThumbnailClick: (imageUrl: string) => void;
+}) {
+  return (
+    <Chrono
+      items={plant_images.map((plant_image) =>
+        PlantTimelineObj({ plant_img: plant_image }),
+      )}
+      mode="VERTICAL_ALTERNATING"
+      mediaHeight={500}
+      contentDetailsHeight={0}
+      hideControls={true}
+      theme={{
+        primary: "#003366", // Deep Blue (used sparingly)
+        secondary: "#FFFFFF", // Soft Green (as a new secondary color for contrast)
+        cardBgColor: "#FFFFFF", // White (for a cleaner look, reducing the grey tones)
+        cardDetailsBackGround: "#EFEFEF", // Light Grey (subtle and neutral)
+        cardDetailsColor: "#424242", // Dark Grey (for readability)
+        cardMediaBgColor: "#FFFFFF", // Soft Blue-Grey (less intense than previous blue)
+        cardSubtitleColor: "#595959", // Medium Grey (reducing the blue here)
+        cardTitleColor: "#212121", // Almost Black (for strong readability)
+        detailsColor: "#424242", // Dark Grey (consistent with other text)
+        nestedCardBgColor: "#FAFAFA", // Very Light Grey (light and neutral)
+        nestedCardDetailsBackGround: "#D1E8E4", // Very Pale Green (a hint of color)
+        nestedCardDetailsColor: "#424242", // Dark Grey (for readability)
+        nestedCardSubtitleColor: "#FF6F61", // Coral (a pop of color)
+        nestedCardTitleColor: "#4F4F4F", // Darker Grey (less blue than before)
+        iconBackgroundColor: "#B0C4DE", // Light Steel Blue (soft and less saturated)
+        titleColorActive: "#4F4F4F", // Coral (for an active and noticeable look)
+        titleColor: "#4F4F4F", // Darker Grey (more neutral than blue)
+      }}
+    ></Chrono>
   );
 }
 
