@@ -1,0 +1,28 @@
+.verticalTimeline::before {
+  background: #D3D3D3;
+}
+
+.verticalTimelineElement .vertical-timeline-element-icon {
+  background: #8CBF88 !important; /* Pastel green for the icon background */
+  color: #333 !important; /* Text color */
+  border: 2px solid #D3D3D3 !important; /* Grey border */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Shadow for depth */
+}
+
+.verticalTimelineElement .vertical-timeline-element-content {
+  background: #A8D5BA !important; /* Pastel green for content background */
+  color: #333 !important; /* Text color */
+  border-radius: 10px !important; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Shadow for depth */
+}
+
+.verticalTimelineElement .vertical-timeline-element-content-arrow {
+  border-right: 7px solid #A8D5BA !important; /* Arrow color */
+}
+
+.timelineImage {
+  border-radius: 5px; /* Rounded corners for images */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+  width: 100%; /* Ensures image is responsive */
+  height: auto; /* Maintains aspect ratio */
+}

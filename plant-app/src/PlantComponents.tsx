@@ -1,4 +1,10 @@
 import React, { useState, useEffect, JSX } from "react";
+import {
+  VerticalTimeline,
+  VerticalTimelineElement,
+} from "react-vertical-timeline-component";
+import "react-vertical-timeline-component/style.min.css";
+import "./PlantImagesTimeline.css";
 
 import { ListGroup } from "react-bootstrap";
 
@@ -210,10 +216,7 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
         {isLoading ? (
           <div>Loading images...</div>
         ) : (
-          <PlantImagesTimeline2
-            plant_images={plantImages}
-            onThumbnailClick={handleThumbnailClick}
-          />
+          <PlantImagesTimeline3 plant_images={plantImages} />
         )}
       </Card.Body>
 
@@ -227,151 +230,38 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
   );
 }
 
-// Create a Chronos timeline objects from plant image
-// data. This is a React component that can be rendered
-// in the PlantDetails component.
-export function PlantTimelineObj({
-  plant_img,
-}: {
-  plant_img: PlantImage;
-}): TimelineItem {
-  return {
-    title: plant_img.Timestamp,
-    media: {
-      type: "IMAGE",
-      source: {
-        url: plant_img.SignedUrl,
-      },
-    },
-  };
-}
-
-// const createImageHTML = ({ plant_img }: { plant_img: PlantImage }) => {
-//   return (
-//     <div style="width: 100%;">
-//       <img
-//         src="${plant_img.SignedUrl}"
-//         style="object-fit: contain; max-height: 300px; width: 100%;"
-//         alt="Plant"
-//       />
-//       <div>
-//         <h5>${plant_img.Timestamp}</h5>
-//       </div>
-//     </div>
-//   );
-// };
-
-export function PlantImagesTimeline2({
+export function PlantImagesTimeline3({
   plant_images,
-  onThumbnailClick,
 }: {
   plant_images: PlantImage[];
-  onThumbnailClick: (imageUrl: string) => void;
 }) {
-  return (
-    <Chrono
-      items={plant_images.map((plant_image) =>
-        PlantTimelineObj({ plant_img: plant_image }),
-      )}
-      mode="VERTICAL_ALTERNATING"
-      mediaHeight={500}
-      contentDetailsHeight={0}
-      hideControls={true}
-      theme={{
-        primary: "#003366", // Deep Blue (used sparingly)
-        secondary: "#FFFFFF", // Soft Green (as a new secondary color for contrast)
-        cardBgColor: "#FFFFFF", // White (for a cleaner look, reducing the grey tones)
-        cardDetailsBackGround: "#EFEFEF", // Light Grey (subtle and neutral)
-        cardDetailsColor: "#424242", // Dark Grey (for readability)
-        cardMediaBgColor: "#FFFFFF", // Soft Blue-Grey (less intense than previous blue)
-        cardSubtitleColor: "#595959", // Medium Grey (reducing the blue here)
-        cardTitleColor: "#212121", // Almost Black (for strong readability)
-        detailsColor: "#424242", // Dark Grey (consistent with other text)
-        nestedCardBgColor: "#FAFAFA", // Very Light Grey (light and neutral)
-        nestedCardDetailsBackGround: "#D1E8E4", // Very Pale Green (a hint of color)
-        nestedCardDetailsColor: "#424242", // Dark Grey (for readability)
-        nestedCardSubtitleColor: "#FF6F61", // Coral (a pop of color)
-        nestedCardTitleColor: "#4F4F4F", // Darker Grey (less blue than before)
-        iconBackgroundColor: "#B0C4DE", // Light Steel Blue (soft and less saturated)
-        titleColorActive: "#4F4F4F", // Coral (for an active and noticeable look)
-        titleColor: "#4F4F4F", // Darker Grey (more neutral than blue)
-      }}
-    ></Chrono>
-  );
-}
+  const contentBackground = "#A8D5BA"; // Soft pastel green
+  const textColor = "#333"; // Darker text color for better contrast
+  const iconColor = "#8CBF88"; // Slightly darker pastel green
+  const iconBorderColor = "#D3D3D3"; // Light grey for the border
 
-export function PlantImagesTimeline({
-  plant_images,
-  onThumbnailClick,
-}: {
-  plant_images: PlantImage[];
-  onThumbnailClick: (imageUrl: string) => void;
-}) {
   return (
-    <Container>
-      {plant_images.map((image, index) => (
-        <Row
-          key={image.ImageID}
-          className={
-            index % 2 === 0
-              ? "timeline-row"
-              : "timeline-row timeline-row-alternate"
-          }
+    <VerticalTimeline className="verticalTimeline">
+      {plant_images.map((plant_image) => (
+        <VerticalTimelineElement
+          key={plant_image.Timestamp}
+          date={new Date(plant_image.Timestamp).toLocaleDateString("en-US")}
+          className="verticalTimelineElement"
+          contentStyle={{ background: "none", boxShadow: "none" }} // Override default styles
+          contentArrowStyle={{ borderRight: "none" }} // Override default styles
+          iconStyle={{ background: "none", boxShadow: "none" }} // Override default styles
+          icon={<i className="fas fa-seedling timelineElementIcon"></i>}
         >
-          <Col md={6} className="timeline-date">
-            <p>{image.Timestamp}</p>
-          </Col>
-          <Col md={6} className="timeline-image-col">
-            <Image
-              src={image.SignedUrl}
-              alt={`Plant taken on ${image.Timestamp}`}
-              fluid
-              rounded
-              className="timeline-img clickable-item"
-              onClick={() => onThumbnailClick(image.SignedUrl)}
+          <div className="timelineElementContent">
+            <img
+              src={plant_image.SignedUrl}
+              alt={`Plant taken on ${plant_image.Timestamp}`}
+              className="img-fluid timelineImage"
             />
-          </Col>
-        </Row>
+          </div>
+        </VerticalTimelineElement>
       ))}
-    </Container>
-  );
-}
-
-export function PlantImagesOriginal({
-  plant_images,
-}: {
-  plant_images: PlantImage[];
-}) {
-  return (
-    <Container>
-      <Row>
-        {plant_images.map((plant_image) => (
-          <Col key={plant_image.Timestamp} sm={12} md={6} lg={4} xl={3}>
-            <PlantImageContainer plant_image={plant_image} />
-          </Col>
-        ))}
-      </Row>
-    </Container>
-  );
-}
-
-export function PlantImageContainer({
-  plant_image,
-}: {
-  plant_image: PlantImage;
-}) {
-  return (
-    <Container>
-      <Card>
-        <h5 className="text-center">{plant_image.Timestamp}</h5>
-        <Card.Img
-          variant="top"
-          src={plant_image.SignedUrl}
-          className="img-fluid"
-          alt="Plant"
-        />
-      </Card>
-    </Container>
+    </VerticalTimeline>
   );
 }
 
