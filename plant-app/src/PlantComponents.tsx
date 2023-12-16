@@ -9,13 +9,10 @@ import "./PlantImagesTimeline.css";
 import { ListGroup } from "react-bootstrap";
 
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
-import { Container, Card, Row, Col, Image, Modal } from "react-bootstrap";
+import { Container, Card, Image, Modal } from "react-bootstrap";
 
 import { useParams, useNavigate, NavigateFunction } from "react-router-dom";
 import { BackButton } from "./commonComponents";
-
-import "./timeline.css";
-import { Chrono, TimelineItem } from "react-chrono";
 
 interface Plant {
   PlantID: string;
