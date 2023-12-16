@@ -235,11 +235,6 @@ export function PlantImagesTimeline3({
 }: {
   plant_images: PlantImage[];
 }) {
-  const contentBackground = "#A8D5BA"; // Soft pastel green
-  const textColor = "#333"; // Darker text color for better contrast
-  const iconColor = "#8CBF88"; // Slightly darker pastel green
-  const iconBorderColor = "#D3D3D3"; // Light grey for the border
-
   return (
     <VerticalTimeline className="verticalTimeline">
       {plant_images.map((plant_image) => (
