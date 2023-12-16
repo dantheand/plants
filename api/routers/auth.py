@@ -33,9 +33,11 @@ async def auth(request: Request):
     request = requests.Request()
     try:
         id_info = id_token.verify_oauth2_token(token, request, GOOGLE_CLIENT_ID)
-        # TODO: figure out how to verify nonce; it's not in the id_toekn
         if not id_info:
             logging.error("Could not verify id token: %s", id_info)
+            raise CREDENTIALS_EXCEPTION
+        if nonce != id_info["nonce"]:
+            logging.error("Invalid nonce: %s", nonce)
             raise CREDENTIALS_EXCEPTION
         return (create_token_for_email(id_info["email"]),)
 

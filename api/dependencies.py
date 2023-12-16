@@ -1,18 +1,20 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, Security
+from fastapi.security import APIKeyHeader, OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer
 from jose import jwt
 
-from api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, JWT_SECRET_KEY, TOKEN_URL
+from api.constants import ALGORITHM, BASE_URL, CREDENTIALS_EXCEPTION, JWT_SECRET_KEY, TOKEN_URL
 from api.utils.schema import User
 
 # TODO: figure out what magic this is doing may be able to replace with OpenIdConnect()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
+oauth2_google = OAuth2PasswordBearer(
+    tokenUrl=TOKEN_URL,
+)
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> User:
     """Returns the user from the token if they are a valid user."""
     try:
         logging.info("Attempting to validate credentials...")

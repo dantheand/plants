@@ -5,6 +5,7 @@ from api.utils.aws import get_aws_secret
 
 PLANTS_TABLE_NAME = "plants"
 IMAGES_TABLE_NAME = "images"
+NEW_PLANTS_TABLE = "new_plants"
 
 S3_BUCKET_NAME = "0bf665f0db5b-plant-app"
 PLANT_IMAGES_FOLDER = "images"

@@ -8,16 +8,6 @@ from pydantic import BaseModel, Field, validator
 ######### New DynamoDB Models ##############
 ############################################
 
-"""
-User:
-PK: User#<email>
-SK: User#<email>
-entity_type: User
-disabled: bool
-
-
-"""
-
 
 class EntityType(str, Enum):
     USER = "User"
@@ -27,22 +17,34 @@ class EntityType(str, Enum):
 
 
 class UserItem(BaseModel):
-    pk: str = Field(..., alias="PK", regex=r"^USER#")
-    sk: str = Field(..., alias="SK", regex=r"^USER#")
+    pk: str = Field(..., alias="PK", pattern=r"^USER#")
+    sk: str = Field(..., alias="SK", pattern=r"^USER#")
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
 
-class PlantItem(BaseModel):
-    pk: str = Field(..., alias="PK", regex=r"^USER#")
-    sk: str = Field(..., alias="SK", regex=r"^USER#")
+class PlantBase(BaseModel):
+    human_name: str
+    species: str
+    location: str
+    parent_id: Optional[str] = None
+    source: str  # TODO: make this a list of strings (or plants?)
+    source_date: date
+    sink: Optional[str] = None
+    sink_date: Optional[date] = None
+    notes: Optional[str] = None
+
+
+class PlantItem(PlantBase):
+    pk: str = Field(..., alias="PK", pattern=r"^USER#")
+    sk: str = Field(..., alias="SK", pattern=r"^USER#")
     entity_type: str = Field(EntityType.PLANT)
     # TODO add the rest
 
 
 class ImageItem(BaseModel):
-    pk: str = Field(..., alias="PK", regex=r"^PLANT#")
-    sk: str = Field(..., alias="SK", regex=r"^IMAGE#")
+    pk: str = Field(..., alias="PK", pattern=r"^PLANT#")
+    sk: str = Field(..., alias="SK", pattern=r"^IMAGE#")
     entity_type: str = Field(EntityType.IMAGE)
     timestamp: datetime
     s3_url: str
@@ -53,10 +55,10 @@ class PlantLineageItem(BaseModel):
     pk: str = Field(
         ...,
         alias="PK",
-        regex=r"^PLANT#",
+        pattern=r"^PLANT#",
         description="Partition key, must start with PLANT# and correspond to an offspring PlantItem's pk",
     )
-    sk: str = Field(..., alias="SK", regex=r"^PARENT#", description="Sort key, must start with PARENT#")
+    sk: str = Field(..., alias="SK", pattern=r"^PARENT#", description="Sort key, must start with PARENT#")
     entity_type: str = Field(EntityType.LINEAGE)
 
 

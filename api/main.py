@@ -7,7 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 
 from api.routers import auth, plants
-from api.constants import JWT_SECRET_KEY
+from api.constants import GOOGLE_CLIENT_ID, JWT_SECRET_KEY
 
 app = FastAPI()
 

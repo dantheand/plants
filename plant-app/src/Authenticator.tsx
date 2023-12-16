@@ -77,6 +77,7 @@ export function AuthFromFrontEnd() {
           }}
         >
           <GoogleLogin
+            nonce={nonce}
             onSuccess={handleGoogleSuccess}
             onError={() => {
               console.log("Login Failed");
