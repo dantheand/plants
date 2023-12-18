@@ -9,8 +9,10 @@ from api.dependencies import get_current_user
 from api.utils.db import get_db_table
 from api.utils.schema import PlantBase, PlantCreate, PlantItem, PlantUpdate, User
 
+PLANT_ROUTE = "/new_plants"
+
 router = APIRouter(
-    prefix="/new_plants",
+    prefix=PLANT_ROUTE,
     dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )

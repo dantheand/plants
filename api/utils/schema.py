@@ -72,7 +72,7 @@ class PlantItem(PlantCreate):
 class ImageBase(BaseModel):
     s3_url: str
     signed_url: Optional[str] = None
-    timestamp: datetime
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     # This is needed because dynamodb can't handle date objects
     @field_validator("timestamp", mode="after")
@@ -84,8 +84,8 @@ class ImageBase(BaseModel):
 
 
 class ImageItem(ImageBase):
-    pk: str = Field(..., alias="PK", pattern=r"^PLANT#")
-    sk: str = Field(..., alias="SK", pattern=r"^IMAGE#")
+    PK: str = Field(..., alias="PK", pattern=r"^PLANT#")
+    SK: str = Field(..., alias="SK", pattern=r"^IMAGE#")
     entity_type: str = Field(EntityType.IMAGE)
 
 

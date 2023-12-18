@@ -3,6 +3,7 @@ import uuid
 from pydantic import TypeAdapter
 from fastapi import status
 
+from api.routers.new_plants import PLANT_ROUTE
 from api.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_plant_item, mock_db
 from api.utils.schema import PlantBase, PlantItem
 
@@ -15,7 +16,7 @@ class TestPlantRead:
             mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"/new_plants/{plant_user_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}")
         parsed_response = TypeAdapter(list[PlantItem]).validate_python(response.json())
         assert len(parsed_response) == 10
         assert all(isinstance(item, PlantItem) for item in parsed_response)
@@ -27,7 +28,7 @@ class TestPlantRead:
             mock_db.insert_mock_data(plant)
 
         test_client = client(OTHER_TEST_USER)
-        response = test_client.get(f"/new_plants/{plant_user_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}")
         assert response.status_code == 200
 
     def test_read_your_plant(self, client, mock_db):
@@ -37,7 +38,7 @@ class TestPlantRead:
         mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"/new_plants/{plant_user_id}/{plant_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
         assert PlantItem(**response.json()).SK == f"PLANT#{plant_id}"
         assert response.status_code == 200
 
@@ -48,14 +49,14 @@ class TestPlantRead:
         mock_db.insert_mock_data(plant)
 
         test_client = client(OTHER_TEST_USER)
-        response = test_client.get(f"/new_plants/{plant_user_id}/{plant_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
         assert PlantItem(**response.json()).SK == f"PLANT#{plant_id}"
         assert response.status_code == 200
 
     def test_read_missing_plant(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.email
         plant_id = uuid.uuid4()
-        response = client().get(f"/new_plants/{plant_user_id}/{plant_id}")
+        response = client().get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
         assert response.status_code == 404
 
 
@@ -63,7 +64,7 @@ class TestPlantCreate:
     def test_create(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
         new_plant = create_plant_item(human_name="New Plant")
-        response = test_client.post("/new_plants/", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["human_name"] == "New Plant"
 
@@ -78,14 +79,14 @@ class TestPlantCreate:
         mock_db.insert_mock_data(existing_plant)
 
         new_plant = create_plant_item(human_id=42)
-        response = test_client.post("/new_plants/", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_create_missing_required_fields(self, client):
         test_client = client(DEFAULT_TEST_USER)
         new_plant = create_plant_item()
         new_plant.human_id = None
-        response = test_client.post("/new_plants/", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -100,7 +101,7 @@ class TestPlantUpdate:
         updated_plant = PlantBase(**plant.model_dump())
         updated_plant.human_name = "Updated Name"
 
-        response = test_client.patch(f"/new_plants/{plant_id}", json=updated_plant.model_dump())
+        response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant.model_dump())
         assert response.status_code == status.HTTP_200_OK
 
         # Check the plant was updated in the DB
@@ -121,7 +122,7 @@ class TestPlantUpdate:
         updated_plant = PlantBase(**plant.model_dump())
         updated_plant.human_name = "Updated Name"
 
-        response = other_user_client.patch(f"/new_plants/{plant_id}", json=updated_plant.model_dump())
+        response = other_user_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant.model_dump())
 
         # Check that the update is not allowed
         assert response.status_code == status.HTTP_403_FORBIDDEN or response.status_code == status.HTTP_404_NOT_FOUND
@@ -130,7 +131,7 @@ class TestPlantUpdate:
         plant_id = uuid.uuid4()
         updated_plant = PlantBase(**create_plant_item().model_dump())
         test_client = client()
-        response = test_client.patch(f"/new_plants/{plant_id}", json=updated_plant.model_dump())
+        response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant.model_dump())
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_update_cant_change_human_id(self, mock_db, client):
@@ -142,7 +143,7 @@ class TestPlantUpdate:
         updated_plant["human_id"] = 42
 
         test_client = client()
-        response = test_client.patch(f"/new_plants/{plant_id}", json=updated_plant)
+        response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant)
 
         # Check that nothing changed
         assert response.status_code == status.HTTP_200_OK
@@ -157,7 +158,7 @@ class TestPlantDelete:
         mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.delete(f"/new_plants/{plant_id}")
+        response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         # Check the plant was deleted from the DB
@@ -174,7 +175,7 @@ class TestPlantDelete:
         # Another user who is not the owner of the plant
         other_user_client = client(OTHER_TEST_USER)
 
-        response = other_user_client.delete(f"/new_plants/{plant_id}")
+        response = other_user_client.delete(f"{PLANT_ROUTE}/{plant_id}")
 
         # Check that the delete is not allowed
         assert response.status_code == status.HTTP_403_FORBIDDEN or response.status_code == status.HTTP_404_NOT_FOUND
@@ -182,5 +183,5 @@ class TestPlantDelete:
     def test_delete_missing_plant_fails(self, client):
         plant_id = uuid.uuid4()
         test_client = client()
-        response = test_client.delete(f"/new_plants/{plant_id}")
+        response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
