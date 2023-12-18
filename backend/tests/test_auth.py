@@ -1,4 +1,4 @@
-from api.utils.aws import get_aws_secret
+from backend.plant_api.utils.aws import get_aws_secret
 
 
 class TestAWSAccess:

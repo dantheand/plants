@@ -1,6 +1,6 @@
 import boto3
 
-from api.constants import NEW_PLANTS_TABLE
+from backend.plant_api.constants import NEW_PLANTS_TABLE
 
 
 def get_db_connection():

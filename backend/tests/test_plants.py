@@ -3,9 +3,9 @@ import uuid
 from pydantic import TypeAdapter
 from fastapi import status
 
-from api.routers.new_plants import PLANT_ROUTE
-from api.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_plant_item, mock_db
-from api.utils.schema import PlantBase, PlantItem
+from backend.plant_api.routers.new_plants import PLANT_ROUTE
+from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_plant_item, mock_db
+from backend.plant_api.utils.schema import PlantBase, PlantItem
 
 
 class TestPlantRead:

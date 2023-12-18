@@ -5,9 +5,9 @@ from uuid import UUID
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from api.dependencies import get_current_user
-from api.utils.db import get_db_table
-from api.utils.schema import PlantBase, PlantCreate, PlantItem, PlantUpdate, User
+from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.utils.db import get_db_table
+from backend.plant_api.utils.schema import PlantBase, PlantCreate, PlantItem, PlantUpdate, User
 
 PLANT_ROUTE = "/new_plants"
 

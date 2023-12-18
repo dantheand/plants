@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from api.dependencies import get_current_user
+from backend.plant_api.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/new_source_links",

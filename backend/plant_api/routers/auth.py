@@ -8,9 +8,9 @@ from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
-from api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, GOOGLE_CLIENT_ID, JWT_SECRET_KEY, TOKEN_URL
-from api.dependencies import get_current_user
-from api.utils.schema import User
+from backend.plant_api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, GOOGLE_CLIENT_ID, JWT_SECRET_KEY, TOKEN_URL
+from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.utils.schema import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

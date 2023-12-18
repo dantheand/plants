@@ -2,9 +2,9 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 
-from api.dependencies import get_current_user
-from api.utils.db import get_db_table
-from api.utils.schema import ImageBase, ImageItem
+from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.utils.db import get_db_table
+from backend.plant_api.utils.schema import ImageBase, ImageItem
 
 router = APIRouter(
     prefix="/new_images",

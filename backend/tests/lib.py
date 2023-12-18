@@ -8,10 +8,11 @@ from faker import Faker
 from moto import mock_dynamodb
 from starlette.testclient import TestClient
 
-from api.constants import NEW_PLANTS_TABLE
-from api.dependencies import get_current_user
-from api.main import app
-from api.utils.schema import DbModelType, EntityType, PlantItem, User
+from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.main import app
+from backend.plant_api.utils.schema import DbModelType, EntityType, PlantItem, User
+
+from backend.plant_api.constants import NEW_PLANTS_TABLE
 
 
 class MockDB:

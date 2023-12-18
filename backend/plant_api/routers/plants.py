@@ -4,11 +4,11 @@ from boto3.dynamodb.conditions import Key
 from fastapi import APIRouter, Depends
 from pydantic import TypeAdapter
 
-from api.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
-from api.dependencies import get_current_user
-from api.utils.db import get_db_connection, scan_table
-from api.utils.s3 import assign_presigned_url_to_img
-from api.utils.schema import Image, Plant
+from backend.plant_api.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME
+from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.utils.db import get_db_connection, scan_table
+from backend.plant_api.utils.s3 import assign_presigned_url_to_img
+from backend.plant_api.utils.schema import Image, Plant
 
 router = APIRouter(
     prefix="/plants",
