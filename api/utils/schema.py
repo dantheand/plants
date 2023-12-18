@@ -39,7 +39,6 @@ class UserItem(BaseModel):
 
 class PlantBase(BaseModel):
     human_name: str
-    human_id: int  # Must be unique
     species: Optional[str] = None
     location: str
     # Sink can be either another plant (if it is wholly incorporated) or something else (like a gift to someone)
@@ -49,25 +48,45 @@ class PlantBase(BaseModel):
 
     # This is needed because dynamodb can't handle date objects
     @field_validator("sink_date", mode="after")
+    @classmethod
     def datetime_to_string(cls, v):
         if isinstance(v, date):
             return v.isoformat()
         return v
 
 
-class PlantItem(PlantBase):
+class PlantCreate(PlantBase):
+    human_id: int  # Must be unique for a given user; cannot be changed
+
+
+class PlantUpdate(PlantBase):
+    pass
+
+
+class PlantItem(PlantCreate):
     PK: str = Field(..., alias="PK", pattern=r"^USER#")
     SK: str = Field(..., alias="SK", pattern=r"^PLANT#")
     entity_type: str = Field(EntityType.PLANT)
 
 
-class ImageItem(BaseModel):
+class ImageBase(BaseModel):
+    s3_url: str
+    signed_url: Optional[str] = None
+    timestamp: datetime
+
+    # This is needed because dynamodb can't handle date objects
+    @field_validator("timestamp", mode="after")
+    @classmethod
+    def datetime_to_string(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
+
+
+class ImageItem(ImageBase):
     pk: str = Field(..., alias="PK", pattern=r"^PLANT#")
     sk: str = Field(..., alias="SK", pattern=r"^IMAGE#")
     entity_type: str = Field(EntityType.IMAGE)
-    timestamp: datetime
-    s3_url: str
-    signed_url: Optional[str] = None
 
 
 class PlantSourceItem(BaseModel):

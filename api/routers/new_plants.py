@@ -1,11 +1,13 @@
+import uuid
+from typing import Annotated
 from uuid import UUID
 
-from boto3.dynamodb.conditions import Key
-from fastapi import APIRouter, Depends, HTTPException
+from boto3.dynamodb.conditions import Attr, Key
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.dependencies import get_current_user
 from api.utils.db import get_db_table
-from api.utils.schema import PlantItem
+from api.utils.schema import PlantBase, PlantCreate, PlantItem, PlantUpdate, User
 
 router = APIRouter(
     prefix="/new_plants",
@@ -38,16 +40,56 @@ async def get_plant_for_user(plant_id: UUID, user_id: str):
         raise HTTPException(status_code=404, detail="Plant not found")
 
 
-@router.post("/")
-async def create_plant(user=Depends(get_current_user)):
-    ...
+@router.post("/", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
+async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(get_current_user)]):
+    table = get_db_table()
+    # Query to check if a plant with the same human_id already exists for this user
+    response = table.query(
+        KeyConditionExpression=Key("PK").eq(f"USER#{user.email}") & Key("SK").begins_with("PLANT#"),
+        FilterExpression=Attr("human_id").eq(plant_data.human_id),
+    )
+    if response["Items"]:
+        raise HTTPException(status_code=400, detail="Duplicate plant IDs (human_id field) not allowed")
+
+    # Create a new plant item
+    plant_id = str(uuid.uuid4())
+    plant_item = PlantItem(
+        PK=f"USER#{user.email}", SK=f"PLANT#{plant_id}", entity_type="Plant", **plant_data.model_dump()
+    )
+
+    table.put_item(Item=plant_item.model_dump())
+    return plant_item
 
 
-@router.put("/{plant_id}")
-async def update_plant(plant_id: UUID, user=Depends(get_current_user)):
-    ...
+@router.patch("/{plant_id}", response_model=PlantItem)
+async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_current_user)):
+    table = get_db_table()
+    pk = f"USER#{user.email}"
+    sk = f"PLANT#{str(plant_id)}"
+
+    # Retrieve the existing plant
+    response = table.get_item(Key={"PK": pk, "SK": sk})
+    if "Item" not in response:
+        raise HTTPException(status_code=404, detail="Plant not found")
+    stored_item = PlantItem(**response["Item"])
+    update_data = new_data.model_dump(exclude_unset=True)
+    updated_item = stored_item.model_copy(update=update_data)
+
+    table.put_item(Item=updated_item.model_dump())
+    return updated_item
 
 
-@router.delete("/{plant_id}")
+@router.delete("/{plant_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_plant(plant_id: UUID, user=Depends(get_current_user)):
-    ...
+    table = get_db_table()
+    pk = f"USER#{user.email}"
+    sk = f"PLANT#{str(plant_id)}"
+
+    # Check if the plant exists and belongs to the user
+    response = table.get_item(Key={"PK": pk, "SK": sk})
+    if "Item" not in response:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Plant not found")
+
+    # Delete the plant item
+    table.delete_item(Key={"PK": pk, "SK": sk})
+    return {"message": "Plant deleted successfully"}
