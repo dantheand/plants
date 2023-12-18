@@ -1,6 +1,7 @@
 import uuid
 from datetime import date
 from typing import Optional
+from unittest import mock
 
 import boto3
 import pytest
@@ -9,10 +10,17 @@ from moto import mock_dynamodb
 from starlette.testclient import TestClient
 
 from backend.plant_api.dependencies import get_current_user
-from backend.plant_api.main import app
+
+# from backend.plant_api.main import app
 from backend.plant_api.utils.schema import DbModelType, EntityType, PlantItem, User
 
 from backend.plant_api.constants import NEW_PLANTS_TABLE
+
+
+def get_app():
+    from backend.plant_api.main import app
+
+    return app
 
 
 class MockDB:
@@ -55,6 +63,8 @@ def mock_db():
 
 @pytest.fixture(scope="function")
 def client():
+    app = get_app()
+
     def _get_client(current_user: User = DEFAULT_TEST_USER):
         def mock_get_current_user():
             return current_user
