@@ -45,7 +45,7 @@ aws lambda update-function-code \
 # Running FastAPI
 export AWS_PROFILE=plants
 cd ~/projects/plants
-uvicorn api.main:app --reload
+uvicorn backend.plant_api.main:app --reload
 
 # Running react app
 cd ~/projects/plants/plant-app

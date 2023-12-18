@@ -20,4 +20,8 @@ CREDENTIALS_EXCEPTION = HTTPException(
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
 )
-JWT_SECRET_KEY = get_aws_secret("jwt_signing_key")
+JWT_KEY_IN_SECRETS_MANAGER = "jwt_signing_key"
+
+
+def get_jwt_secret() -> str:
+    return get_aws_secret(JWT_KEY_IN_SECRETS_MANAGER)

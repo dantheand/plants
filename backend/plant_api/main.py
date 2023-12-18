@@ -7,7 +7,8 @@ from starlette.middleware.sessions import SessionMiddleware
 
 
 from backend.plant_api.routers import auth, new_plants, plants
-from backend.plant_api.constants import GOOGLE_CLIENT_ID, JWT_SECRET_KEY
+from backend.plant_api.constants import get_jwt_secret
+
 
 app = FastAPI()
 
@@ -25,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(SessionMiddleware, secret_key=JWT_SECRET_KEY)
 
 app.include_router(auth.router)
 app.include_router(plants.router)

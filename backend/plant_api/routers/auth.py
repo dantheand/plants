@@ -8,7 +8,7 @@ from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
-from backend.plant_api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, GOOGLE_CLIENT_ID, JWT_SECRET_KEY, TOKEN_URL
+from backend.plant_api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, GOOGLE_CLIENT_ID, TOKEN_URL, get_jwt_secret
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.utils.schema import User
 
@@ -55,7 +55,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
     try:
-        encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(to_encode, get_jwt_secret(), algorithm=ALGORITHM)
     except jwt.JWTError as e:
         logging.error(e)
         raise e

@@ -5,7 +5,7 @@ from fastapi import Depends, Security
 from fastapi.security import APIKeyHeader, OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer
 from jose import jwt
 
-from backend.plant_api.constants import ALGORITHM, BASE_URL, CREDENTIALS_EXCEPTION, JWT_SECRET_KEY, TOKEN_URL
+from backend.plant_api.constants import ALGORITHM, BASE_URL, CREDENTIALS_EXCEPTION, TOKEN_URL, get_jwt_secret
 from backend.plant_api.utils.schema import User
 
 # TODO: figure out what magic this is doing may be able to replace with OpenIdConnect()
@@ -18,7 +18,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
     """Returns the user from the token if they are a valid user."""
     try:
         logging.info("Attempting to validate credentials...")
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, get_jwt_secret(), algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             raise CREDENTIALS_EXCEPTION
