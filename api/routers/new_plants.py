@@ -14,14 +14,18 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def read_plants_for_user(user=Depends(get_current_user)):
-    print(user)
-    ...
+@router.get("/{user_id}", response_model=list[PlantItem])
+async def read_all_plants_for_user(user_id=str):
+    pk_value = f"USER#{user_id}"
+    sk_value = f"PLANT#"
+    table = get_db_table()
+
+    response = table.query(KeyConditionExpression=Key("PK").eq(pk_value) & Key("SK").begins_with(sk_value))
+    return response.get("Items", [])
 
 
 @router.get("/{user_id}/{plant_id}", response_model=PlantItem)
-async def get_plant_for_user(plant_id: UUID, user_id: str, current_user=Depends(get_current_user)):
+async def get_plant_for_user(plant_id: UUID, user_id: str):
     pk_value = f"USER#{user_id}"
     sk_value = f"PLANT#{plant_id}"
     table = get_db_table()
