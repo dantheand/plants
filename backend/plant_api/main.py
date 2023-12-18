@@ -3,11 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from mangum import Mangum
-from starlette.middleware.sessions import SessionMiddleware
 
 
 from backend.plant_api.routers import auth, new_plants, plants
-from backend.plant_api.constants import get_jwt_secret
 
 
 app = FastAPI()

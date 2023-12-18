@@ -127,7 +127,7 @@ class TestPlantUpdate:
         # Check that the update is not allowed
         assert response.status_code == status.HTTP_403_FORBIDDEN or response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_update_missing_plant_fails(self, client):
+    def test_update_missing_plant_fails(self, client, mock_db):
         plant_id = uuid.uuid4()
         updated_plant = PlantBase(**create_plant_item().model_dump())
         test_client = client()
@@ -180,7 +180,7 @@ class TestPlantDelete:
         # Check that the delete is not allowed
         assert response.status_code == status.HTTP_403_FORBIDDEN or response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_delete_missing_plant_fails(self, client):
+    def test_delete_missing_plant_fails(self, client, mock_db):
         plant_id = uuid.uuid4()
         test_client = client()
         response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")

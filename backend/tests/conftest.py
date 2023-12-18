@@ -16,8 +16,3 @@ def mock_aws_secrets():
             Name=JWT_KEY_IN_SECRETS_MANAGER, SecretString="test_secret"
         )
         yield
-
-
-def test_get_jwt_key():
-    secret = get_aws_secret(JWT_KEY_IN_SECRETS_MANAGER)
-    assert secret == "test_secret"
