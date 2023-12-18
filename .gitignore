@@ -181,6 +181,6 @@ pyrightconfig.json
 data/
 
 # Lambda config stuff
-api_deps/
+backend_deps/
 api_lambda.zip
 
