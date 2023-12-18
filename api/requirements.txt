@@ -4,6 +4,7 @@ uvicorn
 mangum
 python-multipart
 python-jose[cryptography]
+pydantic
 passlib[bcrypt]
 authlib
 google-auth-oauthlib
