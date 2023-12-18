@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from mangum import Mangum
 
-
 from backend.plant_api.routers import auth, new_plants, plants
 
 

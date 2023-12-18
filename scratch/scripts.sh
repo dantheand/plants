@@ -17,10 +17,10 @@ aws lambda create-function \
 --role arn:aws:iam::593627358790:role/lambda_db_reader
 
 # Install AWS compatible dependencies
-cd ~/projects/plants/backend/
+cd ~/projects/plants/backend
 pip install \
 --platform manylinux2014_x86_64 \
---target=backend_deps \
+--target=../backend_deps \
 --implementation cp \
 --python-version 3.9 \
 --only-binary=:all: --upgrade \
@@ -28,10 +28,10 @@ pip install \
 -r requirements.txt
 
 # Package lambda
-cd ~/projects/plants/backend/api_deps
-zip -r ~/projects/plants/backend/api_lambda.zip .
-cd ~/projects/plants/backend
-zip -g ./api_lambda.zip -r plant_api
+cd ~/projects/plants/backend_deps
+zip -r ~/projects/plants/api_lambda.zip .
+cd ~/projects/plants/
+zip -g ./api_lambda.zip -r backend
 
 # Updating lambda function w/ FastAPI backend
 aws lambda update-function-code \

@@ -2,11 +2,8 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Optional, Union
 
-from faker import Faker
 from pydantic import BaseModel, Field, field_validator, validator
 
-
-fake = Faker()
 
 ############################################
 ######### New DynamoDB Models ##############
