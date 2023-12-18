@@ -7,3 +7,6 @@ python-jose[cryptography]
 passlib[bcrypt]
 authlib
 google-auth-oauthlib
+# for testing
+moto
+faker

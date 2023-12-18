@@ -6,7 +6,7 @@ from mangum import Mangum
 from starlette.middleware.sessions import SessionMiddleware
 
 
-from api.routers import auth, plants
+from api.routers import auth, new_plants, plants
 from api.constants import GOOGLE_CLIENT_ID, JWT_SECRET_KEY
 
 app = FastAPI()
@@ -29,6 +29,8 @@ app.add_middleware(SessionMiddleware, secret_key=JWT_SECRET_KEY)
 
 app.include_router(auth.router)
 app.include_router(plants.router)
+# New endpoints
+app.include_router(new_plants.router)
 
 
 @app.get("/")

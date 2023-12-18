@@ -1,8 +1,12 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from faker import Faker
+from pydantic import BaseModel, Field, field_validator, validator
+
+
+fake = Faker()
 
 ############################################
 ######### New DynamoDB Models ##############
@@ -16,6 +20,16 @@ class EntityType(str, Enum):
     LINEAGE = "Lineage"
 
 
+class SourceType(str, Enum):
+    PLANT = "Plant"
+    OTHER = "Other"
+
+
+class SinkType(str, Enum):
+    PLANT = "Plant"
+    OTHER = "Other"
+
+
 class UserItem(BaseModel):
     pk: str = Field(..., alias="PK", pattern=r"^USER#")
     sk: str = Field(..., alias="SK", pattern=r"^USER#")
@@ -25,21 +39,26 @@ class UserItem(BaseModel):
 
 class PlantBase(BaseModel):
     human_name: str
-    species: str
+    human_id: int  # Must be unique
+    species: Optional[str] = None
     location: str
-    parent_id: Optional[str] = None
-    source: str  # TODO: make this a list of strings (or plants?)
-    source_date: date
+    # Sink can be either another plant (if it is wholly incorporated) or something else (like a gift to someone)
     sink: Optional[str] = None
     sink_date: Optional[date] = None
     notes: Optional[str] = None
 
+    # This is needed because dynamodb can't handle date objects
+    @field_validator("sink_date", mode="after")
+    def datetime_to_string(cls, v):
+        if isinstance(v, date):
+            return v.isoformat()
+        return v
+
 
 class PlantItem(PlantBase):
-    pk: str = Field(..., alias="PK", pattern=r"^USER#")
-    sk: str = Field(..., alias="SK", pattern=r"^USER#")
+    PK: str = Field(..., alias="PK", pattern=r"^USER#")
+    SK: str = Field(..., alias="SK", pattern=r"^PLANT#")
     entity_type: str = Field(EntityType.PLANT)
-    # TODO add the rest
 
 
 class ImageItem(BaseModel):
@@ -51,15 +70,22 @@ class ImageItem(BaseModel):
     signed_url: Optional[str] = None
 
 
-class PlantLineageItem(BaseModel):
+class PlantSourceItem(BaseModel):
     pk: str = Field(
         ...,
         alias="PK",
         pattern=r"^PLANT#",
-        description="Partition key, must start with PLANT# and correspond to an offspring PlantItem's pk",
+        description="Child's plant key in the link.",
     )
-    sk: str = Field(..., alias="SK", pattern=r"^PARENT#", description="Sort key, must start with PARENT#")
+    sk: str = Field(
+        ..., alias="SK", pattern=r"^SOURCE#", description="Either the parent plant, or someone/something else"
+    )
     entity_type: str = Field(EntityType.LINEAGE)
+    source_type: SourceType
+    source_date: date
+
+
+DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem]
 
 
 ############################################
