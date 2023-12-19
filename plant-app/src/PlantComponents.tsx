@@ -6,7 +6,7 @@ import {
 import "react-vertical-timeline-component/style.min.css";
 import "./PlantImagesTimeline.css";
 
-import { ListGroup } from "react-bootstrap";
+import { Button, Form, ListGroup } from "react-bootstrap";
 
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { Container, Card, Image, Modal } from "react-bootstrap";
@@ -84,19 +84,71 @@ export function PlantList(): JSX.Element {
   );
 }
 
+// Define props for EditableInput component
+interface EditableInputProps {
+  label: string;
+  type: string;
+  value: string;
+  editsAllowed?: boolean;
+  OnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isEditable: boolean;
+}
+
+const EditableInput = ({
+  label,
+  type,
+  value,
+  editsAllowed = true,
+  OnChange,
+  isEditable,
+}: EditableInputProps) => {
+  return (
+    <Form.Group className="mx-3 mb-3">
+      <Form.Label className="fw-bold text-primary">{label}</Form.Label>
+      <Form.Control
+        type={type}
+        value={value}
+        onChange={OnChange}
+        disabled={!(isEditable && editsAllowed)}
+        plaintext={!editsAllowed}
+      />
+    </Form.Group>
+  );
+};
+
 export function PlantDetails() {
   const { plantId } = useParams<{ plantId: string }>();
-  const safePlantId = plantId ?? "";
   const navigate = useNavigate();
-  // Modal stuff
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   // Fetch plant details using plantId or other logic
-  const [plant, setPlant] = useState<Plant | null>(null);
+  const [plant, setPlant] = useState<Plant>({
+    PlantID: "",
+    HumanName: "",
+    Species: "",
+    Location: "",
+    ParentID: "",
+    Source: "",
+    SourceDate: "",
+    Sink: "",
+    SinkDate: "",
+    Notes: "",
+  });
+  const [originalPlant, setOriginalPlant] = useState<Plant>({
+    PlantID: "",
+    HumanName: "",
+    Species: "",
+    Location: "",
+    ParentID: "",
+    Source: "",
+    SourceDate: "",
+    Sink: "",
+    SinkDate: "",
+    Notes: "",
+  });
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditable, setIsEditable] = useState<boolean>(false);
 
   useEffect(() => {
     fetch(`${BASE_API_URL}/plants/${plantId}`, {
@@ -107,6 +159,7 @@ export function PlantDetails() {
       .then((response) => response.json())
       .then((data) => {
         setPlant(data);
+        setOriginalPlant(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -114,6 +167,26 @@ export function PlantDetails() {
         setIsLoading(false);
       });
   }, [plantId]);
+
+  type PlantField = keyof Plant;
+  const handleInputChange =
+    (field: PlantField) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setPlant({ ...plant, [field]: event.target.value });
+    };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    alert("Form submitted!");
+  };
+
+  const toggleEditable = () => {
+    if (isEditable) {
+      setPlant(originalPlant);
+    } else {
+      setOriginalPlant(plant);
+    }
+    setIsEditable(!isEditable);
+  };
 
   if (isLoading) {
     return <p>Loading plant...</p>;
@@ -126,54 +199,113 @@ export function PlantDetails() {
   return (
     <Container className="my-4">
       <BackButton />
+      {/** Edit Button */}
+      <Button
+        variant="secondary"
+        onClick={toggleEditable}
+        className="mb-3 float-end"
+      >
+        {isEditable ? "Cancel" : "Edit"}
+      </Button>
       {/* Basic Information Section */}
-      <Card className="mb-3">
-        <Card.Header as="h4">Basic Information</Card.Header>
-        <ListGroup variant="flush">
-          <ListGroup.Item>Plant ID: {plant.PlantID || "N/A"}</ListGroup.Item>
-          <ListGroup.Item>
-            Human Name: {plant.HumanName || "N/A"}
-          </ListGroup.Item>
-          <ListGroup.Item>Species: {plant.Species || "N/A"}</ListGroup.Item>
-          <ListGroup.Item>Location: {plant.Location || "N/A"}</ListGroup.Item>
-        </ListGroup>
-      </Card>
+      <Form onSubmit={handleSubmit}>
+        <Button variant="primary" type="submit" disabled={!isEditable}>
+          Submit
+        </Button>
+        <Card className="mb-3">
+          <Card.Header as="h4">Basic Information</Card.Header>
+          <EditableInput
+            label="Plant ID"
+            type="text"
+            value={plant.PlantID}
+            OnChange={handleInputChange("PlantID")}
+            isEditable={isEditable}
+            editsAllowed={false}
+          />
+          <EditableInput
+            label="Human Name"
+            type="text"
+            value={plant.HumanName}
+            OnChange={handleInputChange("HumanName")}
+            isEditable={isEditable}
+          />
+          <EditableInput
+            label="Species"
+            type="text"
+            value={plant.Species || ""}
+            OnChange={handleInputChange("Species")}
+            isEditable={isEditable}
+          />
+          <EditableInput
+            label="Location"
+            type="text"
+            value={plant.Location}
+            OnChange={handleInputChange("Location")}
+            isEditable={isEditable}
+          />
+        </Card>
 
-      {/* Source Information Section */}
-      <Card className="mb-3">
-        <Card.Header as="h4">Source Information</Card.Header>
-        <ListGroup variant="flush">
-          <ListGroup.Item
-            onClick={() =>
-              plant.ParentID && handlePlantClick(plant.ParentID, navigate)
-            }
-            className={plant.ParentID ? "clickable-item" : ""}
-          >
-            Parent ID: {plant.ParentID || "N/A"}
-          </ListGroup.Item>
-          <ListGroup.Item>Source: {plant.Source || "N/A"}</ListGroup.Item>
-          <ListGroup.Item>
-            Source Date: {plant.SourceDate || "N/A"}
-          </ListGroup.Item>
-        </ListGroup>
-      </Card>
+        {/* Source Information Section */}
+        <Card className="mb-3">
+          <Card.Header as="h4">Source Information</Card.Header>
+          <ListGroup variant="flush">
+            <div
+              onClick={() =>
+                plant.ParentID && handlePlantClick(plant.ParentID, navigate)
+              }
+              className={plant.ParentID ? "clickable-item" : ""}
+            >
+              <EditableInput
+                label="Parent ID"
+                type="text"
+                value={plant.ParentID || ""}
+                OnChange={handleInputChange("Species")}
+                isEditable={isEditable}
+                editsAllowed={false}
+              />
+            </div>
+            <EditableInput
+              label="Source"
+              type="text"
+              value={plant.Source || ""}
+              OnChange={handleInputChange("Source")}
+              isEditable={isEditable}
+            />
+            <EditableInput
+              label={"Source Date"}
+              type={"date"}
+              value={plant.SourceDate}
+              OnChange={handleInputChange("SourceDate")}
+              isEditable={isEditable}
+            />
+          </ListGroup>
+        </Card>
 
-      {/* Sink Information Section */}
-      <Card className="mb-3">
-        <Card.Header as="h4">Sink Information</Card.Header>
-        <ListGroup variant="flush">
-          <ListGroup.Item>Sink: {plant.Sink || "N/A"}</ListGroup.Item>
-          <ListGroup.Item>Sink Date: {plant.SinkDate || "N/A"}</ListGroup.Item>
-        </ListGroup>
-      </Card>
+        {/* Sink Information Section */}
+        <Card className="mb-3">
+          <Card.Header as="h4">Sink Information</Card.Header>
+          <ListGroup variant="flush">
+            <ListGroup.Item>Sink: {plant.Sink || "N/A"}</ListGroup.Item>
+            <ListGroup.Item>
+              Sink Date: {plant.SinkDate || "N/A"}
+            </ListGroup.Item>
+          </ListGroup>
+        </Card>
 
-      {/* Notes Section */}
-      <Card className="mb-3">
-        <Card.Header as="h4">Notes</Card.Header>
-        <Card.Body>{plant.Notes || "N/A"}</Card.Body>
-      </Card>
+        {/* Notes Section */}
+        <Card className="mb-3">
+          <Card.Header as="h4">Notes</Card.Header>
+          <EditableInput
+            label={""}
+            type={"textarea"}
+            value={plant.Notes ?? ""}
+            OnChange={handleInputChange("Notes")}
+            isEditable={isEditable}
+          />
+        </Card>
+      </Form>
       {/* Images Section */}
-      <PlantImages plant_id={safePlantId} />
+      <PlantImages plant_id={plantId ?? ""} />
     </Container>
   );
 }
