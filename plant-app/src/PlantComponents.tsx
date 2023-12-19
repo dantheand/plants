@@ -153,7 +153,7 @@ export function PlantDetails() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
 
   useEffect(() => {
     fetch(`${BASE_API_URL}/plants/${plantId}`, {
@@ -185,12 +185,12 @@ export function PlantDetails() {
   };
 
   const toggleEditable = () => {
-    if (isEditable) {
+    if (isFormEditable) {
       setPlant(originalPlant);
     } else {
       setOriginalPlant(plant);
     }
-    setIsEditable(!isEditable);
+    setIsFormEditable(!isFormEditable);
   };
 
   if (isLoading) {
@@ -213,13 +213,17 @@ export function PlantDetails() {
             <span>Plant Information</span>
             <div>
               <Button
-                variant={isEditable ? "danger" : "secondary"}
+                variant={isFormEditable ? "danger" : "secondary"}
                 onClick={toggleEditable}
                 className="mx-2"
               >
-                {isEditable ? <FaTimes /> : <FaPencilAlt />}
+                {isFormEditable ? <FaTimes /> : <FaPencilAlt />}
               </Button>
-              <Button variant="primary" type="submit" disabled={!isEditable}>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={!isFormEditable}
+              >
                 <FaSave />
               </Button>
             </div>
@@ -229,7 +233,7 @@ export function PlantDetails() {
             type="text"
             value={plant.PlantID}
             OnChange={handleInputChange("PlantID")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
             editsAllowed={false}
           />
           <EditableInput
@@ -237,21 +241,21 @@ export function PlantDetails() {
             type="text"
             value={plant.HumanName}
             OnChange={handleInputChange("HumanName")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
           <EditableInput
             label="Species"
             type="text"
             value={plant.Species || ""}
             OnChange={handleInputChange("Species")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
           <EditableInput
             label="Location"
             type="text"
             value={plant.Location}
             OnChange={handleInputChange("Location")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
 
           {/*<div*/}
@@ -267,21 +271,21 @@ export function PlantDetails() {
             type="text"
             value={plant.ParentID || ""}
             OnChange={handleInputChange("Species")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
           <EditableInput
             label="Source"
             type="text"
             value={plant.Source || ""}
             OnChange={handleInputChange("Source")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
           <EditableInput
             label={"Source Date"}
             type={"date"}
             value={plant.SourceDate}
             OnChange={handleInputChange("SourceDate")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
 
           <EditableInput
@@ -289,14 +293,14 @@ export function PlantDetails() {
             type={"text"}
             value={plant.Sink ?? ""}
             OnChange={handleInputChange("Sink")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
           <EditableInput
             label={"Sink Date"}
             type={"date"}
             value={plant.SinkDate ?? ""}
             OnChange={handleInputChange("SinkDate")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
 
           <EditableInput
@@ -304,7 +308,7 @@ export function PlantDetails() {
             type={"textarea"}
             value={plant.Notes ?? ""}
             OnChange={handleInputChange("Notes")}
-            isEditable={isEditable}
+            isEditable={isFormEditable}
           />
         </Card>
       </Form>
