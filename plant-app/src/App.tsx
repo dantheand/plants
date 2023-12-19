@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlantList, PlantDetails } from "./PlantComponents";
+import { PlantDetails } from "./PlantComponents";
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { AuthFromFrontEnd } from "./Authenticator";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
+import { PlantList } from "./PlantList";
 
 // TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
 //

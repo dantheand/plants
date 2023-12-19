@@ -1,4 +1,4 @@
-import React, { useState, useEffect, JSX } from "react";
+import React, { useEffect, useState } from "react";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
@@ -6,16 +6,25 @@ import {
 import "react-vertical-timeline-component/style.min.css";
 import "./PlantImagesTimeline.css";
 
-import { Button, Col, Form, ListGroup, Row, Spinner } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Image,
+  Modal,
+  Row,
+  Spinner,
+} from "react-bootstrap";
 
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
-import { Container, Card, Image, Modal } from "react-bootstrap";
 
-import { useParams, useNavigate, NavigateFunction } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { BackButton } from "./commonComponents";
-import { FaBan, FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
+import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 
-interface Plant {
+export interface Plant {
   PlantID: string;
   HumanName: string;
   Species?: string;
@@ -32,57 +41,6 @@ interface PlantImage {
   ImageID: string;
   Timestamp: string;
   SignedUrl: string;
-}
-
-const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
-  navigate(`/plants/${plantID}`);
-};
-
-export function PlantList(): JSX.Element {
-  const [plants, setPlants] = useState<Plant[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    fetch(`${BASE_API_URL}/plants/`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const sortedPlants = data.sort((a: Plant, b: Plant) => {
-          return parseInt(a.PlantID) - parseInt(b.PlantID);
-        });
-        setPlants(sortedPlants);
-        setIsLoading(false);
-      });
-  }, []);
-
-  if (isLoading) {
-    return <p>Loading plants...</p>;
-  }
-
-  return (
-    <div>
-      <Container className="p-5 mb-4 bg-light rounded-3">
-        <h2>All Plants</h2>
-        <ul>
-          <ListGroup>
-            {plants.map((plant) => (
-              <ListGroup.Item
-                key={plant.PlantID}
-                onClick={() => handlePlantClick(plant.PlantID, navigate)}
-                className="clickable-item"
-              >
-                {plant.PlantID} - {plant.HumanName}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </ul>
-      </Container>
-    </div>
-  );
 }
 
 // Define props for EditableInput component
