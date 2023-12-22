@@ -5,12 +5,12 @@ from fastapi import status
 
 from backend.plant_api.routers.new_plants import PLANT_ROUTE
 from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_plant_item, mock_db
-from backend.plant_api.utils.schema import PlantBase, PlantItem
+from backend.plant_api.utils.schema import ItemKeys, PlantBase, PlantItem
 
 
 class TestPlantRead:
     def test_get_your_plant_list(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_list = [create_plant_item(user_id=plant_user_id) for _ in range(10)]
         for plant in plant_list:
             mock_db.insert_mock_data(plant)
@@ -22,7 +22,7 @@ class TestPlantRead:
         assert all(isinstance(item, PlantItem) for item in parsed_response)
 
     def test_get_other_users_plant_list(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_list = [create_plant_item(user_id=plant_user_id) for _ in range(10)]
         for plant in plant_list:
             mock_db.insert_mock_data(plant)
@@ -32,7 +32,7 @@ class TestPlantRead:
         assert response.status_code == 200
 
     def test_read_your_plant(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         plant = create_plant_item(user_id=plant_user_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)
@@ -43,7 +43,7 @@ class TestPlantRead:
         assert response.status_code == 200
 
     def test_read_other_users_plant_ok(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         plant = create_plant_item(user_id=plant_user_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)
@@ -54,7 +54,7 @@ class TestPlantRead:
         assert response.status_code == 200
 
     def test_read_missing_plant(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         response = client().get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
         assert response.status_code == 404
@@ -72,10 +72,11 @@ class TestPlantCreate:
         db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
         assert len(db_items) == 1
         assert db_items[0]["human_name"] == "New Plant"
+        assert db_items[0]["PK"] == f"{ItemKeys.USER}#{DEFAULT_TEST_USER.google_id}"
 
     def test_create_with_duplicate_id_fails(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
-        existing_plant = create_plant_item(human_id=42, user_id=DEFAULT_TEST_USER.email)
+        existing_plant = create_plant_item(human_id=42, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(existing_plant)
 
         new_plant = create_plant_item(human_id=42)
@@ -92,7 +93,7 @@ class TestPlantCreate:
 
 class TestPlantUpdate:
     def test_update(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         plant = create_plant_item(user_id=plant_user_id, plant_id=plant_id, human_name="Original Name")
         mock_db.insert_mock_data(plant)
@@ -111,7 +112,7 @@ class TestPlantUpdate:
 
     def test_update_other_users_plant_fails(self, client, mock_db):
         # Plant owner user details
-        plant_owner_id = DEFAULT_TEST_USER.email
+        plant_owner_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         plant = create_plant_item(user_id=plant_owner_id, plant_id=plant_id, human_name="Original Name")
         mock_db.insert_mock_data(plant)
@@ -152,7 +153,7 @@ class TestPlantUpdate:
 
 class TestPlantDelete:
     def test_delete(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.email
+        plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         plant = create_plant_item(user_id=plant_user_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)
@@ -167,7 +168,7 @@ class TestPlantDelete:
 
     def test_delete_other_users_plant_fails(self, client, mock_db):
         # Plant owner user details
-        plant_owner_id = DEFAULT_TEST_USER.email
+        plant_owner_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
         plant = create_plant_item(user_id=plant_owner_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)

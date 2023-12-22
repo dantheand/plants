@@ -79,8 +79,8 @@ def client():
 
 
 fake = Faker()
-DEFAULT_TEST_USER = User(email="test@testing.com", disabled=False)
-OTHER_TEST_USER = User(email="other@testing.com", disabled=False)
+DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=False)
+OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 
 def create_plant_item(
@@ -104,7 +104,7 @@ def create_plant_item(
         sink=sink or fake.word(),
         sink_date=sink_date or fake.date(),
         notes=notes or fake.text(),
-        PK=f"USER#{user_id or DEFAULT_TEST_USER.email}",
+        PK=f"USER#{user_id or DEFAULT_TEST_USER.google_id}",
         SK=f"PLANT#{plant_id or fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )

@@ -47,7 +47,7 @@ async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(ge
     table = get_db_table()
     # Query to check if a plant with the same human_id already exists for this user
     response = table.query(
-        KeyConditionExpression=Key("PK").eq(f"USER#{user.email}") & Key("SK").begins_with("PLANT#"),
+        KeyConditionExpression=Key("PK").eq(f"USER#{user.google_id}") & Key("SK").begins_with("PLANT#"),
         FilterExpression=Attr("human_id").eq(plant_data.human_id),
     )
     if response["Items"]:
@@ -56,7 +56,7 @@ async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(ge
     # Create a new plant item
     plant_id = str(uuid.uuid4())
     plant_item = PlantItem(
-        PK=f"USER#{user.email}", SK=f"PLANT#{plant_id}", entity_type="Plant", **plant_data.model_dump()
+        PK=f"USER#{user.google_id}", SK=f"PLANT#{plant_id}", entity_type="Plant", **plant_data.model_dump()
     )
 
     table.put_item(Item=plant_item.model_dump())
@@ -66,7 +66,7 @@ async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(ge
 @router.patch("/{plant_id}", response_model=PlantItem)
 async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_current_user)):
     table = get_db_table()
-    pk = f"USER#{user.email}"
+    pk = f"USER#{user.google_id}"
     sk = f"PLANT#{str(plant_id)}"
 
     # Retrieve the existing plant
@@ -84,7 +84,7 @@ async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_c
 @router.delete("/{plant_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_plant(plant_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
-    pk = f"USER#{user.email}"
+    pk = f"USER#{user.google_id}"
     sk = f"PLANT#{str(plant_id)}"
 
     # Check if the plant exists and belongs to the user
