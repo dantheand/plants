@@ -222,7 +222,8 @@ def format_new_plant_row(row):
     )
 
 
-def post_to_plants_api(plant_item: PlantCreate):
+def create_new_plant(plant_item: PlantCreate):
+
     post_url = f"{BASE_URL}/new_plants/"
 
     # You'll need to get this from the app manually, check your localStorage once you've logged in
@@ -233,19 +234,19 @@ def post_to_plants_api(plant_item: PlantCreate):
     return requests.post(post_url, json=plant_item.model_dump(), headers=headers)
 
 
-def post_plants_from_csv():
-    """Load in plant data, format it to proper schema, and use app to POST to database"""
+def upload_plants_from_csv():
+    """Load in plant data, format it to proper schema, and use our app to POST to database"""
     with open("../data/plants_sheet.csv", "r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
             # Format the CSV row to DynamoDB item structure
             item = format_new_plant_row(row)
 
-            print(post_to_plants_api(item).json())
+            print(create_new_plant(item).json())
 
 
 def main():
-    post_plants_from_csv()
+    upload_plants_from_csv()
     pass
 
 
