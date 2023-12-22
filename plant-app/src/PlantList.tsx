@@ -1,8 +1,8 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
 import { Container, ListGroup, Placeholder } from "react-bootstrap";
-import { Plant } from "./PlantComponents";
+import { NewPlant } from "./PlantComponents";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
@@ -10,7 +10,7 @@ const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
 
 interface RenderListItemsProps {
   isLoading: boolean;
-  plants?: Plant[];
+  plants?: NewPlant[];
   handlePlantClick: (plantID: string, navigate: NavigateFunction) => void;
   navigate: NavigateFunction;
 }
@@ -32,31 +32,31 @@ const renderListItems = ({
   } else {
     return plants.map((plant) => (
       <ListGroup.Item
-        key={plant.PlantID}
-        onClick={() => handlePlantClick(plant.PlantID, navigate)}
+        key={plant.plant_id}
+        onClick={() => handlePlantClick(plant.plant_id, navigate)}
         className="clickable-item"
       >
-        {plant.PlantID} - {plant.HumanName}
+        {plant.human_id} - {plant.human_name}
       </ListGroup.Item>
     ));
   }
 };
 
 export function PlantList(): JSX.Element {
-  const [plants, setPlants] = useState<Plant[]>([]);
+  const [plants, setPlants] = useState<NewPlant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/plants/`, {
+    fetch(`${BASE_API_URL}/new_plants/${HARDCODED_USER}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
     })
       .then((response) => response.json())
       .then((data) => {
-        const sortedPlants = data.sort((a: Plant, b: Plant) => {
-          return parseInt(a.PlantID) - parseInt(b.PlantID);
+        const sortedPlants = data.sort((a: NewPlant, b: NewPlant) => {
+          return a.human_id - b.human_id;
         });
         setPlants(sortedPlants);
         setIsLoading(false);

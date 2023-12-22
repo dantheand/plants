@@ -29,7 +29,7 @@ async def read_all_plants_for_user(user_id=str):
 
 
 @router.get("/{user_id}/{plant_id}", response_model=PlantItem)
-async def get_plant_for_user(plant_id: UUID, user_id: str):
+def get_plant_for_user(plant_id: UUID, user_id: str):
     pk_value = f"USER#{user_id}"
     sk_value = f"PLANT#{plant_id}"
     table = get_db_table()

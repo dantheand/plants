@@ -18,7 +18,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { BackButton } from "./commonComponents";
@@ -37,6 +37,21 @@ export interface Plant {
   Notes?: string;
 }
 
+export interface NewPlant {
+  plant_id: string;
+  human_id: number;
+  human_name: string;
+  species: string | null;
+  location: string;
+  // TODO: figure out how to handle this as list of int
+  parent_id: string[] | null;
+  source: string;
+  source_date: string;
+  sink: string | null;
+  sink_date: string | null;
+  notes: string | null;
+}
+
 interface PlantImage {
   ImageID: string;
   Timestamp: string;
@@ -47,7 +62,7 @@ interface PlantImage {
 interface EditableInputProps {
   label: string;
   type: string;
-  value: string;
+  value: string | number | string[] | undefined;
   editsAllowed?: boolean;
   OnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isEditable: boolean;
@@ -84,37 +99,39 @@ export function PlantDetails() {
   const navigate = useNavigate();
 
   // Fetch plant details using plantId or other logic
-  const [plant, setPlant] = useState<Plant>({
-    PlantID: "",
-    HumanName: "",
-    Species: "",
-    Location: "",
-    ParentID: "",
-    Source: "",
-    SourceDate: "",
-    Sink: "",
-    SinkDate: "",
-    Notes: "",
+  const [plant, setPlant] = useState<NewPlant>({
+    plant_id: "",
+    human_id: 0,
+    human_name: "",
+    species: "",
+    location: "",
+    parent_id: null,
+    source: "",
+    source_date: "",
+    sink: "",
+    sink_date: "",
+    notes: "",
   });
-  const [originalPlant, setOriginalPlant] = useState<Plant>({
-    PlantID: "",
-    HumanName: "",
-    Species: "",
-    Location: "",
-    ParentID: "",
-    Source: "",
-    SourceDate: "",
-    Sink: "",
-    SinkDate: "",
-    Notes: "",
+  const [originalPlant, setOriginalPlant] = useState<NewPlant>({
+    plant_id: "",
+    human_id: 0,
+    human_name: "",
+    species: "",
+    location: "",
+    parent_id: null,
+    source: "",
+    source_date: "",
+    sink: "",
+    sink_date: "",
+    notes: "",
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [plantIsLoading, setPlantIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/plants/${plantId}`, {
+    fetch(`${BASE_API_URL}/new_plants/${HARDCODED_USER}/${plantId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
@@ -123,11 +140,11 @@ export function PlantDetails() {
       .then((data) => {
         setPlant(data);
         setOriginalPlant(data);
-        setIsLoading(false);
+        setPlantIsLoading(false);
       })
       .catch((error) => {
         setError(error.message);
-        setIsLoading(false);
+        setPlantIsLoading(false);
       });
   }, [plantId]);
 
@@ -151,7 +168,7 @@ export function PlantDetails() {
     setIsFormEditable(!isFormEditable);
   };
 
-  if (isLoading) {
+  if (plantIsLoading) {
     return <p>Loading plant...</p>;
   }
 
@@ -187,9 +204,17 @@ export function PlantDetails() {
             </div>
           </Card.Header>
           <EditableInput
-            label="Plant ID"
+            label="UUID"
             type="text"
-            value={plant.PlantID}
+            value={plant.plant_id}
+            OnChange={handleInputChange("PlantID")}
+            isEditable={isFormEditable}
+            editsAllowed={false}
+          />
+          <EditableInput
+            label="Human ID"
+            type="text"
+            value={plant.human_id}
             OnChange={handleInputChange("PlantID")}
             isEditable={isFormEditable}
             editsAllowed={false}
@@ -197,21 +222,21 @@ export function PlantDetails() {
           <EditableInput
             label="Human Name"
             type="text"
-            value={plant.HumanName}
+            value={plant.human_name}
             OnChange={handleInputChange("HumanName")}
             isEditable={isFormEditable}
           />
           <EditableInput
             label="Species"
             type="text"
-            value={plant.Species || ""}
+            value={plant.species || ""}
             OnChange={handleInputChange("Species")}
             isEditable={isFormEditable}
           />
           <EditableInput
             label="Location"
             type="text"
-            value={plant.Location}
+            value={plant.location}
             OnChange={handleInputChange("Location")}
             isEditable={isFormEditable}
           />
@@ -227,21 +252,21 @@ export function PlantDetails() {
           <EditableInput
             label="Parent ID"
             type="text"
-            value={plant.ParentID || ""}
+            value={plant.parent_id || ""}
             OnChange={handleInputChange("Species")}
             isEditable={isFormEditable}
           />
           <EditableInput
             label="Source"
             type="text"
-            value={plant.Source || ""}
+            value={plant.source || ""}
             OnChange={handleInputChange("Source")}
             isEditable={isFormEditable}
           />
           <EditableInput
             label={"Source Date"}
             type={"date"}
-            value={plant.SourceDate}
+            value={plant.source_date ?? ""}
             OnChange={handleInputChange("SourceDate")}
             isEditable={isFormEditable}
           />
@@ -249,14 +274,14 @@ export function PlantDetails() {
           <EditableInput
             label={"Sink"}
             type={"text"}
-            value={plant.Sink ?? ""}
+            value={plant.sink ?? ""}
             OnChange={handleInputChange("Sink")}
             isEditable={isFormEditable}
           />
           <EditableInput
             label={"Sink Date"}
             type={"date"}
-            value={plant.SinkDate ?? ""}
+            value={plant.sink_date ?? ""}
             OnChange={handleInputChange("SinkDate")}
             isEditable={isFormEditable}
           />
@@ -264,22 +289,24 @@ export function PlantDetails() {
           <EditableInput
             label={"Notes"}
             type={"textarea"}
-            value={plant.Notes ?? ""}
+            value={plant.notes ?? ""}
             OnChange={handleInputChange("Notes")}
             isEditable={isFormEditable}
           />
         </Card>
       </Form>
       {/* Images Section */}
-      <PlantImages plant_id={plantId ?? ""} />
+      <PlantImages human_id={plant.human_id} />
     </Container>
   );
 }
 
-export function PlantImages({ plant_id }: { plant_id: string }) {
+// TODO: switch this over to using the plant_id UUID value (need to switch over the API)
+export function PlantImages({ human_id }: { human_id: number }) {
   const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
 
+  //TODO: get the modal working again
   // Modal Stuff
   const [showModal, setShowModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
@@ -290,7 +317,8 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
   const handleCloseModal = () => setShowModal(false);
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/plants/${plant_id}/images`, {
+    // TODO: only fetch if the plant_id has been loaded
+    fetch(`${BASE_API_URL}/plants/${human_id}/images`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
@@ -300,15 +328,15 @@ export function PlantImages({ plant_id }: { plant_id: string }) {
         setPlantImages(data);
       })
       .then(() => {
-        setIsLoading(false);
+        setImagesIsLoading(false);
       });
-  }, [plant_id]);
+  }, [human_id]);
 
   return (
     <Card className="mb-3">
       <Card.Header as="h4">Images</Card.Header>
       <Card.Body>
-        {isLoading ? (
+        {imagesIsLoading ? (
           <div>
             <Spinner />
             Loading images...

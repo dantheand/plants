@@ -1,8 +1,10 @@
+import uuid
 from datetime import date, datetime
 from enum import Enum
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
+from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator, validator
+from pydantic import BaseModel, Field, field_validator, model_validator, root_validator, validator
 
 
 ############################################
@@ -77,6 +79,12 @@ class PlantItem(PlantCreate):
     PK: str = Field(..., alias="PK", pattern=f"^{ItemKeys.USER}#")
     SK: str = Field(..., alias="SK", pattern=f"^{ItemKeys.PLANT}#")
     entity_type: str = Field(EntityType.PLANT)
+    plant_id: Optional[str] = None
+
+    @model_validator(mode="before")
+    def extract_plant_id(cls, values: Dict[str, Any]):
+        values["plant_id"] = values["SK"].split("#")[1]
+        return values
 
 
 class ImageBase(BaseModel):
