@@ -24,7 +24,7 @@ export function PlantImages({ human_id }: { human_id: number }) {
 
   useEffect(() => {
     // TODO: only fetch if the plant_id has been loaded
-    fetch(`${BASE_API_URL}/plants/${human_id}/images`, {
+    fetch(`${BASE_API_URL}/images/${human_id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
