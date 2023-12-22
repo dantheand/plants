@@ -22,7 +22,7 @@ const renderListItems = ({
   navigate,
 }: RenderListItemsProps) => {
   if (isLoading || !plants) {
-    return [...Array(5)].map((_, idx) => (
+    return [...Array(10)].map((_, idx) => (
       <ListGroup.Item key={idx}>
         <Placeholder as="div" animation="glow">
           <Placeholder xs={12} size="lg" />

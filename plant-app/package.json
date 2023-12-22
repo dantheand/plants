@@ -5,6 +5,7 @@
   "dependencies": {
     "@aws-amplify/cli": "^12.8.2",
     "@aws-amplify/ui-react": "^6.0.4",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@react-oauth/google": "^0.12.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

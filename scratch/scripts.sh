@@ -16,7 +16,10 @@ aws lambda create-function \
 --function-name new-plant-app \
 --role arn:aws:iam::593627358790:role/lambda_db_reader
 
-# Install AWS compatible dependencies
+
+###### Updating FastAPI backend lambda ######
+
+# Install AWS compatible dependencies into a local directory to be packaged with the FastAPI backend
 cd ~/projects/plants/backend
 pip install \
 --platform manylinux2014_x86_64 \
@@ -27,13 +30,13 @@ pip install \
 --index https://pypi.org/simple/ \
 -r requirements.txt
 
-# Package lambda
+# Package FastAPI backend and dependencies into a single zip file so it can be deployed to lambda
 cd ~/projects/plants/backend_deps
 zip -r ~/projects/plants/api_lambda.zip .
 cd ~/projects/plants/
 zip -g ./api_lambda.zip -r backend
 
-# Updating lambda function w/ FastAPI backend
+# Deploy .zip to AWS lambda function
 aws lambda update-function-code \
 --profile plants \
 --zip-file fileb://api_lambda.zip \
