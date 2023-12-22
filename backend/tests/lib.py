@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from unittest import mock
 
@@ -12,7 +12,7 @@ from starlette.testclient import TestClient
 from backend.plant_api.dependencies import get_current_user
 
 # from backend.plant_api.main import app
-from backend.plant_api.utils.schema import DbModelType, EntityType, PlantItem, User
+from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, PlantItem, User
 
 from backend.plant_api.constants import NEW_PLANTS_TABLE
 
@@ -93,7 +93,7 @@ DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=Fal
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 
-def create_plant_item(
+def create_fake_plant(
     human_name: Optional[str] = None,
     human_id: Optional[int] = None,
     species: Optional[str] = None,
@@ -117,4 +117,19 @@ def create_plant_item(
         PK=f"USER#{user_id or DEFAULT_TEST_USER.google_id}",
         SK=f"PLANT#{plant_id or fake.uuid4()}",
         entity_type=EntityType.PLANT,
+    )
+
+
+def create_fake_image(
+    s3_url: Optional[str] = None,
+    signed_url: Optional[str] = None,
+    timestamp: Optional[datetime] = None,
+) -> ImageItem:
+    return ImageItem(
+        s3_url=s3_url or fake.url(),
+        signed_url=signed_url,
+        timestamp=timestamp or fake.date_time(),
+        PK=f"PLANT#{fake.uuid4()}",
+        SK=f"IMAGE#{fake.uuid4()}",
+        entity_type=EntityType.IMAGE,
     )
