@@ -16,6 +16,7 @@
 - AWS Lambda function hosts and runs FastAPI through `Mangum` handler
 - API Gateway in "proxy" mode triggers lambda function
 - DynamoDB NoSQL DB for basic single-table DB
+  - Created global secondary index 'SK-PK-index' to allow querying by plant_id directly 
 - S3 for image hosting
 - IAM for role and permissions management for each of the above services
 - Cloudwatch for logging output from FastAPI lambda

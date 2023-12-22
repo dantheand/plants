@@ -18,7 +18,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{user_id}", response_model=list[PlantItem])
+@router.get("/user/{user_id}", response_model=list[PlantItem])
 async def read_all_plants_for_user(user_id=str):
     pk_value = f"USER#{user_id}"
     sk_value = f"PLANT#"
@@ -28,13 +28,12 @@ async def read_all_plants_for_user(user_id=str):
     return response.get("Items", [])
 
 
-@router.get("/{user_id}/{plant_id}", response_model=PlantItem)
-def get_plant_for_user(plant_id: UUID, user_id: str):
-    pk_value = f"USER#{user_id}"
-    sk_value = f"PLANT#{plant_id}"
+@router.get("/{plant_id}", response_model=PlantItem)
+def get_plant_for_user(plant_id: UUID):
+    idx_pk_value = f"PLANT#{plant_id}"
     table = get_db_table()
 
-    response = table.query(KeyConditionExpression=Key("PK").eq(pk_value) & Key("SK").eq(sk_value))
+    response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(idx_pk_value))
     items = response.get("Items", [])
     if items:
         return items[0]

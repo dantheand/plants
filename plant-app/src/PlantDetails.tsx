@@ -194,7 +194,7 @@ const usePlantDetails = (plantId: string | undefined) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/new_plants/${HARDCODED_USER}/${plantId}`, {
+    fetch(`${BASE_API_URL}/new_plants/${plantId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },

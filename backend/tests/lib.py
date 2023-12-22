@@ -39,6 +39,16 @@ class MockDB:
                 {"AttributeName": "PK", "AttributeType": "S"},
                 {"AttributeName": "SK", "AttributeType": "S"},
             ],
+            GlobalSecondaryIndexes=[
+                {
+                    "IndexName": "SK-PK-index",
+                    "KeySchema": [
+                        {"AttributeName": "SK", "KeyType": "HASH"},
+                        {"AttributeName": "PK", "KeyType": "HASH"},
+                    ],
+                    "Projection": {"ProjectionType": "ALL"},
+                },
+            ],
             ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
         )
 

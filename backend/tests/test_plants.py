@@ -16,7 +16,7 @@ class TestPlantRead:
             mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/user/{plant_user_id}")
         parsed_response = TypeAdapter(list[PlantItem]).validate_python(response.json())
         assert len(parsed_response) == 10
         assert all(isinstance(item, PlantItem) for item in parsed_response)
@@ -28,17 +28,17 @@ class TestPlantRead:
             mock_db.insert_mock_data(plant)
 
         test_client = client(OTHER_TEST_USER)
-        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/user/{plant_user_id}")
         assert response.status_code == 200
 
     def test_read_your_plant(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_plant_item(user_id=plant_user_id, plant_id=plant_id)
+        plant = create_plant_item(plant_id=plant_id, user_id=plant_user_id)
         mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/{plant_id}")
         assert PlantItem(**response.json()).SK == f"PLANT#{plant_id}"
         assert response.status_code == 200
 
@@ -49,7 +49,7 @@ class TestPlantRead:
         mock_db.insert_mock_data(plant)
 
         test_client = client(OTHER_TEST_USER)
-        response = test_client.get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
+        response = test_client.get(f"{PLANT_ROUTE}/{plant_id}")
         assert PlantItem(**response.json()).SK == f"PLANT#{plant_id}"
         assert response.status_code == 200
 

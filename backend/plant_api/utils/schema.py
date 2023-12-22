@@ -83,6 +83,7 @@ class PlantItem(PlantCreate):
 
     @model_validator(mode="before")
     def extract_plant_id(cls, values: Dict[str, Any]):
+        """Break out the plant_id UUID as a separate field"""
         values["plant_id"] = values["SK"].split("#")[1]
         return values
 
