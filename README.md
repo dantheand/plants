@@ -10,7 +10,8 @@
 - aws CLI
 - aws credentials set up (use a profile)
 
-# AWS services used
+# Services used
+## AWS 
 - AWS Amplify for front-end builds and deployment
 - AWS Lambda function hosts and runs FastAPI through `Mangum` handler
 - API Gateway in "proxy" mode triggers lambda function
@@ -18,6 +19,9 @@
 - S3 for image hosting
 - IAM for role and permissions management for each of the above services
 - Cloudwatch for logging output from FastAPI lambda
+
+## Google
+- Oauth authentication tokens
   
 # Running/Deploying the App
 
