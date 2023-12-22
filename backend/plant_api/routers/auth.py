@@ -8,7 +8,14 @@ from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
-from backend.plant_api.constants import ALGORITHM, CREDENTIALS_EXCEPTION, GOOGLE_CLIENT_ID, TOKEN_URL, get_jwt_secret
+from backend.plant_api.constants import (
+    ALGORITHM,
+    CREDENTIALS_EXCEPTION,
+    GOOGLE_CLIENT_ID,
+    GoogleOauthPayload,
+    TOKEN_URL,
+    get_jwt_secret,
+)
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.utils.schema import User
 
@@ -39,7 +46,8 @@ async def auth(request: Request):
         if nonce != id_info["nonce"]:
             logging.error("Invalid nonce: %s", nonce)
             raise CREDENTIALS_EXCEPTION
-        return (create_token_for_email(id_info["email"]),)
+        payload = GoogleOauthPayload(**id_info)
+        return create_token_for_user(payload)
 
     except Exception as e:
         logging.error(e)
@@ -62,5 +70,5 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-def create_token_for_email(email: str):
-    return create_access_token(data={"sub": email})
+def create_token_for_user(payload: GoogleOauthPayload):
+    return create_access_token(data={"sub": payload.sub, "email": payload.email})

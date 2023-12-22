@@ -153,5 +153,6 @@ class Image(MyBaseModel):
 
 
 class User(BaseModel):
-    email: Optional[str] = None
+    email: str
+    google_id: str
     disabled: Optional[bool] = None

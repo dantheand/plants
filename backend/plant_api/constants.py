@@ -1,4 +1,7 @@
+from typing import Optional
+
 from fastapi import HTTPException
+from pydantic import BaseModel, Field
 from starlette import status
 
 from backend.plant_api.utils.aws import get_aws_secret
@@ -25,3 +28,8 @@ JWT_KEY_IN_SECRETS_MANAGER = "jwt_signing_key"
 
 def get_jwt_secret() -> str:
     return get_aws_secret(JWT_KEY_IN_SECRETS_MANAGER)
+
+
+class GoogleOauthPayload(BaseModel):
+    email: Optional[str]
+    sub: Optional[str] = Field(..., description="Google's unique identifier for the user.")
