@@ -10,6 +10,13 @@ from pydantic import BaseModel, Field, field_validator, validator
 ############################################
 
 
+class ItemKeys(str, Enum):
+    USER = "USER"
+    PLANT = "PLANT"
+    IMAGE = "IMAGE"
+    SOURCE = "SOURCE"
+
+
 class EntityType(str, Enum):
     USER = "User"
     PLANT = "Plant"
@@ -28,8 +35,8 @@ class SinkType(str, Enum):
 
 
 class UserItem(BaseModel):
-    pk: str = Field(..., alias="PK", pattern=r"^USER#")
-    sk: str = Field(..., alias="SK", pattern=r"^USER#")
+    pk: str = Field(..., alias="PK", pattern=f"^{ItemKeys.USER}#")
+    sk: str = Field(..., alias="SK", pattern=f"^{ItemKeys.USER}#")
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
@@ -38,16 +45,17 @@ class PlantBase(BaseModel):
     human_name: str
     species: Optional[str] = None
     location: str
-    # TODO: integrate these
-    # source_id: Optional[Union[list[int], str]] = None
-    # source_date: Optional[date] = None
+    # TODO: Migrate these over to the PlantSourceItem system
+    parent_id: Optional[list[int]] = None
+    source: str
+    source_date: date
     # Sink can be either another plant (if it is wholly incorporated) or something else (like a gift to someone)
     sink: Optional[str] = None
     sink_date: Optional[date] = None
     notes: Optional[str] = None
 
     # This is needed because dynamodb can't handle date objects
-    @field_validator("sink_date", mode="after")
+    @field_validator("sink_date", "source_date", mode="after")
     @classmethod
     def datetime_to_string(cls, v):
         if isinstance(v, date):
@@ -64,8 +72,10 @@ class PlantUpdate(PlantBase):
 
 
 class PlantItem(PlantCreate):
-    PK: str = Field(..., alias="PK", pattern=r"^USER#")
-    SK: str = Field(..., alias="SK", pattern=r"^PLANT#")
+    """The DB model for a plant item."""
+
+    PK: str = Field(..., alias="PK", pattern=f"^{ItemKeys.USER}#")
+    SK: str = Field(..., alias="SK", pattern=f"^{ItemKeys.PLANT}#")
     entity_type: str = Field(EntityType.PLANT)
 
 
@@ -84,21 +94,20 @@ class ImageBase(BaseModel):
 
 
 class ImageItem(ImageBase):
-    PK: str = Field(..., alias="PK", pattern=r"^PLANT#")
-    SK: str = Field(..., alias="SK", pattern=r"^IMAGE#")
+    PK: str = Field(..., pattern=f"^{ItemKeys.PLANT}#")
+    SK: str = Field(..., pattern=f"^{ItemKeys.IMAGE}#")
     entity_type: str = Field(EntityType.IMAGE)
 
 
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem
 class PlantSourceItem(BaseModel):
-    pk: str = Field(
+    PK: str = Field(
         ...,
-        alias="PK",
-        pattern=r"^PLANT#",
+        pattern=f"^{ItemKeys.PLANT}#",
         description="Child's plant key in the link.",
     )
-    sk: str = Field(
-        ..., alias="SK", pattern=r"^SOURCE#", description="Either the parent plant, or someone/something else"
+    SK: str = Field(
+        ..., pattern=f"^{ItemKeys.SOURCE}#", description="Either the parent plant, or someone/something else"
     )
     entity_type: str = Field(EntityType.LINEAGE)
     source_type: SourceType

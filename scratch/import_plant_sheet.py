@@ -1,6 +1,9 @@
 import csv
 import io
+from datetime import datetime
+from typing import Optional
 
+import requests
 from dotenv import load_dotenv
 import os
 import boto3
@@ -8,7 +11,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
-from backend.plant_api.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
+from backend.plant_api.constants import BASE_URL, IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
+from backend.plant_api.utils.schema import PlantCreate, PlantItem
 
 load_dotenv()
 
@@ -61,7 +65,7 @@ def get_gdrive_connection():
     return service
 
 
-def upload_plants():
+def old_upload_plants():
     dynamodb = get_db_connection()
     table = dynamodb.Table(PLANTS_TABLE_NAME)
     with open("../data/plants_sheet.csv", "r", encoding="utf-8") as file:
@@ -182,8 +186,66 @@ def format_image_row(row, row_num):
     }
 
 
+######################## NEW STUFF BELOW HERE ########################
+
+
+def convert_date_str_to_iso(date_str: Optional[str]):
+    if date_str is None:
+        return None
+    date_obj = datetime.strptime(date_str, "%m/%d/%Y")
+    # Formatting to ISO 8601 date format (YYYY-MM-DD)
+    iso_date_str = date_obj.strftime("%Y-%m-%d")
+    return iso_date_str
+
+
+def format_new_plant_row(row):
+    # Convert empty strings to None
+    for key in row:
+        if row[key] == "":
+            row[key] = None
+
+    # Convert parent id to list of int
+    if row["parent_id"] is not None:
+        row["parent_id"] = [int(parent_id) for parent_id in row["parent_id"].split(",")]
+
+    return PlantCreate(
+        human_id=row["id"],
+        human_name=row["human_name"],
+        location=row["location"],
+        species=row["species"],
+        parent_id=row["parent_id"],
+        source=row["source"],
+        source_date=convert_date_str_to_iso(row["source_date"]),
+        sink=row["sink"],
+        sink_date=convert_date_str_to_iso(row["sink_date"]),
+        notes=row["Notes"],
+    )
+
+
+def post_to_plants_api(plant_item: PlantCreate):
+    post_url = f"{BASE_URL}/new_plants/"
+
+    # You'll need to get this from the app manually, check your localStorage once you've logged in
+    load_dotenv()
+    jwt_token = os.getenv("TEMP_JWT_TOKEN")
+    headers = {"Authorization": f"Bearer {jwt_token}", "Content-Type": "application/json"}
+
+    return requests.post(post_url, json=plant_item.model_dump(), headers=headers)
+
+
+def post_plants_from_csv():
+    """Load in plant data, format it to proper schema, and use app to POST to database"""
+    with open("../data/plants_sheet.csv", "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            # Format the CSV row to DynamoDB item structure
+            item = format_new_plant_row(row)
+
+            print(post_to_plants_api(item).json())
+
+
 def main():
-    gdrive = get_gdrive_connection()
+    post_plants_from_csv()
     pass
 
 

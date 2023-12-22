@@ -140,7 +140,7 @@ class TestPlantUpdate:
         mock_db.insert_mock_data(plant)
 
         updated_plant = plant.model_dump()
-        updated_plant["human_id"] = 42
+        updated_plant["human_id"] = 1
 
         test_client = client()
         response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant)

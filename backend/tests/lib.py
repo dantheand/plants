@@ -99,6 +99,8 @@ def create_plant_item(
         human_id=human_id or fake.random_int(min=1, max=10000),
         species=species or fake.word(),
         location=location or fake.word(),
+        source=fake.word(),
+        source_date=fake.date(),
         sink=sink or fake.word(),
         sink_date=sink_date or fake.date(),
         notes=notes or fake.text(),
