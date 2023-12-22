@@ -186,3 +186,26 @@ class TestPlantDelete:
         test_client = client()
         response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestParsing:
+    def test_parses_mult_parent_id(self):
+        plant = PlantItem.model_validate(
+            {
+                "human_name": "Mid-right kitchen spider plant",
+                "species": None,
+                "location": "kitchen",
+                "parent_id": "20, 22",
+                "source": "plant",
+                "source_date": "2023-11-25",
+                "sink": None,
+                "sink_date": None,
+                "notes": None,
+                "human_id": 9,
+                "PK": "USER#106821357176702886816",
+                "SK": "PLANT#0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+                "entity_type": "Plant",
+                "plant_id": "0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+            }
+        )
+        assert plant.parent_id == [20, 22]

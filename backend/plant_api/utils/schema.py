@@ -64,6 +64,13 @@ class PlantBase(BaseModel):
             return v.isoformat()
         return v
 
+    @field_validator("parent_id", mode="before")
+    @classmethod
+    def parent_id_to_list_of_int(cls, v):
+        if isinstance(v, str):
+            return [int(x) for x in v.split(",")]
+        return v
+
 
 class PlantCreate(PlantBase):
     human_id: int  # Must be unique for a given user; cannot be changed
