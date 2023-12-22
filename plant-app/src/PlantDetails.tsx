@@ -51,12 +51,21 @@ const EditableInput = ({
 interface PlantFormProps {
   plant: Plant;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  plantInForm: Plant;
+  setPlantInForm: React.Dispatch<React.SetStateAction<Plant | null>>;
+  isFormEditable: boolean;
+  setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const PlantForm = ({ plant, handleSubmit }: PlantFormProps) => {
-  const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
+const PlantForm = ({
+  plant,
+  handleSubmit,
+  plantInForm,
+  setPlantInForm,
+  isFormEditable,
+  setIsFormEditable,
+}: PlantFormProps) => {
   const [originalPlant, setOriginalPlant] = useState<Plant>(plant);
-  const [plantInForm, setPlantInForm] = useState<Plant>(plant);
 
   type PlantField = keyof Plant;
   const handleInputChange =
@@ -188,6 +197,43 @@ const PlantForm = ({ plant, handleSubmit }: PlantFormProps) => {
   );
 };
 
+const updatePlant = async (
+  plantData: Plant,
+): Promise<{ success: boolean; data: Plant | null; error?: string }> => {
+  try {
+    const response = await fetch(
+      `${BASE_API_URL}/new_plants/${plantData.plant_id}`,
+      {
+        // Replace with your actual API endpoint
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+        },
+        body: JSON.stringify(plantData),
+      },
+    );
+    if (!response.ok) {
+      // Handle non-2xx HTTP responses
+      const errorText = await response.text();
+      return {
+        success: false,
+        data: null,
+        error: errorText || `Error: ${response.status}`,
+      };
+    }
+
+    return { success: true, data: await response.json() };
+  } catch (error) {
+    console.error("Error updating plant:", error);
+    return {
+      success: false,
+      data: null,
+      error: "Unknown error",
+    };
+  }
+};
+
 const usePlantDetails = (plantId: string | undefined) => {
   const [plant, setPlant] = useState<Plant | null>(null);
   const [plantIsLoading, setPlantIsLoading] = useState(true);
@@ -215,15 +261,37 @@ const usePlantDetails = (plantId: string | undefined) => {
 export function PlantDetails() {
   const { plantId } = useParams<{ plantId: string }>();
   const navigate = useNavigate();
-
   const { plant, plantIsLoading, error, setPlant } = usePlantDetails(plantId);
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [plantInForm, setPlantInForm] = useState<Plant | null>(plant);
+  const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (plant) {
+      setPlantInForm(plant);
+    }
+  }, [plant]);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!plantInForm) {
+      console.error("No plant data to submit");
+      return;
+    }
     // TODO: PATCH to API and setPlant to return
-    alert("Form submitted!");
+    console.log("Submitting form");
+    console.log(plantInForm);
+    const updatedPlantResult = await updatePlant(plantInForm);
+    if (updatedPlantResult.success) {
+      setPlant(updatedPlantResult.data);
+      setIsFormEditable(false);
+      alert("Plant updated!");
+    } else {
+      setPlantInForm(plant);
+      setIsFormEditable(false);
+      alert("Error updating plant");
+    }
   };
 
-  if (plantIsLoading) {
+  if (plantIsLoading || !plantInForm) {
     return <p>Loading plant...</p>;
   }
 
@@ -234,7 +302,14 @@ export function PlantDetails() {
   return (
     <Container className="my-4">
       <BackButton />
-      <PlantForm plant={plant} handleSubmit={handleSubmit} />
+      <PlantForm
+        plant={plant}
+        handleSubmit={handleSubmit}
+        plantInForm={plantInForm}
+        setPlantInForm={setPlantInForm}
+        isFormEditable={isFormEditable}
+        setIsFormEditable={setIsFormEditable}
+      />
       {/* Images Section */}
       <PlantImages human_id={plant.human_id} />
     </Container>
