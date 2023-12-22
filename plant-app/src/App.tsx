@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlantDetails } from "./PlantComponents";
+import { PlantDetails } from "./PlantDetails";
 import {
   BrowserRouter as Router,
   Routes,

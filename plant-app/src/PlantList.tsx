@@ -2,7 +2,8 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
 import { Container, ListGroup, Placeholder } from "react-bootstrap";
-import { NewPlant } from "./PlantComponents";
+
+import { Plant } from "./schema";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
@@ -10,7 +11,7 @@ const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
 
 interface RenderListItemsProps {
   isLoading: boolean;
-  plants?: NewPlant[];
+  plants?: Plant[];
   handlePlantClick: (plantID: string, navigate: NavigateFunction) => void;
   navigate: NavigateFunction;
 }
@@ -43,7 +44,7 @@ const renderListItems = ({
 };
 
 export function PlantList(): JSX.Element {
-  const [plants, setPlants] = useState<NewPlant[]>([]);
+  const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
@@ -55,7 +56,7 @@ export function PlantList(): JSX.Element {
     })
       .then((response) => response.json())
       .then((data) => {
-        const sortedPlants = data.sort((a: NewPlant, b: NewPlant) => {
+        const sortedPlants = data.sort((a: Plant, b: Plant) => {
           return a.human_id - b.human_id;
         });
         setPlants(sortedPlants);
