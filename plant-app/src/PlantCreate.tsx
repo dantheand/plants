@@ -1,11 +1,11 @@
 import { PlantLayout } from "./Layouts";
-import { PlantForm } from "./PlantDetails";
 import { useState } from "react";
 import { Plant } from "./interfaces";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { useNavigate } from "react-router-dom";
 import { ApiResponse } from "./interfaces";
 import { useAlert } from "./AlertComponents";
+import { PlantForm } from "./PlantForm";
 
 export type NewPlant = Partial<Plant>;
 
