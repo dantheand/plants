@@ -6,13 +6,13 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 
 import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
 
-import { useNavigate, useParams } from "react-router-dom";
-import { BackButton } from "./commonComponents";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 import { PlantImages } from "./PlantImages";
 import { Plant } from "./schema";
 import { PlantLayout } from "./Layouts";
 import { initialNewPlantState, NewPlant } from "./PlantCreate";
+import { DeleteButtonWConfirmation } from "./commonComponents";
 
 // Define props for EditableInput component
 interface EditableInputProps {
@@ -268,6 +268,43 @@ const usePlantDetails = (plantId: string | undefined) => {
   return { plant, plantIsLoading, error, setPlant };
 };
 
+const hardcodedPlantId = 400;
+const hardcodedConfirmationText = `delete ${hardcodedPlantId}`;
+const deleteFunction = () => {
+  alert("deleted!");
+};
+
+const createPlantDeleteFunction = (
+  plantId: string | undefined,
+  navigate: NavigateFunction,
+): (() => Promise<void>) => {
+  return async () => {
+    let success = false;
+    try {
+      // Perform the DELETE request
+      const response = await fetch(`${BASE_API_URL}/new_plants/${plantId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+        },
+      });
+      if (!response.ok) {
+        console.error("Error deleting plant:", response.statusText);
+      }
+      // Handle successful deletion
+      console.log("Plant deleted successfully");
+      success = true;
+    } catch (error) {
+      console.error("Failed to delete plant:", error);
+    }
+    if (success) {
+      navigate("/plants");
+    } else {
+      alert("Error deleting plant");
+    }
+  };
+};
+
 export function PlantDetails() {
   const { plantId } = useParams<{ plantId: string }>();
   const navigate = useNavigate();
@@ -305,6 +342,8 @@ export function PlantDetails() {
     }
   };
 
+  const handleDelete = createPlantDeleteFunction(plantId, navigate);
+
   if (plantIsLoading || !plantInForm) {
     return <p>Loading plant...</p>;
   }
@@ -315,6 +354,11 @@ export function PlantDetails() {
 
   return (
     <PlantLayout>
+      <DeleteButtonWConfirmation
+        entityName="Plant"
+        confirmationText={`delete ${plant.human_id}`}
+        deleteFunction={handleDelete}
+      />
       <PlantForm
         plant={plant}
         handleSubmit={handleSubmit}

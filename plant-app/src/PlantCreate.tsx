@@ -44,8 +44,6 @@ export function PlantCreate() {
       // Navigate to the new plant's page
       navigate(`/plants/${createdPlant.plant_id}`);
     }
-
-    // if successful, redirect to /plants/:plantId
   };
   return (
     <PlantLayout>
