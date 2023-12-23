@@ -39,10 +39,10 @@ const EditableInput = ({
 }: EditableInputProps) => {
   return (
     <Form.Group as={Row} className="m-2">
-      <Form.Label column sm={2}>
+      <Form.Label column md={3}>
         {label} {isRequired && <span className="required-asterisk">*</span>}
       </Form.Label>
-      <Col sm={10}>
+      <Col md={9}>
         <Form.Control
           required={isRequired}
           type={type}
@@ -269,41 +269,45 @@ const usePlantDetails = (plantId: string | undefined) => {
   return { plant, plantIsLoading, error, setPlant };
 };
 
-const hardcodedPlantId = 400;
-const hardcodedConfirmationText = `delete ${hardcodedPlantId}`;
-const deleteFunction = () => {
-  alert("deleted!");
-};
-
-const createPlantDeleteFunction = (
+const deletePlant = async (
   plantId: string | undefined,
-  navigate: NavigateFunction,
-): (() => Promise<void>) => {
-  return async () => {
-    let success = false;
-    try {
-      // Perform the DELETE request
-      const response = await fetch(`${BASE_API_URL}/new_plants/${plantId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-        },
-      });
-      if (!response.ok) {
-        console.error("Error deleting plant:", response.statusText);
-      }
-      // Handle successful deletion
-      console.log("Plant deleted successfully");
-      success = true;
-    } catch (error) {
-      console.error("Failed to delete plant:", error);
+): Promise<ApiResponse<null>> => {
+  if (!plantId) {
+    return {
+      success: false,
+      data: null,
+      error: "No plant ID provided",
+    };
+  }
+  try {
+    // Perform the DELETE request
+    const response = await fetch(`${BASE_API_URL}/new_plants/${plantId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+      },
+    });
+    if (!response.ok) {
+      return {
+        success: false,
+        data: null,
+        error: `Error: ${response.status}`,
+      };
     }
-    if (success) {
-      navigate("/plants");
-    } else {
-      alert("Error deleting plant");
-    }
-  };
+    // Handle successful deletion
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error deleting plant:", message);
+    return {
+      success: false,
+      data: null,
+      error: "Unknown error" || message,
+    };
+  }
 };
 
 export function PlantDetails() {
@@ -344,7 +348,15 @@ export function PlantDetails() {
     }
   };
 
-  const handleDelete = createPlantDeleteFunction(plantId, navigate);
+  const handleDelete = async () => {
+    const response = await deletePlant(plantId);
+    if (response.success) {
+      showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
+      navigate("/plants");
+    } else {
+      showAlert(`Error deleting plant: ${response.error}`, "danger");
+    }
+  };
 
   if (plantIsLoading || !plantInForm) {
     return <p>Loading plant...</p>;

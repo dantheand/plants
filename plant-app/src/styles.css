@@ -17,3 +17,16 @@
   color: #ff4d4d; /* Red color */
   margin-left: 3px;
 }
+
+.floating-action-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  border-radius: 50%; /* Circular */
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
