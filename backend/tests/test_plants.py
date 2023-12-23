@@ -99,7 +99,7 @@ class TestPlantCreate:
 
     def test_create_missing_required_fields(self, client):
         test_client = client(DEFAULT_TEST_USER)
-        new_plant = create_fake_plant()
+        new_plant = create_fake_plant(human_name="New Plant")
         new_plant.human_id = None
         response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

@@ -147,6 +147,7 @@ export const PlantForm = ({
           value={plantInForm.location}
           OnChange={handleInputChange("location")}
           isEditable={isFormEditable}
+          isRequired={true}
         />
 
         {/*<div*/}
