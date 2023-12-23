@@ -74,7 +74,7 @@ class TestPlantCreate:
         assert db_items[0]["human_name"] == "New Plant"
         assert db_items[0]["PK"] == f"{ItemKeys.USER}#{DEFAULT_TEST_USER.google_id}"
 
-    def test_create_with_duplicate_id_fails(self, client, mock_db):
+    def test_create_with_duplicate_human_id_fails(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
         existing_plant = create_fake_plant(human_id=42, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(existing_plant)
@@ -82,6 +82,20 @@ class TestPlantCreate:
         new_plant = create_fake_plant(human_id=42)
         response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_with_duplicate_plant_id(self, client, mock_db):
+        test_client = client(DEFAULT_TEST_USER)
+        plant_id = uuid.uuid4()
+        existing_plant = create_fake_plant(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
+        mock_db.insert_mock_data(existing_plant)
+
+        new_plant = create_fake_plant(plant_id=plant_id)
+        _ = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
+
+        # Check that the plants were created with different UUIDs
+        db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
+        assert len(db_items) == 2
+        assert db_items[0]["plant_id"] != db_items[1]["plant_id"]
 
     def test_create_missing_required_fields(self, client):
         test_client = client(DEFAULT_TEST_USER)

@@ -22,6 +22,7 @@ interface EditableInputProps {
   editsAllowed?: boolean;
   OnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isEditable: boolean;
+  isRequired?: boolean;
 }
 
 const EditableInput = ({
@@ -31,6 +32,7 @@ const EditableInput = ({
   editsAllowed = true,
   OnChange,
   isEditable,
+  isRequired = false,
 }: EditableInputProps) => {
   return (
     <Form.Group as={Row} className="m-2">
@@ -39,6 +41,7 @@ const EditableInput = ({
       </Form.Label>
       <Col sm={10}>
         <Form.Control
+          required={isRequired}
           type={type}
           value={value}
           onChange={OnChange}
@@ -121,6 +124,7 @@ export const PlantForm = ({
           OnChange={handleInputChange("human_id")}
           isEditable={isFormEditable}
           editsAllowed={false || isFormNewPlant}
+          isRequired={true}
         />
         <EditableInput
           label="Human Name"
@@ -128,6 +132,7 @@ export const PlantForm = ({
           value={plantInForm.human_name}
           OnChange={handleInputChange("human_name")}
           isEditable={isFormEditable}
+          isRequired={true}
         />
         <EditableInput
           label="Species"
@@ -165,6 +170,7 @@ export const PlantForm = ({
           value={plantInForm.source}
           OnChange={handleInputChange("source")}
           isEditable={isFormEditable}
+          isRequired={true}
         />
         <EditableInput
           label={"Source Date"}
@@ -172,6 +178,7 @@ export const PlantForm = ({
           value={plantInForm.source_date}
           OnChange={handleInputChange("source_date")}
           isEditable={isFormEditable}
+          isRequired={true}
         />
 
         <EditableInput
@@ -208,7 +215,6 @@ const updatePlant = async (
     const response = await fetch(
       `${BASE_API_URL}/new_plants/${plantData.plant_id}`,
       {
-        // Replace with your actual API endpoint
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -218,7 +224,6 @@ const updatePlant = async (
       },
     );
     if (!response.ok) {
-      // Handle non-2xx HTTP responses
       const errorText = await response.text();
       return {
         success: false,
