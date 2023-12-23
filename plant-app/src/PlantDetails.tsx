@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
 import "./PlantImagesTimeline.css";
 
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 
-import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 import { PlantImages } from "./PlantImages";
-import { Plant } from "./schema";
+import { Plant } from "./interfaces";
 import { PlantLayout } from "./Layouts";
 import { initialNewPlantState, NewPlant } from "./PlantCreate";
 import { DeleteButtonWConfirmation } from "./commonComponents";
+import { useAlert } from "./AlertComponents";
+import { ApiResponse } from "./interfaces";
+import "./styles.css";
 
 // Define props for EditableInput component
 interface EditableInputProps {
@@ -37,7 +40,7 @@ const EditableInput = ({
   return (
     <Form.Group as={Row} className="m-2">
       <Form.Label column sm={2}>
-        {label}
+        {label} {isRequired && <span className="required-asterisk">*</span>}
       </Form.Label>
       <Col sm={10}>
         <Form.Control
@@ -46,7 +49,6 @@ const EditableInput = ({
           value={value}
           onChange={OnChange}
           disabled={!(isEditable && editsAllowed)}
-          // plaintext={!editsAllowed}
         />
       </Col>
     </Form.Group>
@@ -211,7 +213,7 @@ export const PlantForm = ({
 
 const updatePlant = async (
   plantData: NewPlant,
-): Promise<{ success: boolean; data: Plant | null; error?: string }> => {
+): Promise<ApiResponse<Plant>> => {
   try {
     const response = await fetch(
       `${BASE_API_URL}/new_plants/${plantData.plant_id}`,
@@ -225,11 +227,10 @@ const updatePlant = async (
       },
     );
     if (!response.ok) {
-      const errorText = await response.text();
       return {
         success: false,
         data: null,
-        error: errorText || `Error: ${response.status}`,
+        error: `Error: ${response.status}`,
       };
     }
 
@@ -312,6 +313,7 @@ export function PlantDetails() {
     useState<NewPlant>(initialNewPlantState);
   const { plant, plantIsLoading, error, setPlant } = usePlantDetails(plantId);
   const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     if (plant) {
@@ -330,7 +332,7 @@ export function PlantDetails() {
     if (updatedPlantResult.success) {
       setPlant(updatedPlantResult.data);
       setIsFormEditable(false);
-      alert("Plant updated!");
+      showAlert("Successfully updated plant", "success");
     } else {
       if (!plant) {
         setPlantInForm(initialNewPlantState);
@@ -338,7 +340,7 @@ export function PlantDetails() {
         setPlantInForm(plant);
       }
       setIsFormEditable(false);
-      alert("Error updating plant");
+      showAlert("Failed to update plant", "danger");
     }
   };
 

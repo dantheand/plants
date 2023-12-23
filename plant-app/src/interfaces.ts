@@ -18,3 +18,9 @@ export interface Plant {
   sink_date: string | undefined;
   notes: string | undefined;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T | null;
+  error?: string;
+}

@@ -1,14 +1,15 @@
 import { PlantLayout } from "./Layouts";
 import { PlantForm } from "./PlantDetails";
 import { useState } from "react";
-import { Plant } from "./schema";
-import { v4 as uuidv4 } from "uuid";
+import { Plant } from "./interfaces";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { useNavigate } from "react-router-dom";
+import { ApiResponse } from "./interfaces";
+import { useAlert } from "./AlertComponents";
 
 export type NewPlant = Partial<Plant>;
 
-const createPlant = async (plant: NewPlant) => {
+const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
   const response = await fetch(`${BASE_API_URL}/new_plants`, {
     method: "POST",
     headers: {
@@ -18,10 +19,16 @@ const createPlant = async (plant: NewPlant) => {
     body: JSON.stringify(plant),
   });
   if (!response.ok) {
-    alert("Error creating plant");
-    return;
+    return {
+      success: false,
+      data: null,
+      error: `Error: ${response.status}`,
+    };
   }
-  return await response.json();
+  return {
+    success: true,
+    data: await response.json(),
+  };
 };
 
 export const initialNewPlantState: NewPlant = {};
@@ -30,6 +37,7 @@ export function PlantCreate() {
   const newPlant = initialNewPlantState;
   const [plantInForm, setPlantInForm] = useState<NewPlant>(newPlant);
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   const handleSubmitNewPlant = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -37,12 +45,13 @@ export function PlantCreate() {
     event.preventDefault();
     console.log("Submitting new plant:");
     console.log(plantInForm);
-    const createdPlant = await createPlant(plantInForm);
-    if (!createdPlant) {
-      return;
-    } else {
+    const createdPlantResult = await createPlant(plantInForm);
+    if (createdPlantResult.success && createdPlantResult.data) {
+      showAlert("Successfully created plant", "success");
       // Navigate to the new plant's page
-      navigate(`/plants/${createdPlant.plant_id}`);
+      navigate(`/plants/${createdPlantResult.data.plant_id}`);
+    } else {
+      showAlert(`Error creating plant: ${createdPlantResult.error}`, "danger");
     }
   };
   return (

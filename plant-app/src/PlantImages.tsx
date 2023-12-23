@@ -5,7 +5,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
-import { PlantImage } from "./schema";
+import { PlantImage } from "./interfaces";
 
 // TODO: switch this over to using the plant_id UUID value (need to switch over the API)
 export function PlantImages({ human_id }: { human_id: number }) {

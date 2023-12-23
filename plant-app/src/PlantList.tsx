@@ -3,7 +3,7 @@ import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
 import { Container, ListGroup, Placeholder } from "react-bootstrap";
 
-import { Plant } from "./schema";
+import { Plant } from "./interfaces";
 import { useAlert } from "./AlertComponents";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
@@ -49,8 +49,6 @@ export function PlantList(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  const { showAlert } = useAlert();
-
   useEffect(() => {
     fetch(`${BASE_API_URL}/new_plants/user/${HARDCODED_USER}`, {
       headers: {
@@ -64,7 +62,6 @@ export function PlantList(): JSX.Element {
         });
         setPlants(sortedPlants);
         setIsLoading(false);
-        showAlert("Successfully loaded the plant list page", "success");
       });
   }, []);
 
