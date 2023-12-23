@@ -1,6 +1,16 @@
 import { Container } from "react-bootstrap";
 import { BackButton } from "./commonComponents";
 import React, { ReactNode } from "react";
+import { AlertComponent, AlertProvider } from "./AlertComponents";
+
+export const GlobalLayout = ({ children }: { children: ReactNode }) => {
+  return (
+    <AlertProvider>
+      <AlertComponent />
+      {children}
+    </AlertProvider>
+  );
+};
 
 export const PlantLayout = ({ children }: { children: ReactNode }) => {
   return (

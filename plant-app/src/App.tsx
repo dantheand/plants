@@ -11,6 +11,7 @@ import { AuthFromFrontEnd } from "./Authenticator";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { PlantList } from "./PlantList";
 import { PlantCreate } from "./PlantCreate";
+import { GlobalLayout } from "./Layouts";
 
 // TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
 //
@@ -66,15 +67,17 @@ const ProtectedRoute = () => {
 function App() {
   return (
     <Router basename="/">
-      <Routes>
-        <Route path="/" element={<AuthFromFrontEnd />} />
-        <Route path="/login" element={<AuthFromFrontEnd />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/plants" element={<PlantList />} />
-          <Route path="/plants/:plantId" element={<PlantDetails />} />
-          <Route path="/plants/create" element={<PlantCreate />} />
-        </Route>
-      </Routes>
+      <GlobalLayout>
+        <Routes>
+          <Route path="/" element={<AuthFromFrontEnd />} />
+          <Route path="/login" element={<AuthFromFrontEnd />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/plants" element={<PlantList />} />
+            <Route path="/plants/:plantId" element={<PlantDetails />} />
+            <Route path="/plants/create" element={<PlantCreate />} />
+          </Route>
+        </Routes>
+      </GlobalLayout>
     </Router>
   );
 }
