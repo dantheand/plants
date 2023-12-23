@@ -56,6 +56,13 @@ class PlantBase(BaseModel):
     sink_date: Optional[date] = None
     notes: Optional[str] = None
 
+    # Convert all empty strings to None
+    @field_validator("*", mode="before")
+    def empty_str_to_none(cls, v):
+        if v == "":
+            return None
+        return v
+
     # This is needed because dynamodb can't handle date objects
     @field_validator("sink_date", "source_date", mode="after")
     @classmethod

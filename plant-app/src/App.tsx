@@ -10,6 +10,7 @@ import {
 import { AuthFromFrontEnd } from "./Authenticator";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { PlantList } from "./PlantList";
+import { PlantCreate } from "./PlantCreate";
 
 // TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
 //
@@ -71,6 +72,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/plants" element={<PlantList />} />
           <Route path="/plants/:plantId" element={<PlantDetails />} />
+          <Route path="/plants/create" element={<PlantCreate />} />
         </Route>
       </Routes>
     </Router>

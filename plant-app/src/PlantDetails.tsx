@@ -11,6 +11,8 @@ import { BackButton } from "./commonComponents";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 import { PlantImages } from "./PlantImages";
 import { Plant } from "./schema";
+import { PlantLayout } from "./Layouts";
+import { initialNewPlantState, NewPlant } from "./PlantCreate";
 
 // Define props for EditableInput component
 interface EditableInputProps {
@@ -49,23 +51,25 @@ const EditableInput = ({
 };
 
 interface PlantFormProps {
-  plant: Plant;
+  plant: NewPlant;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  plantInForm: Plant;
-  setPlantInForm: React.Dispatch<React.SetStateAction<Plant | null>>;
+  plantInForm: NewPlant;
+  setPlantInForm: React.Dispatch<React.SetStateAction<NewPlant>>;
   isFormEditable: boolean;
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
+  isFormNewPlant?: boolean;
 }
 
-const PlantForm = ({
+export const PlantForm = ({
   plant,
   handleSubmit,
   plantInForm,
   setPlantInForm,
   isFormEditable,
   setIsFormEditable,
+  isFormNewPlant = false,
 }: PlantFormProps) => {
-  const [originalPlant, setOriginalPlant] = useState<Plant>(plant);
+  const [plantBeforeEdit, setPlantBeforeEdit] = useState<NewPlant>(plant);
 
   type PlantField = keyof Plant;
   const handleInputChange =
@@ -75,9 +79,9 @@ const PlantForm = ({
 
   const toggleEditable = () => {
     if (isFormEditable) {
-      setPlantInForm(originalPlant);
+      setPlantInForm(plantBeforeEdit);
     } else {
-      setOriginalPlant(plantInForm);
+      setPlantBeforeEdit(plantInForm);
     }
     setIsFormEditable(!isFormEditable);
   };
@@ -116,7 +120,7 @@ const PlantForm = ({
           value={plantInForm.human_id}
           OnChange={handleInputChange("human_id")}
           isEditable={isFormEditable}
-          editsAllowed={false}
+          editsAllowed={false || isFormNewPlant}
         />
         <EditableInput
           label="Human Name"
@@ -128,7 +132,7 @@ const PlantForm = ({
         <EditableInput
           label="Species"
           type="text"
-          value={plantInForm.species || ""}
+          value={plantInForm.species}
           OnChange={handleInputChange("species")}
           isEditable={isFormEditable}
         />
@@ -151,21 +155,21 @@ const PlantForm = ({
         <EditableInput
           label="Parent ID"
           type="text"
-          value={plantInForm.parent_id || ""}
+          value={plantInForm.parent_id}
           OnChange={handleInputChange("parent_id")}
           isEditable={isFormEditable}
         />
         <EditableInput
           label="Source"
           type="text"
-          value={plantInForm.source || ""}
+          value={plantInForm.source}
           OnChange={handleInputChange("source")}
           isEditable={isFormEditable}
         />
         <EditableInput
           label={"Source Date"}
           type={"date"}
-          value={plantInForm.source_date ?? ""}
+          value={plantInForm.source_date}
           OnChange={handleInputChange("source_date")}
           isEditable={isFormEditable}
         />
@@ -173,14 +177,14 @@ const PlantForm = ({
         <EditableInput
           label={"Sink"}
           type={"text"}
-          value={plantInForm.sink ?? ""}
+          value={plantInForm.sink}
           OnChange={handleInputChange("sink")}
           isEditable={isFormEditable}
         />
         <EditableInput
           label={"Sink Date"}
           type={"date"}
-          value={plantInForm.sink_date ?? ""}
+          value={plantInForm.sink_date}
           OnChange={handleInputChange("sink_date")}
           isEditable={isFormEditable}
         />
@@ -188,7 +192,7 @@ const PlantForm = ({
         <EditableInput
           label={"Notes"}
           type={"textarea"}
-          value={plantInForm.notes ?? ""}
+          value={plantInForm.notes}
           OnChange={handleInputChange("notes")}
           isEditable={isFormEditable}
         />
@@ -198,7 +202,7 @@ const PlantForm = ({
 };
 
 const updatePlant = async (
-  plantData: Plant,
+  plantData: NewPlant,
 ): Promise<{ success: boolean; data: Plant | null; error?: string }> => {
   try {
     const response = await fetch(
@@ -261,8 +265,9 @@ const usePlantDetails = (plantId: string | undefined) => {
 export function PlantDetails() {
   const { plantId } = useParams<{ plantId: string }>();
   const navigate = useNavigate();
+  const [plantInForm, setPlantInForm] =
+    useState<NewPlant>(initialNewPlantState);
   const { plant, plantIsLoading, error, setPlant } = usePlantDetails(plantId);
-  const [plantInForm, setPlantInForm] = useState<Plant | null>(plant);
   const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
 
   useEffect(() => {
@@ -276,7 +281,6 @@ export function PlantDetails() {
       console.error("No plant data to submit");
       return;
     }
-    // TODO: PATCH to API and setPlant to return
     console.log("Submitting form");
     console.log(plantInForm);
     const updatedPlantResult = await updatePlant(plantInForm);
@@ -285,7 +289,11 @@ export function PlantDetails() {
       setIsFormEditable(false);
       alert("Plant updated!");
     } else {
-      setPlantInForm(plant);
+      if (!plant) {
+        setPlantInForm(initialNewPlantState);
+      } else {
+        setPlantInForm(plant);
+      }
       setIsFormEditable(false);
       alert("Error updating plant");
     }
@@ -300,8 +308,7 @@ export function PlantDetails() {
   }
 
   return (
-    <Container className="my-4">
-      <BackButton />
+    <PlantLayout>
       <PlantForm
         plant={plant}
         handleSubmit={handleSubmit}
@@ -310,9 +317,8 @@ export function PlantDetails() {
         isFormEditable={isFormEditable}
         setIsFormEditable={setIsFormEditable}
       />
-      {/* Images Section */}
       <PlantImages human_id={plant.human_id} />
-    </Container>
+    </PlantLayout>
   );
 }
 
