@@ -1,7 +1,6 @@
 import uuid
 from datetime import date, datetime
 from typing import Optional
-from unittest import mock
 
 import boto3
 import pytest

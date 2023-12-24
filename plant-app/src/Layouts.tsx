@@ -6,7 +6,7 @@ import plantBrandIcon from "./assets/plant_logo_leaf_only_small.png";
 
 import "./styles.css";
 import { useLocation } from "react-router-dom";
-import { APP_BRAND } from "./constants";
+import { APP_BRAND_NAME } from "./constants";
 
 export const AppNavbar = () => {
   return (
@@ -20,7 +20,7 @@ export const AppNavbar = () => {
             className="d-inline-block align-top"
             alt="Brand Icon"
           />{" "}
-          {APP_BRAND}
+          {APP_BRAND_NAME}
         </Navbar.Brand>
         {/* Other navbar content */}
       </Container>

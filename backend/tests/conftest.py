@@ -23,7 +23,8 @@ def mock_jwt_secret():
 
 @pytest.fixture(autouse=True, scope="session")
 def set_mock_aws_env_vars():
-    del os.environ["AWS_PROFILE"]
+    if "AWS_PROFILE" in os.environ:
+        del os.environ["AWS_PROFILE"]
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
     os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
