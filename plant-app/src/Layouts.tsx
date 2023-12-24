@@ -6,6 +6,7 @@ import plantBrandIcon from "./assets/plant_logo_leaf_only_small.png";
 
 import "./styles.css";
 import { useLocation } from "react-router-dom";
+import { APP_BRAND } from "./constants";
 
 export const AppNavbar = () => {
   return (
@@ -19,7 +20,7 @@ export const AppNavbar = () => {
             className="d-inline-block align-top"
             alt="Brand Icon"
           />{" "}
-          Florio
+          {APP_BRAND}
         </Navbar.Brand>
         {/* Other navbar content */}
       </Container>

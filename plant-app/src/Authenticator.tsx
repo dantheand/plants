@@ -1,6 +1,11 @@
 import "@aws-amplify/ui-react/styles.css";
 import { Alert, Button, Card, Form } from "react-bootstrap";
-import { BASE_API_URL, GOOGLE_CLIENT_ID, JWT_TOKEN_STORAGE } from "./constants";
+import {
+  APP_BRAND,
+  BASE_API_URL,
+  GOOGLE_CLIENT_ID,
+  JWT_TOKEN_STORAGE,
+} from "./constants";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -72,10 +77,10 @@ export function AuthFromFrontEnd() {
       <div style={{ textAlign: "center" }}>
         <img
           src={logo}
-          alt="Florio Logo"
+          alt={`${APP_BRAND} Logo`}
           style={{ width: "200px", margin: "10px auto" }}
         />
-        <h2>Florio</h2>
+        <h2>{APP_BRAND}</h2>
       </div>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
         <div

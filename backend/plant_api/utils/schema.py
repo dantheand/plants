@@ -103,8 +103,10 @@ class PlantItem(PlantCreate):
 
 
 class ImageBase(BaseModel):
-    s3_url: str
-    signed_url: Optional[str] = None
+    full_photo_s3_url: str
+    thumbnail_photo_s3_url: str
+    signed_full_photo_url: Optional[str] = None
+    signed_thumbnail_photo_url: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     # This is needed because dynamodb can't handle date objects
