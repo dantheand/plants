@@ -10,8 +10,10 @@ PLANTS_TABLE_NAME = "plants"
 IMAGES_TABLE_NAME = "images"
 NEW_PLANTS_TABLE = "new_plants"
 
+AWS_REGION = "us-west-2"
 S3_BUCKET_NAME = "0bf665f0db5b-plant-app"
 PLANT_IMAGES_FOLDER = "images"
+NEW_PLANT_IMAGES_FOLDER = "new_images"
 
 BASE_URL = "http://localhost:8000"
 DEPLOYED_BASE_URL = "https://master.d1g3nlvs6mpirt.amplifyapp.com/prod"

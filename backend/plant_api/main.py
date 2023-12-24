@@ -6,7 +6,7 @@ from mangum import Mangum
 from starlette.middleware.sessions import SessionMiddleware
 
 from backend.plant_api.constants import get_jwt_secret
-from backend.plant_api.routers import auth, new_plants, images
+from backend.plant_api.routers import auth, new_plants, images, new_images
 
 
 app = FastAPI()
@@ -32,6 +32,7 @@ app.include_router(auth.router)
 app.include_router(images.router)
 # New endpoints
 app.include_router(new_plants.router)
+app.include_router(new_images.router)
 
 
 @app.get("/")

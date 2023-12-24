@@ -6,7 +6,7 @@ from unittest import mock
 import boto3
 import pytest
 from faker import Faker
-from moto import mock_dynamodb
+from moto import mock_dynamodb, mock_s3
 from starlette.testclient import TestClient
 
 from backend.plant_api.dependencies import get_current_user
@@ -14,7 +14,7 @@ from backend.plant_api.dependencies import get_current_user
 # from backend.plant_api.main import app
 from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, PlantItem, User
 
-from backend.plant_api.constants import NEW_PLANTS_TABLE
+from backend.plant_api.constants import AWS_REGION, NEW_PLANTS_TABLE, S3_BUCKET_NAME
 
 
 def get_app():
@@ -26,7 +26,7 @@ def get_app():
 class MockDB:
     def __init__(self):
         self.table_name = NEW_PLANTS_TABLE
-        self.dynamodb = boto3.resource("dynamodb", region_name="us-west-2")
+        self.dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 
     def create_table(self):
         self.dynamodb.create_table(
@@ -58,6 +58,14 @@ class MockDB:
     def delete_table(self):
         table = self.dynamodb.Table(self.table_name)
         table.delete()
+
+
+@pytest.fixture(scope="function")
+def fake_s3():
+    with mock_s3():
+        client = boto3.client("s3", region_name=AWS_REGION)
+        client.create_bucket(Bucket=S3_BUCKET_NAME, CreateBucketConfiguration={"LocationConstraint": AWS_REGION})
+        yield client
 
 
 @pytest.fixture(scope="function")

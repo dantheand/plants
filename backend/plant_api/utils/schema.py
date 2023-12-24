@@ -117,6 +117,12 @@ class ImageBase(BaseModel):
             return v.isoformat()
         return v
 
+    # Method to get a dict compatible with DynamoDB
+    def dynamodb_dump(self):
+        data = self.dict()
+        data["timestamp"] = self.datetime_to_string(data["timestamp"])
+        return data
+
 
 class ImageItem(ImageBase):
     PK: str = Field(..., pattern=f"^{ItemKeys.PLANT}#")
