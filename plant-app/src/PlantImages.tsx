@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
 import { PlantImage } from "./interfaces";
+import { SHOW_IMAGES } from "./featureFlags";
 
 // TODO: switch this over to using the plant_id UUID value (need to switch over the API)
 export function PlantImages({ human_id }: { human_id: number }) {
@@ -23,19 +24,21 @@ export function PlantImages({ human_id }: { human_id: number }) {
   const handleCloseModal = () => setShowModal(false);
 
   useEffect(() => {
-    // TODO: only fetch if the plant_id has been loaded
-    fetch(`${BASE_API_URL}/images/${human_id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setPlantImages(data);
+    if (SHOW_IMAGES) {
+      // TODO: only fetch if the plant_id has been loaded
+      fetch(`${BASE_API_URL}/images/${human_id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+        },
       })
-      .then(() => {
-        setImagesIsLoading(false);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          setPlantImages(data);
+        })
+        .then(() => {
+          setImagesIsLoading(false);
+        });
+    }
   }, [human_id]);
 
   return (
