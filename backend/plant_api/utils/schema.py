@@ -37,8 +37,8 @@ class SinkType(str, Enum):
 
 
 class UserItem(BaseModel):
-    pk: str = Field(..., alias="PK", pattern=f"^{ItemKeys.USER}#")
-    sk: str = Field(..., alias="SK", pattern=f"^{ItemKeys.USER}#")
+    pk: str = Field(..., alias="PK", pattern=rf"^{ItemKeys.USER}#")
+    sk: str = Field(..., alias="SK", pattern=rf"^{ItemKeys.USER}#")
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
@@ -90,8 +90,8 @@ class PlantUpdate(PlantBase):
 class PlantItem(PlantCreate):
     """The DB model for a plant item."""
 
-    PK: str = Field(..., alias="PK", pattern=f"^{ItemKeys.USER}#")
-    SK: str = Field(..., alias="SK", pattern=f"^{ItemKeys.PLANT}#")
+    PK: str = Field(..., alias="PK", pattern=rf"^{ItemKeys.USER}#")
+    SK: str = Field(..., alias="SK", pattern=rf"^{ItemKeys.PLANT}#")
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
 
@@ -127,8 +127,8 @@ class ImageBase(BaseModel):
 
 
 class ImageItem(ImageBase):
-    PK: str = Field(..., pattern=f"^{ItemKeys.PLANT}#")
-    SK: str = Field(..., pattern=f"^{ItemKeys.IMAGE}#")
+    PK: str = Field(..., pattern=rf"^{ItemKeys.PLANT}#")
+    SK: str = Field(..., pattern=rf"^{ItemKeys.IMAGE}#")
     entity_type: str = Field(EntityType.IMAGE)
 
 
