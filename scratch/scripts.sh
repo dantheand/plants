@@ -1,6 +1,12 @@
 # Testing API integration
 curl https://2jbzjl9rj2.execute-api.us-west-2.amazonaws.com/test/plants
 
+######################################
+############# CI/Tests ################
+######################################
+
+cd ~/projects/plants
+mypy ./backend
 
 ####################################################################################################
 ################################ Lambda function build and deploy ##################################

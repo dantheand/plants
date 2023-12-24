@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
+import jose
 from fastapi import APIRouter, Depends
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -37,9 +38,8 @@ async def auth(request: Request):
     body = await request.json()
     token = body.get("token")
     nonce = body.get("nonce")
-    request = requests.Request()
     try:
-        id_info = id_token.verify_oauth2_token(token, request, GOOGLE_CLIENT_ID)
+        id_info = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
         if not id_info:
             logging.error("Could not verify id token: %s", id_info)
             raise CREDENTIALS_EXCEPTION
@@ -64,7 +64,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     try:
         encoded_jwt = jwt.encode(to_encode, get_jwt_secret(), algorithm=ALGORITHM)
-    except jwt.JWTError as e:
+    except jose.JWTError as e:
         logging.error(e)
         raise e
     return encoded_jwt

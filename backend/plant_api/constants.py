@@ -33,5 +33,5 @@ def get_jwt_secret() -> str:
 
 
 class GoogleOauthPayload(BaseModel):
-    email: Optional[str]
-    sub: Optional[str] = Field(..., description="Google's unique identifier for the user.")
+    email: str
+    sub: str = Field(..., description="Google's unique identifier for the user.")

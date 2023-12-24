@@ -9,7 +9,8 @@ from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.utils.db import get_db_table
 from backend.plant_api.utils.s3 import get_s3_client
 from backend.plant_api.utils.schema import EntityType, ImageBase, ImageItem
-from PIL import Image
+from PIL import Image as img
+from PIL.Image import Image
 
 router = APIRouter(
     prefix="/new_images",
@@ -18,18 +19,6 @@ router = APIRouter(
 )
 
 MAX_X_PIXELS = 200
-
-
-def create_thumbnail(image: Image, max_x_size=MAX_X_PIXELS) -> Image:
-    """Resize images (while maintaining aspect) to a max value of pixels on the x-axis"""
-    original_x_len = image.width
-    ratio = max_x_size / float(original_x_len)
-    new_size = tuple([int(x * ratio) for x in image.size])
-    if new_size[0] < max_x_size:
-        logging.warning(f"Image is already smaller than {max_x_size} pixels on the x-axis")
-        return image
-    resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
-    return resized_image
 
 
 @router.get("/{plant_id}")
@@ -59,20 +48,20 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
     table = get_db_table()
     response = table.get_item(Key={"PK": f"USER#{user.google_id}", "SK": f"PLANT#{str(plant_id)}"})
     if "Item" not in response:
-        raise HTTPException(status_code=404, detail="Plant not found for user.")
+        raise HTTPException(status_code=404, detail="Coul not find plant to attach image to for user.")
 
     image_id = uuid4()
     image_content = await image_file.read()
 
     # Save Original to S3
-    image = Image.open(io.BytesIO(image_content))
+    image = img.open(io.BytesIO(image_content))
     original_s3_path = upload_image_to_s3(image, image_id, plant_id, "original")
 
-    # Create thumbnail and save to S3
+    # Create thumbnail and save to S3 (I tried to break this out into a separate function but it didn't work...)
     if image.width > MAX_X_PIXELS:
         ratio = MAX_X_PIXELS / float(image.width)
-        new_size = tuple([int(x * ratio) for x in image.size])
-        thumbnail = image.resize(new_size, Image.Resampling.LANCZOS)
+        new_size = (MAX_X_PIXELS, int(image.height * ratio))
+        thumbnail = image.resize(new_size, img.Resampling.LANCZOS)
     else:
         logging.warning(f"Image {image_id} is already smaller than {MAX_X_PIXELS} pixels on the x-axis")
         thumbnail = image
@@ -90,18 +79,6 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
     return image_item
 
 
-@router.post("/{plant_id}")
-async def create_image_for_plant(
-    plant_id: UUID, image_file: UploadFile, user=Depends(get_current_user), background_tasks=BackgroundTasks
-):
-    background_tasks.add_task(create_thumbnail, image_file)
-    ...
-
-
 @router.delete("/{plant_id}")
 async def delete_image_for_plant(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
-    ...
-
-
-def create_thumbnail(image_file):
     ...

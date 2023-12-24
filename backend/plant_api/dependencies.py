@@ -1,9 +1,11 @@
 import logging
 from typing import Annotated
 
+import jose
 from fastapi import Depends, Security
 from fastapi.security import APIKeyHeader, OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer
 from jose import jwt
+from pydantic import ValidationError
 
 from backend.plant_api.constants import (
     ALGORITHM,
@@ -26,9 +28,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
     try:
         logging.info("Attempting to validate credentials...")
         payload = GoogleOauthPayload(**jwt.decode(token, get_jwt_secret(), algorithms=[ALGORITHM]))
-        if payload.email is None:
-            raise CREDENTIALS_EXCEPTION
-    except jwt.JWTError:
+    except ValidationError:
+        logging.error("Encountered error validating credential format.")
+        raise CREDENTIALS_EXCEPTION
+    except jose.JWTError:
         logging.error("Encountered error decoding credentials.")
         raise CREDENTIALS_EXCEPTION
 

@@ -58,7 +58,7 @@ class PlantBase(BaseModel):
 
     # Convert all empty strings to None
     @field_validator("*", mode="before")
-    def empty_str_to_none(cls, v):
+    def empty_str_to_none(cls, v: Any) -> Optional[Any]:
         if v == "":
             return None
         return v
@@ -66,14 +66,14 @@ class PlantBase(BaseModel):
     # This is needed because dynamodb can't handle date objects
     @field_validator("sink_date", "source_date", mode="after")
     @classmethod
-    def datetime_to_string(cls, v):
+    def datetime_to_string(cls, v: Union[str, date]) -> str:
         if isinstance(v, date):
             return v.isoformat()
         return v
 
     @field_validator("parent_id", mode="before")
     @classmethod
-    def parent_id_to_list_of_int(cls, v):
+    def parent_id_to_list_of_int(cls, v: Union[str, list[int]]) -> list[int]:
         if isinstance(v, str):
             return [int(x) for x in v.split(",")]
         return v
@@ -96,7 +96,7 @@ class PlantItem(PlantCreate):
     plant_id: Optional[str] = None
 
     @model_validator(mode="before")
-    def extract_plant_id(cls, values: Dict[str, Any]):
+    def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Break out the plant_id UUID as a separate field"""
         values["plant_id"] = values["SK"].split("#")[1]
         return values
@@ -112,12 +112,14 @@ class ImageBase(BaseModel):
     # This is needed because dynamodb can't handle date objects
     @field_validator("timestamp", mode="after")
     @classmethod
-    def datetime_to_string(cls, v):
+    def datetime_to_string(cls, v: Union[str, datetime]) -> str:
         if isinstance(v, datetime):
             return v.isoformat()
         return v
 
     # Method to get a dict compatible with DynamoDB
+    # TODO: move this to a Base Pydantic model that all DynamoDB models inherit from (or a mixin)
+    #   This should be able to replace all the datetime_to_string methods
     def dynamodb_dump(self):
         data = self.dict()
         data["timestamp"] = self.datetime_to_string(data["timestamp"])

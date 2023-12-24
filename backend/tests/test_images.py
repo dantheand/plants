@@ -24,7 +24,7 @@ class TestImageRead:
     def test_get_image_for_plant(self, client, mock_db):
         ...
 
-    def test_get_image_for_user_ok(self):
+    def test_get_image_for_other_user_ok(self):
         ...
 
 
@@ -64,7 +64,7 @@ class TestImageUpload:
         )["Item"]
         assert image_in_db == parsed_response.model_dump()
 
-    def test_cannot_upload_image_for_others_plant(self, mock_db, client):
+    def test_cant_upload_image_for_other_users_plant(self, mock_db, client):
         # Create mock plant to upload image to
         plant_id = uuid.uuid4()
         plant = create_fake_plant(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)

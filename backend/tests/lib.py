@@ -127,16 +127,5 @@ def create_fake_plant(
     )
 
 
-def create_fake_image(
-    s3_url: Optional[str] = None,
-    signed_url: Optional[str] = None,
-    timestamp: Optional[datetime] = None,
-) -> ImageItem:
-    return ImageItem(
-        s3_url=s3_url or fake.url(),
-        signed_url=signed_url,
-        timestamp=timestamp or fake.date_time(),
-        PK=f"PLANT#{fake.uuid4()}",
-        SK=f"IMAGE#{fake.uuid4()}",
-        entity_type=EntityType.IMAGE,
-    )
+# def create_test_image_in_s3_and_db() -> ImageItem:
+#     ...
