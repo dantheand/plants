@@ -1,4 +1,6 @@
 /* styles.css */
+
+
 .clickable-item:hover {
     cursor: pointer;
     background-color: #f0f0f0; /* Light grey background on hover */
@@ -29,8 +31,4 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.custom-navbar {
-  background-color: #FFF9E9;
 }

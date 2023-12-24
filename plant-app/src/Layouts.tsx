@@ -2,9 +2,10 @@ import { Container, Navbar } from "react-bootstrap";
 import { BackButton } from "./commonComponents";
 import React, { ReactNode } from "react";
 import { AlertComponent, AlertProvider } from "./AlertComponents";
-import plantBrandIcon from "./assets/plant_img_small.jpg";
+import plantBrandIcon from "./assets/plant_logo_leaf_only_small.png";
 
 import "./styles.css";
+import { useLocation } from "react-router-dom";
 
 export const AppNavbar = () => {
   return (
@@ -18,7 +19,7 @@ export const AppNavbar = () => {
             className="d-inline-block align-top"
             alt="Brand Icon"
           />{" "}
-          Plant Tracker App
+          Florio
         </Navbar.Brand>
         {/* Other navbar content */}
       </Container>
@@ -27,9 +28,14 @@ export const AppNavbar = () => {
 };
 
 export const GlobalLayout = ({ children }: { children: ReactNode }) => {
+  // Exclude the navbar from the login page
+  const location = useLocation();
+  const isLoginPage =
+    location.pathname === "/login" || location.pathname === "/logout";
+
   return (
     <AlertProvider>
-      <AppNavbar />
+      {!isLoginPage && <AppNavbar />}
       <AlertComponent />
       {children}
     </AlertProvider>

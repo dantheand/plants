@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
-import { useAlert } from "./AlertComponents";
+import logo from "./assets/plant_logo_big.png";
 
 function generateNonce(length = 32) {
   let result = "";
@@ -69,12 +69,21 @@ export function AuthFromFrontEnd() {
   }, [isLoggedIn, navigate]);
   return (
     <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
+      <div style={{ textAlign: "center" }}>
+        <img
+          src={logo}
+          alt="Florio Logo"
+          style={{ width: "200px", margin: "10px auto" }}
+        />
+        <h2>Florio</h2>
+      </div>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             marginBottom: "10px",
+            marginTop: "10px",
           }}
         >
           <GoogleLogin
@@ -86,6 +95,17 @@ export function AuthFromFrontEnd() {
           />
         </div>
       </GoogleOAuthProvider>
+    </Card>
+  );
+}
+
+export function Logout() {
+  const handleLogout = () => {
+    localStorage.removeItem(JWT_TOKEN_STORAGE);
+    console.log("Logged out successfully.");
+  };
+  return (
+    <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
       <Button
         onClick={() => handleLogout()}
         variant="secondary"

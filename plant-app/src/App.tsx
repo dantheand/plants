@@ -7,11 +7,13 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { AuthFromFrontEnd } from "./Authenticator";
+import { AuthFromFrontEnd, Logout } from "./Authenticator";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { PlantList } from "./PlantList";
 import { PlantCreate } from "./PlantCreate";
 import { GlobalLayout } from "./Layouts";
+
+import "./styles.css";
 
 // TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
 //
@@ -71,6 +73,7 @@ function App() {
         <Routes>
           <Route path="/" element={<AuthFromFrontEnd />} />
           <Route path="/login" element={<AuthFromFrontEnd />} />
+          <Route path="/logout" element={<Logout />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/plants" element={<PlantList />} />
             <Route path="/plants/:plantId" element={<PlantDetails />} />
