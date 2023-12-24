@@ -1,4 +1,4 @@
-
+# Plantly
 ![DALL·E 2023-12-19 00 28 16 - A minimalist logo for a plant growth tracking app  The logo should include a stylized depiction of a growing plant, symbolizing growth and progression](https://github.com/dantheand/plants/assets/16441200/000dde1f-9b1d-4d54-b54f-e655b0466c6e)
 
 # Development environment setup
