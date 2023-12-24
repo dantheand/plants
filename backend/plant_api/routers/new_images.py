@@ -2,7 +2,7 @@ import io
 import logging
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
@@ -55,6 +55,12 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
 @router.post("/{plant_id}", response_model=ImageItem)
 async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_current_user)):
 
+    # Check if plant exists
+    table = get_db_table()
+    response = table.get_item(Key={"PK": f"USER#{user.google_id}", "SK": f"PLANT#{str(plant_id)}"})
+    if "Item" not in response:
+        raise HTTPException(status_code=404, detail="Plant not found for user.")
+
     image_id = uuid4()
     image_content = await image_file.read()
 
@@ -80,7 +86,6 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
         full_photo_s3_url=original_s3_path,
         thumbnail_photo_s3_url=thumbnail_s3_path,
     )
-    table = get_db_table()
     table.put_item(Item=image_item.dynamodb_dump())
     return image_item
 
