@@ -4,14 +4,14 @@ from pydantic import TypeAdapter
 from fastapi import status
 
 from backend.plant_api.routers.new_plants import PLANT_ROUTE
-from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_fake_plant, mock_db
+from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_fake_plant_record, mock_db
 from backend.plant_api.utils.schema import ItemKeys, PlantBase, PlantItem
 
 
 class TestPlantRead:
     def test_get_your_plant_list(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
-        plant_list = [create_fake_plant(user_id=plant_user_id) for _ in range(10)]
+        plant_list = [create_fake_plant_record(user_id=plant_user_id) for _ in range(10)]
         for plant in plant_list:
             mock_db.insert_mock_data(plant)
 
@@ -23,7 +23,7 @@ class TestPlantRead:
 
     def test_get_other_users_plant_list(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
-        plant_list = [create_fake_plant(user_id=plant_user_id) for _ in range(10)]
+        plant_list = [create_fake_plant_record(user_id=plant_user_id) for _ in range(10)]
         for plant in plant_list:
             mock_db.insert_mock_data(plant)
 
@@ -34,7 +34,7 @@ class TestPlantRead:
     def test_read_your_plant(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(plant_id=plant_id, user_id=plant_user_id)
+        plant = create_fake_plant_record(plant_id=plant_id, user_id=plant_user_id)
         mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
@@ -45,7 +45,7 @@ class TestPlantRead:
     def test_read_other_users_plant_ok(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(user_id=plant_user_id, plant_id=plant_id)
+        plant = create_fake_plant_record(user_id=plant_user_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)
 
         test_client = client(OTHER_TEST_USER)
@@ -63,7 +63,7 @@ class TestPlantRead:
 class TestPlantCreate:
     def test_create(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
-        new_plant = create_fake_plant(human_name="New Plant")
+        new_plant = create_fake_plant_record(human_name="New Plant")
         response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["human_name"] == "New Plant"
@@ -76,20 +76,20 @@ class TestPlantCreate:
 
     def test_create_with_duplicate_human_id_fails(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
-        existing_plant = create_fake_plant(human_id=42, user_id=DEFAULT_TEST_USER.google_id)
+        existing_plant = create_fake_plant_record(human_id=42, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(existing_plant)
 
-        new_plant = create_fake_plant(human_id=42)
+        new_plant = create_fake_plant_record(human_id=42)
         response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_create_with_duplicate_plant_id(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
         plant_id = uuid.uuid4()
-        existing_plant = create_fake_plant(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
+        existing_plant = create_fake_plant_record(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(existing_plant)
 
-        new_plant = create_fake_plant(plant_id=plant_id)
+        new_plant = create_fake_plant_record(plant_id=plant_id)
         _ = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
 
         # Check that the plants were created with different UUIDs
@@ -99,7 +99,7 @@ class TestPlantCreate:
 
     def test_create_missing_required_fields(self, client):
         test_client = client(DEFAULT_TEST_USER)
-        new_plant = create_fake_plant(human_name="New Plant")
+        new_plant = create_fake_plant_record(human_name="New Plant")
         new_plant.human_id = None
         response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -109,7 +109,7 @@ class TestPlantUpdate:
     def test_update(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(user_id=plant_user_id, plant_id=plant_id, human_name="Original Name")
+        plant = create_fake_plant_record(user_id=plant_user_id, plant_id=plant_id, human_name="Original Name")
         mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
@@ -128,7 +128,7 @@ class TestPlantUpdate:
         # Plant owner user details
         plant_owner_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(user_id=plant_owner_id, plant_id=plant_id, human_name="Original Name")
+        plant = create_fake_plant_record(user_id=plant_owner_id, plant_id=plant_id, human_name="Original Name")
         mock_db.insert_mock_data(plant)
 
         # Another user who is not the owner of the plant
@@ -144,14 +144,14 @@ class TestPlantUpdate:
 
     def test_update_missing_plant_fails(self, client, mock_db):
         plant_id = uuid.uuid4()
-        updated_plant = PlantBase(**create_fake_plant().model_dump())
+        updated_plant = PlantBase(**create_fake_plant_record().model_dump())
         test_client = client()
         response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant.model_dump())
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_update_cant_change_human_id(self, mock_db, client):
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(plant_id=plant_id, human_id=42)
+        plant = create_fake_plant_record(plant_id=plant_id, human_id=42)
         mock_db.insert_mock_data(plant)
 
         updated_plant = plant.model_dump()
@@ -169,7 +169,7 @@ class TestPlantDelete:
     def test_delete(self, client, mock_db):
         plant_user_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(user_id=plant_user_id, plant_id=plant_id)
+        plant = create_fake_plant_record(user_id=plant_user_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)
 
         test_client = client(DEFAULT_TEST_USER)
@@ -184,7 +184,7 @@ class TestPlantDelete:
         # Plant owner user details
         plant_owner_id = DEFAULT_TEST_USER.google_id
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(user_id=plant_owner_id, plant_id=plant_id)
+        plant = create_fake_plant_record(user_id=plant_owner_id, plant_id=plant_id)
         mock_db.insert_mock_data(plant)
 
         # Another user who is not the owner of the plant

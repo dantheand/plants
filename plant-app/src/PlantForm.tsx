@@ -98,16 +98,16 @@ export const PlantForm = ({
             </Button>
           </div>
         </Card.Header>
+        {/*<EditableInput*/}
+        {/*  label="UUID"*/}
+        {/*  type="text"*/}
+        {/*  value={plantInForm.plant_id}*/}
+        {/*  OnChange={handleInputChange("plant_id")}*/}
+        {/*  isEditable={isFormEditable}*/}
+        {/*  editsAllowed={false}*/}
+        {/*/>*/}
         <EditableInput
-          label="UUID"
-          type="text"
-          value={plantInForm.plant_id}
-          OnChange={handleInputChange("plant_id")}
-          isEditable={isFormEditable}
-          editsAllowed={false}
-        />
-        <EditableInput
-          label="Human ID"
+          label="ID Number"
           type="text"
           value={plantInForm.human_id}
           OnChange={handleInputChange("human_id")}
@@ -116,7 +116,7 @@ export const PlantForm = ({
           isRequired={true}
         />
         <EditableInput
-          label="Human Name"
+          label="Plant Name"
           type="text"
           value={plantInForm.human_name}
           OnChange={handleInputChange("human_name")}

@@ -61,11 +61,10 @@ export const DeleteButtonWConfirmation = ({
             This action cannot be undone.
           </p>
           <p>
-            Type <em>{confirmationText}</em> to confirm:
+            Type <b>{confirmationText}</b> to confirm:
           </p>
           <Form.Control
             type="text"
-            placeholder={confirmationText}
             value={confirmationInput}
             onChange={handleInputChange}
             onKeyDown={(event) => {

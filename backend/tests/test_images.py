@@ -7,7 +7,7 @@ from PIL import Image
 from backend.plant_api.constants import S3_BUCKET_NAME
 from backend.plant_api.routers.new_images import MAX_X_PIXELS
 from backend.plant_api.utils.schema import ImageItem
-from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_fake_plant, mock_db, fake_s3
+from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, create_fake_plant_record, mock_db, fake_s3
 
 
 def create_test_image(size=(100, 100)):
@@ -21,10 +21,13 @@ def create_test_image(size=(100, 100)):
 
 
 class TestImageRead:
-    def test_get_image_for_plant(self, client, mock_db):
+    def test_get_image_link_for_plant(self, client, mock_db):
         ...
 
-    def test_get_image_for_other_user_ok(self):
+    def test_get_image_link_for_other_user_ok(self):
+        ...
+
+    def test_get_all_image_links_for_plant(self, client, mock_db):
         ...
 
 
@@ -32,7 +35,7 @@ class TestImageUpload:
     def test_upload_image_for_plant(self, client, mock_db, fake_s3):
         # Create mock plant to upload image to
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
+        plant = create_fake_plant_record(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(plant)
 
         test_image = create_test_image()
@@ -67,7 +70,7 @@ class TestImageUpload:
     def test_cant_upload_image_for_other_users_plant(self, mock_db, client):
         # Create mock plant to upload image to
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
+        plant = create_fake_plant_record(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(plant)
 
         test_image = create_test_image()
@@ -88,7 +91,7 @@ class TestImageUpload:
     def test_thumbnail_creation(self, client, mock_db, fake_s3):
 
         plant_id = uuid.uuid4()
-        plant = create_fake_plant(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
+        plant = create_fake_plant_record(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(plant)
 
         image_size = (MAX_X_PIXELS + 10, MAX_X_PIXELS + 10)

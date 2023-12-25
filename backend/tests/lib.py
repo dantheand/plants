@@ -11,7 +11,7 @@ from starlette.testclient import TestClient
 from backend.plant_api.dependencies import get_current_user
 
 # from backend.plant_api.main import app
-from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, PlantItem, User
+from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
 
 from backend.plant_api.constants import AWS_REGION, NEW_PLANTS_TABLE, S3_BUCKET_NAME
 
@@ -100,7 +100,7 @@ DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=Fal
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 
-def create_fake_plant(
+def create_fake_plant_record(
     human_name: Optional[str] = None,
     human_id: Optional[int] = None,
     species: Optional[str] = None,
@@ -121,11 +121,24 @@ def create_fake_plant(
         sink=sink or fake.word(),
         sink_date=sink_date or fake.date(),
         notes=notes or fake.text(),
-        PK=f"USER#{user_id or DEFAULT_TEST_USER.google_id}",
-        SK=f"PLANT#{plant_id or fake.uuid4()}",
+        PK=f"{ItemKeys.USER}#{user_id or DEFAULT_TEST_USER.google_id}",
+        SK=f"{ItemKeys.PLANT}#{plant_id or fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
 
 
-# def create_test_image_in_s3_and_db() -> ImageItem:
-#     ...
+def create_fake_image_record(
+    plant_id: Optional[uuid.UUID] = None,
+    image_id: Optional[uuid.UUID] = None,
+    full_photo_s3_url: Optional[str] = None,
+    thumbnail_photo_s3_url: Optional[str] = None,
+    timestamp: Optional[datetime] = None,
+) -> ImageItem:
+    return ImageItem(
+        PK=f"{ItemKeys.PLANT}#{plant_id or fake.uuid4()}",
+        SK=f"{ItemKeys.IMAGE}#{image_id or fake.uuid4()}",
+        entity_type=EntityType.IMAGE,
+        full_photo_s3_url=full_photo_s3_url or fake.url(),
+        thumbnail_photo_s3_url=thumbnail_photo_s3_url or fake.url(),
+        timestamp=timestamp or fake.date_time(),
+    )
