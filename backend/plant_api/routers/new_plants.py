@@ -31,13 +31,8 @@ async def read_all_plants_for_user(user_id=str):
 @router.get("/{plant_id}", response_model=PlantItem)
 def get_plant(plant_id: UUID):
     table = get_db_table()
-
     response = query_by_plant_id(table, plant_id)
-    items = response.get("Items", [])
-    if items:
-        return items[0]
-    else:
-        raise HTTPException(status_code=404, detail="Plant not found")
+    return response
 
 
 @router.post("/", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
