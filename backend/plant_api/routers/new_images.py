@@ -1,5 +1,6 @@
 import io
 import logging
+from enum import Enum
 from uuid import UUID, uuid4
 
 from boto3.dynamodb.conditions import Key
@@ -20,6 +21,11 @@ router = APIRouter(
 )
 
 MAX_X_PIXELS = 200
+
+
+class ImageSuffixes(str, Enum):
+    ORIGINAL = "original"
+    THUMB = "thumb"
 
 
 def make_s3_path_for_image(image_id: UUID, plant_id: UUID, image_suffix: str) -> str:
@@ -72,7 +78,7 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
 
     # Save Original to S3
     image = img.open(io.BytesIO(image_content))
-    original_s3_path = upload_image_to_s3(image, image_id, plant_id, "original")
+    original_s3_path = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.ORIGINAL)
 
     # Create thumbnail and save to S3 (I tried to break this out into a separate function but it didn't work...)
     if image.width > MAX_X_PIXELS:
@@ -82,7 +88,7 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
     else:
         logging.warning(f"Image {image_id} is already smaller than {MAX_X_PIXELS} pixels on the x-axis")
         thumbnail = image
-    thumbnail_s3_path = upload_image_to_s3(thumbnail, image_id, plant_id, "thumb")
+    thumbnail_s3_path = upload_image_to_s3(thumbnail, image_id, plant_id, ImageSuffixes.THUMB)
 
     # Save reference to DynamoDB
     image_item = ImageItem(
@@ -96,6 +102,6 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
     return image_item
 
 
-@router.delete("/{plant_id}")
+@router.delete("/{plant_id}/{image_id}")
 async def delete_image_for_plant(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
     ...

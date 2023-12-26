@@ -138,7 +138,6 @@ class TestImageUpload:
         assert response.status_code == 404
 
     def test_thumbnail_creation(self, client, mock_db, fake_s3):
-
         plant_id = uuid.uuid4()
         plant = plant_record_factory(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(plant)
@@ -166,11 +165,27 @@ class TestImageUpload:
 
 
 class TestImageDelete:
-    def test_delete_image(self):
-        ...
+    def test_delete_image(self, mock_db, client):
+        plant = plant_record_factory()
+        image = image_record_factory(plant_id=plant.plant_id)
+        mock_db.insert_mock_data(plant)
+        mock_db.insert_mock_data(image)
+
+        # Check that the image was saved
+        image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key={"PK": image.PK, "SK": image.SK})["Item"]
+        assert image_in_db == image.model_dump()
+
+        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{plant.plant_id}/{image.image_id}")
+        assert response.status_code == 204
+
+        # Check that the image was deleted
+        image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key={"PK": image.PK, "SK": image.SK})
 
     def test_delete_image_fails_if_not_owner(self):
         ...
+
+    def test_delete_image_deletes_s3_files(self):
+        pass
 
 
 class TestUtils:
