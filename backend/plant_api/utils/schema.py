@@ -43,8 +43,8 @@ SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
 
 
 class UserItem(BaseModel):
-    pk: str = Field(..., alias="PK", pattern=USER_KEY_PATTERN)
-    sk: str = Field(..., alias="SK", pattern=USER_KEY_PATTERN)
+    PK: str = Field(..., pattern=USER_KEY_PATTERN)
+    SK: str = Field(..., pattern=USER_KEY_PATTERN)
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
@@ -96,8 +96,8 @@ class PlantUpdate(PlantBase):
 class PlantItem(PlantCreate):
     """The DB model for a plant item."""
 
-    PK: str = Field(..., alias="PK", pattern=USER_KEY_PATTERN)
-    SK: str = Field(..., alias="SK", pattern=PLANT_KEY_PATTERN)
+    PK: str = Field(..., pattern=USER_KEY_PATTERN)
+    SK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
 
