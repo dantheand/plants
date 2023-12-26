@@ -4,14 +4,14 @@ from enum import Enum
 from uuid import UUID, uuid4
 
 from boto3.dynamodb.conditions import Key
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from starlette import status
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
-from backend.plant_api.utils.db import get_db_table, query_by_plant_id
+from backend.plant_api.utils.db import get_db_table, make_image_query, query_by_image_id, query_by_plant_id
 from backend.plant_api.utils.s3 import get_s3_client
-from backend.plant_api.utils.schema import EntityType, ImageBase, ImageItem
+from backend.plant_api.utils.schema import EntityType, ImageItem
 from PIL import Image as img
 from PIL.Image import Image
 
@@ -44,7 +44,7 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
     return s3_path
 
 
-@router.get("/{plant_id}", response_model=list[ImageItem])
+@router.get("/plants/{plant_id}", response_model=list[ImageItem])
 async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
     response = table.query(
@@ -58,16 +58,14 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
 
 # TODO: cleanup routes: /new_images/plant/<plant_id>
 #   /new_images/image/<image_id>
-@router.get("/{plant_id}/{image_id}", response_model=ImageItem)
-async def get_image(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
+@router.get("/{image_id}", response_model=ImageItem)
+async def get_image(image_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
-    response = table.get_item(Key={"PK": f"PLANT#{plant_id}", "SK": f"IMAGE#{image_id}"})
-    if "Item" not in response:
-        raise HTTPException(status_code=404, detail="Could not find image for plant.")
-    return response["Item"]
+    image_response = query_by_image_id(table, image_id)
+    return image_response
 
 
-@router.post("/{plant_id}", response_model=ImageItem)
+@router.post("/plants/{plant_id}", response_model=ImageItem)
 async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_current_user)):
 
     # Check if plant exists
@@ -105,24 +103,23 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
     return image_item
 
 
-@router.delete("/{plant_id}/{image_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_image_for_plant(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
+@router.delete("/{image_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_image(image_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
-    pk = f"PLANT#{plant_id}"
-    sk = f"IMAGE#{image_id}"
 
     # Check if image exists
-    response = table.get_item(Key={"PK": pk, "SK": sk})
-    if "Item" not in response:
+    image_response = query_by_image_id(table, image_id)
+    if not image_response:
         raise HTTPException(status_code=404, detail="Could not find image for plant.")
 
+    image_plant_id = UUID(image_response.PK.split("#")[1])
+
     # Check if user owns plant
-    response = query_by_plant_id(table, plant_id)
-    items = response.get("Items")
-    if not items:
+    plant_response = query_by_plant_id(table, image_plant_id)
+    if not plant_response:
         raise HTTPException(status_code=404, detail="Associated plant not found for image.")
-    if items[0]["PK"] != f"USER#{user.google_id}":
+    if plant_response.PK != f"USER#{user.google_id}":
         raise HTTPException(status_code=403, detail="User does not own plant.")
 
-    table.delete_item(Key={"PK": pk, "SK": sk})
+    table.delete_item(Key=make_image_query(image_plant_id, image_id))
     return {"message": "Image deleted successfully"}

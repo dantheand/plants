@@ -31,20 +31,15 @@ def create_test_image(size=(100, 100)):
 
 
 class TestImageRead:
-    def test_get_image_link_for_plant_image(self, client, mock_db):
-        plant_user_id = DEFAULT_TEST_USER.google_id
-        plant_id = uuid.uuid4()
+    def test_get_image_link(self, client, mock_db):
         image_id = uuid.uuid4()
-        plant = plant_record_factory(plant_id=plant_id, user_id=plant_user_id)
-        image = image_record_factory(plant_id=plant_id, image_id=image_id)
-        mock_db.insert_mock_data(plant)
+        image = image_record_factory(image_id=image_id)
         mock_db.insert_mock_data(image)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"/new_images/{plant_id}/{image_id}")
+        response = test_client.get(f"/new_images/{image_id}")
         assert response.status_code == 200
         parsed_response = ImageItem(**response.json())
-        assert parsed_response.PK == f"PLANT#{plant_id}"
         assert parsed_response.SK == f"IMAGE#{image_id}"
 
     def test_get_all_image_links_for_plant(self, client, mock_db):
@@ -56,7 +51,7 @@ class TestImageRead:
             mock_db.insert_mock_data(image)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"/new_images/{plant.plant_id}")
+        response = test_client.get(f"/new_images/plants/{plant.plant_id}")
         assert response.status_code == 200
         parsed_response = TypeAdapter(list[ImageItem]).validate_python(response.json())
         assert len(parsed_response) == 10
@@ -73,7 +68,7 @@ class TestImageRead:
             mock_db.insert_mock_data(image)
 
         test_client = client(OTHER_TEST_USER)
-        response = test_client.get(f"/new_images/{plant.plant_id}")
+        response = test_client.get(f"/new_images/plants/{plant.plant_id}")
         assert response.status_code == 200
         parsed_response = TypeAdapter(list[ImageItem]).validate_python(response.json())
         assert len(parsed_response) == 10
@@ -90,7 +85,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         assert response.status_code == 200
         parsed_response = ImageItem(**response.json())
@@ -125,7 +120,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(OTHER_TEST_USER).post(
-            f"/new_images/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         assert response.status_code == 404
 
@@ -134,7 +129,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/{non_existent_plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/new_images/plants/{non_existent_plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         assert response.status_code == 404
 
@@ -146,7 +141,7 @@ class TestImageUpload:
         image_size = (MAX_X_PIXELS + 10, MAX_X_PIXELS + 10)
         test_image = create_test_image(image_size)
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         parsed_response = ImageItem(**response.json())
 
@@ -178,7 +173,7 @@ class TestImageDelete:
         image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key=db_query).get("Item")
         assert image_in_db == image.model_dump()
 
-        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{plant.plant_id}/{image_id}")
+        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{image_id}")
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         # Check that the image was deleted by scanning the table
@@ -193,14 +188,14 @@ class TestImageDelete:
         mock_db.insert_mock_data(plant)
         mock_db.insert_mock_data(image)
 
-        response = client(OTHER_TEST_USER).delete(f"/new_images/{plant.plant_id}/{image_id}")
+        response = client(OTHER_TEST_USER).delete(f"/new_images/{image_id}")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_non_existant_image(self, mock_db, client):
         plant = plant_record_factory()
         mock_db.insert_mock_data(plant)
 
-        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{plant.plant_id}/{uuid.uuid4()}")
+        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_delete_image_deletes_s3_files(self):
