@@ -36,9 +36,15 @@ class SinkType(str, Enum):
     OTHER = "Other"
 
 
+USER_KEY_PATTERN = f"^{ItemKeys.USER}#"
+PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT}#"
+IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
+SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
+
+
 class UserItem(BaseModel):
-    pk: str = Field(..., alias="PK", pattern=rf"^{ItemKeys.USER}#")
-    sk: str = Field(..., alias="SK", pattern=rf"^{ItemKeys.USER}#")
+    pk: str = Field(..., alias="PK", pattern=USER_KEY_PATTERN)
+    sk: str = Field(..., alias="SK", pattern=USER_KEY_PATTERN)
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
@@ -90,8 +96,8 @@ class PlantUpdate(PlantBase):
 class PlantItem(PlantCreate):
     """The DB model for a plant item."""
 
-    PK: str = Field(..., alias="PK", pattern=rf"^{ItemKeys.USER}#")
-    SK: str = Field(..., alias="SK", pattern=rf"^{ItemKeys.PLANT}#")
+    PK: str = Field(..., alias="PK", pattern=USER_KEY_PATTERN)
+    SK: str = Field(..., alias="SK", pattern=PLANT_KEY_PATTERN)
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
 
@@ -127,8 +133,8 @@ class ImageBase(BaseModel):
 
 
 class ImageItem(ImageBase):
-    PK: str = Field(..., pattern=rf"^{ItemKeys.PLANT}#")
-    SK: str = Field(..., pattern=rf"^{ItemKeys.IMAGE}#")
+    PK: str = Field(..., pattern=PLANT_KEY_PATTERN)
+    SK: str = Field(..., pattern=IMAGE_KEY_PATTERN)
     entity_type: str = Field(EntityType.IMAGE)
 
 
@@ -136,12 +142,10 @@ class ImageItem(ImageBase):
 class PlantSourceItem(BaseModel):
     PK: str = Field(
         ...,
-        pattern=f"^{ItemKeys.PLANT}#",
+        pattern=PLANT_KEY_PATTERN,
         description="Child's plant key in the link.",
     )
-    SK: str = Field(
-        ..., pattern=f"^{ItemKeys.SOURCE}#", description="Either the parent plant, or someone/something else"
-    )
+    SK: str = Field(..., pattern=SOURCE_KEY_PATTERN, description="Either the parent plant, or someone/something else")
     entity_type: str = Field(EntityType.LINEAGE)
     source_type: SourceType
     source_date: date
