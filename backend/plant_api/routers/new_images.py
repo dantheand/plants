@@ -2,6 +2,7 @@ import io
 import logging
 from uuid import UUID, uuid4
 
+from boto3.dynamodb.conditions import Key
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
@@ -21,11 +22,6 @@ router = APIRouter(
 MAX_X_PIXELS = 200
 
 
-@router.get("/{plant_id}")
-async def get_images_for_plant(plant_id: UUID, user=Depends(get_current_user)):
-    ...
-
-
 def make_s3_path_for_image(image_id: UUID, plant_id: UUID, image_suffix: str) -> str:
     return f"{NEW_PLANT_IMAGES_FOLDER}/{plant_id}/{image_id}_{image_suffix}.jpg"
 
@@ -39,6 +35,27 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
     s3_path = make_s3_path_for_image(image_id, plant_id, image_suffix)
     s3_client.upload_fileobj(buf, S3_BUCKET_NAME, s3_path)
     return s3_path
+
+
+@router.get("/{plant_id}", response_model=list[ImageItem])
+async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user)):
+    table = get_db_table()
+    response = table.query(
+        KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
+    )
+    # Catch the case where there are no images for this plant
+    if "Items" not in response or response["Count"] == 0:
+        raise HTTPException(status_code=404, detail="Could not find images for plant.")
+    return response["Items"]
+
+
+@router.get("/{plant_id}/{image_id}", response_model=ImageItem)
+async def get_image_for_plant(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
+    table = get_db_table()
+    response = table.get_item(Key={"PK": f"PLANT#{plant_id}", "SK": f"IMAGE#{image_id}"})
+    if "Item" not in response:
+        raise HTTPException(status_code=404, detail="Could not find image for plant.")
+    return response["Item"]
 
 
 @router.post("/{plant_id}", response_model=ImageItem)

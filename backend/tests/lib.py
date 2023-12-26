@@ -100,7 +100,7 @@ DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=Fal
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 
-def create_fake_plant_record(
+def plant_record_factory(
     human_name: Optional[str] = None,
     human_id: Optional[int] = None,
     species: Optional[str] = None,
@@ -127,7 +127,7 @@ def create_fake_plant_record(
     )
 
 
-def create_fake_image_record(
+def image_record_factory(
     plant_id: Optional[uuid.UUID] = None,
     image_id: Optional[uuid.UUID] = None,
     full_photo_s3_url: Optional[str] = None,
