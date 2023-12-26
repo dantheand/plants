@@ -123,3 +123,22 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user)):
 
     table.delete_item(Key=make_image_query(image_plant_id, image_id))
     return {"message": "Image deleted successfully"}
+
+
+@router.patch("/{image_id}", response_model=ImageItem)
+async def update_image(image_id: UUID, new_data: ImageItem, user=Depends(get_current_user)):
+    table = get_db_table()
+    stored_item = query_by_image_id(table, image_id)
+
+    # Check to make sure attached plant exists and belongs to user
+    plant_response = query_by_plant_id(table, UUID(stored_item.PK.split("#")[1]))
+    if not plant_response:
+        raise HTTPException(status_code=404, detail="Associated plant not found for image.")
+    if plant_response.PK != f"USER#{user.google_id}":
+        raise HTTPException(status_code=403, detail="User does not own plant.")
+
+    update_data = new_data.model_dump(exclude_unset=True)
+    updated_item = stored_item.model_copy(update=update_data)
+
+    table.put_item(Item=updated_item.model_dump())
+    return updated_item

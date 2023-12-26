@@ -210,8 +210,27 @@ class TestImageUpdate:
         mock_db.insert_mock_data(plant)
         mock_db.insert_mock_data(image)
 
-    def test_update_image_fails_if_not_owner(self):
-        ...
+        updated_image = ImageItem(**image.model_dump())
+        updated_image.timestamp = "2005-06-18T00:59:59.408150"
+
+        response = client(DEFAULT_TEST_USER).patch(f"/new_images/{image_id}", json=updated_image.model_dump())
+        parsed_response = ImageItem(**response.json())
+        assert response.status_code == status.HTTP_200_OK
+        assert parsed_response.timestamp == updated_image.timestamp
+
+    def test_update_image_fails_if_not_plant_owner(self, mock_db, client):
+        user_id = DEFAULT_TEST_USER.google_id
+        image_id = uuid.uuid4()
+        plant = plant_record_factory(user_id=user_id)
+        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
+        mock_db.insert_mock_data(plant)
+        mock_db.insert_mock_data(image)
+
+        updated_image = ImageItem(**image.model_dump())
+        updated_image.timestamp = "2005-06-18T00:59:59.408150"
+
+        response = client(OTHER_TEST_USER).patch(f"/new_images/{image_id}", json=updated_image.model_dump())
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 class TestUtils:
