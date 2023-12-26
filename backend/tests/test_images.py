@@ -207,6 +207,18 @@ class TestImageDelete:
         ...
 
 
+class TestImageUpdate:
+    def test_update_image_timestamp(self, mock_db, client):
+        plant = plant_record_factory()
+        image_id = uuid.uuid4()
+        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
+        mock_db.insert_mock_data(plant)
+        mock_db.insert_mock_data(image)
+
+    def test_update_image_fails_if_not_owner(self):
+        ...
+
+
 class TestUtils:
     def test_get_signed_s3_link(self):
         ...

@@ -9,7 +9,7 @@ from starlette import status
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
-from backend.plant_api.utils.db import get_db_table
+from backend.plant_api.utils.db import get_db_table, query_by_plant_id
 from backend.plant_api.utils.s3 import get_s3_client
 from backend.plant_api.utils.schema import EntityType, ImageBase, ImageItem
 from PIL import Image as img
@@ -56,8 +56,10 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return response["Items"]
 
 
+# TODO: cleanup routes: /new_images/plant/<plant_id>
+#   /new_images/image/<image_id>
 @router.get("/{plant_id}/{image_id}", response_model=ImageItem)
-async def get_image_for_plant(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
+async def get_image(plant_id: UUID, image_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
     response = table.get_item(Key={"PK": f"PLANT#{plant_id}", "SK": f"IMAGE#{image_id}"})
     if "Item" not in response:
@@ -115,7 +117,7 @@ async def delete_image_for_plant(plant_id: UUID, image_id: UUID, user=Depends(ge
         raise HTTPException(status_code=404, detail="Could not find image for plant.")
 
     # Check if user owns plant
-    response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(pk))
+    response = query_by_plant_id(table, plant_id)
     items = response.get("Items")
     if not items:
         raise HTTPException(status_code=404, detail="Associated plant not found for image.")
