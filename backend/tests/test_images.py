@@ -4,6 +4,7 @@ import uuid
 
 from PIL import Image
 from pydantic import TypeAdapter
+from starlette import status
 
 from backend.plant_api.constants import S3_BUCKET_NAME
 from backend.plant_api.routers.new_images import MAX_X_PIXELS
@@ -167,25 +168,43 @@ class TestImageUpload:
 class TestImageDelete:
     def test_delete_image(self, mock_db, client):
         plant = plant_record_factory()
-        image = image_record_factory(plant_id=plant.plant_id)
+        image_id = uuid.uuid4()
+        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
         mock_db.insert_mock_data(plant)
         mock_db.insert_mock_data(image)
 
         # Check that the image was saved
-        image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key={"PK": image.PK, "SK": image.SK})["Item"]
+        db_query = {"PK": image.PK, "SK": image.SK}
+        image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key=db_query).get("Item")
         assert image_in_db == image.model_dump()
 
-        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{plant.plant_id}/{image.image_id}")
-        assert response.status_code == 204
+        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{plant.plant_id}/{image_id}")
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
-        # Check that the image was deleted
-        image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key={"PK": image.PK, "SK": image.SK})
+        # Check that the image was deleted by scanning the table
+        image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key=db_query).get("Item")
+        assert image_in_db is None
 
-    def test_delete_image_fails_if_not_owner(self):
-        ...
+    def test_delete_image_fails_if_not_owner(self, mock_db, client):
+        user_id = DEFAULT_TEST_USER.google_id
+        plant = plant_record_factory(user_id=user_id)
+        image_id = uuid.uuid4()
+        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
+        mock_db.insert_mock_data(plant)
+        mock_db.insert_mock_data(image)
+
+        response = client(OTHER_TEST_USER).delete(f"/new_images/{plant.plant_id}/{image_id}")
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_delete_non_existant_image(self, mock_db, client):
+        plant = plant_record_factory()
+        mock_db.insert_mock_data(plant)
+
+        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{plant.plant_id}/{uuid.uuid4()}")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_delete_image_deletes_s3_files(self):
-        pass
+        ...
 
 
 class TestUtils:
