@@ -25,7 +25,7 @@ from backend.tests.lib import (
 def create_test_image(size=(100, 100)):
     # Create a simple image for testing
     file = io.BytesIO()
-    image = Image.new("RGB", size, color="red")
+    image = img.new("RGB", size, color="red")
     image.save(file, "PNG")
     file.name = "test.png"
     file.seek(0)
@@ -151,14 +151,14 @@ class TestImageUpload:
         with tempfile.NamedTemporaryFile() as f:
             fake_s3.download_file(Bucket=S3_BUCKET_NAME, Key=parsed_response.full_photo_s3_url, Filename=f.name)
             with open(f.name, "rb") as image:
-                full_image = Image.open(image)
+                full_image = img.open(image)
                 assert full_image.size == image_size
 
         # Download thumbnail from S3 and check size
         with tempfile.NamedTemporaryFile() as f:
             fake_s3.download_file(Bucket=S3_BUCKET_NAME, Key=parsed_response.thumbnail_photo_s3_url, Filename=f.name)
             with open(f.name, "rb") as image:
-                thumbnail = Image.open(image)
+                thumbnail = img.open(image)
                 assert thumbnail.size == (MAX_X_PIXELS, MAX_X_PIXELS)
 
     def test_upload_image_w_timestamp(self, mock_db, client, fake_s3):
