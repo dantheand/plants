@@ -330,16 +330,14 @@ def upload_images_from_csv():
     with open("../data/photos_sheet.csv", "r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for i, row in enumerate(reader):
-            if i == 1:
-                break
-            # Format the CSV row to DynamoDB item structure
+            # if i == 1:
+            #     break
             item = format_new_image_row(row, all_plants)
 
             if item is None:
                 continue
 
             print(create_new_image(gdrive_service, item).json())
-            ##### Okay... so the basic code works, it appears that the images are being saved sideways though
 
 
 def main():
