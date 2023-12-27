@@ -14,7 +14,7 @@ from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
 from backend.plant_api.utils.s3 import get_s3_client
 from backend.plant_api.utils.schema import EntityType, ImageCreate, ImageItem
-from PIL import Image as img
+from PIL import Image as img, ImageOps
 from PIL.Image import Image
 
 from fastapi import Form
@@ -88,6 +88,7 @@ async def create_image(
 
     # Save Original to S3
     image = img.open(io.BytesIO(image_content))
+    image = _orient_image(image)
     original_s3_path = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.ORIGINAL)
 
     # Create thumbnail and save to S3 (I tried to break this out into a separate function but it didn't work...)
@@ -114,6 +115,10 @@ async def create_image(
     )
     table.put_item(Item=image_item.dynamodb_dump())
     return image_item
+
+
+def _orient_image(image: Image) -> Image:
+    return ImageOps.exif_transpose(image)
 
 
 @router.delete("/{image_id}", status_code=status.HTTP_204_NO_CONTENT)

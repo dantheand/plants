@@ -1,19 +1,19 @@
 import io
 import tempfile
 import uuid
-from datetime import datetime
 
-from PIL import Image
+from PIL import Image as img
 from pydantic import TypeAdapter
 from starlette import status
 
 from backend.plant_api.constants import S3_BUCKET_NAME
-from backend.plant_api.routers.new_images import MAX_X_PIXELS
+from backend.plant_api.routers.new_images import MAX_X_PIXELS, _orient_image
 from backend.plant_api.utils.db import make_image_query_key
-from backend.plant_api.utils.schema import ImageCreate, ImageItem
+from backend.plant_api.utils.schema import ImageItem
 from backend.tests.lib import (
     DEFAULT_TEST_USER,
     OTHER_TEST_USER,
+    TEST_FIXTURE_DIR,
     client,
     image_record_factory,
     plant_record_factory,
@@ -251,5 +251,16 @@ class TestImageUpdate:
 
 
 class TestUtils:
+    def test_set_orientation_from_exif(self):
+        # Open the image, apply EXIF orientation, and save to a temporary file
+        with img.open(TEST_FIXTURE_DIR + "photo_w_portrait_exif.jpeg") as image:
+            reoriented_img = _orient_image(image)
+            with tempfile.NamedTemporaryFile(suffix=".jpeg", mode="w+b", delete=False) as tmp_file:
+                reoriented_img.save(tmp_file)
+
+        with img.open(tmp_file.name) as saved_img:
+            # Add assertions based on the expected orientation
+            assert saved_img.width < saved_img.height  # Example assertion
+
     def test_get_signed_s3_link(self):
         ...

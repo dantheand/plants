@@ -149,3 +149,6 @@ def image_record_factory(
         ),
         timestamp=timestamp or fake.date_time(),
     )
+
+
+TEST_FIXTURE_DIR = "./fixture_data/"
