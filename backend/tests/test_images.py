@@ -161,7 +161,7 @@ class TestImageUpload:
                 thumbnail = Image.open(image)
                 assert thumbnail.size == (MAX_X_PIXELS, MAX_X_PIXELS)
 
-    def test_post_image_w_timestamp(self, mock_db, client, fake_s3):
+    def test_upload_image_w_timestamp(self, mock_db, client, fake_s3):
         plant = plant_record_factory()
         mock_db.insert_mock_data(plant)
         timestamp = "2005-06-18T00:59:59.408150"
