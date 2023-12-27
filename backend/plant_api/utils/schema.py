@@ -108,6 +108,10 @@ class PlantItem(PlantCreate):
         return values
 
 
+class ImageCreate(BaseModel):
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
 class ImageBase(BaseModel):
     full_photo_s3_url: str
     thumbnail_photo_s3_url: str
@@ -136,6 +140,13 @@ class ImageItem(ImageBase):
     PK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     SK: str = Field(..., pattern=IMAGE_KEY_PATTERN)
     entity_type: str = Field(EntityType.IMAGE)
+    image_id: Optional[str] = None
+
+    @model_validator(mode="before")
+    def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Break out the plant_id UUID as a separate field"""
+        values["image_id"] = values["SK"].split("#")[1]
+        return values
 
 
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem

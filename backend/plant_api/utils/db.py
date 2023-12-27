@@ -41,5 +41,5 @@ def query_by_image_id(table, image_id: UUID) -> ImageItem:
     return ImageItem(**response["Items"][0])
 
 
-def make_image_query(plant_id: UUID, image_id: UUID) -> dict:
+def make_image_query_key(plant_id: UUID, image_id: UUID) -> dict:
     return {"PK": f"PLANT#{plant_id}", "SK": f"IMAGE#{image_id}"}

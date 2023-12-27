@@ -198,6 +198,9 @@ def convert_date_str_to_iso(date_str: Optional[str]):
     return iso_date_str
 
 
+######### Uploading plants
+
+
 def format_new_plant_row(row):
     # Convert empty strings to None
     for key in row:
@@ -243,6 +246,29 @@ def upload_plants_from_csv():
             item = format_new_plant_row(row)
 
             print(create_new_plant(item).json())
+
+
+######## Uploading images
+
+
+def format_new_image_row(row):
+    # Convert empty strings to None
+    for key in row:
+        if row[key] == "":
+            row[key] = None
+
+    return PlantCreate(
+        human_id=row["id"],
+        human_name=row["human_name"],
+        location=row["location"],
+        species=row["species"],
+        parent_id=row["parent_id"],
+        source=row["source"],
+        source_date=convert_date_str_to_iso(row["source_date"]),
+        sink=row["sink"],
+        sink_date=convert_date_str_to_iso(row["sink_date"]),
+        notes=row["Notes"],
+    )
 
 
 def main():

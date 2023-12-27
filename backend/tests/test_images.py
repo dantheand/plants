@@ -1,6 +1,7 @@
 import io
 import tempfile
 import uuid
+from datetime import datetime
 
 from PIL import Image
 from pydantic import TypeAdapter
@@ -8,7 +9,8 @@ from starlette import status
 
 from backend.plant_api.constants import S3_BUCKET_NAME
 from backend.plant_api.routers.new_images import MAX_X_PIXELS
-from backend.plant_api.utils.schema import ImageItem
+from backend.plant_api.utils.db import make_image_query_key
+from backend.plant_api.utils.schema import ImageCreate, ImageItem
 from backend.tests.lib import (
     DEFAULT_TEST_USER,
     OTHER_TEST_USER,
@@ -78,14 +80,14 @@ class TestImageRead:
 
 class TestImageUpload:
     def test_upload_image_for_plant(self, client, mock_db, fake_s3):
-        # Create mock plant to upload image to
         plant_id = uuid.uuid4()
         plant = plant_record_factory(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(plant)
 
         test_image = create_test_image()
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/new_images/plants/{plant_id}",
+            files={"image_file": ("filename", test_image, "image/png")},
         )
         assert response.status_code == 200
         parsed_response = ImageItem(**response.json())
@@ -108,7 +110,7 @@ class TestImageUpload:
 
         # Check that the image was saved to the database
         image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(
-            Key={"PK": parsed_response.PK, "SK": parsed_response.SK}
+            Key=make_image_query_key(plant_id=plant_id, image_id=uuid.UUID(parsed_response.image_id))
         )["Item"]
         assert image_in_db == parsed_response.model_dump()
 
@@ -158,6 +160,21 @@ class TestImageUpload:
             with open(f.name, "rb") as image:
                 thumbnail = Image.open(image)
                 assert thumbnail.size == (MAX_X_PIXELS, MAX_X_PIXELS)
+
+    def test_post_image_w_timestamp(self, mock_db, client, fake_s3):
+        plant = plant_record_factory()
+        mock_db.insert_mock_data(plant)
+        timestamp = "2005-06-18T00:59:59.408150"
+
+        test_image = create_test_image()
+        response = client(DEFAULT_TEST_USER).post(
+            f"/new_images/plants/{plant.plant_id}",
+            data={"timestamp": timestamp},
+            files={"image_file": ("filename", test_image, "image/png")},
+        )
+        assert response.status_code == 200
+        parsed_response = ImageItem(**response.json())
+        assert parsed_response.timestamp == timestamp
 
 
 class TestImageDelete:

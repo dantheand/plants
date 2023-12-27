@@ -1,19 +1,23 @@
 import io
 import logging
+from datetime import datetime
 from enum import Enum
+from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
 from boto3.dynamodb.conditions import Key
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from starlette import status
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
-from backend.plant_api.utils.db import get_db_table, make_image_query, query_by_image_id, query_by_plant_id
+from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
 from backend.plant_api.utils.s3 import get_s3_client
-from backend.plant_api.utils.schema import EntityType, ImageItem
+from backend.plant_api.utils.schema import EntityType, ImageCreate, ImageItem
 from PIL import Image as img
 from PIL.Image import Image
+
+from fastapi import Form
 
 router = APIRouter(
     prefix="/new_images",
@@ -66,11 +70,16 @@ async def get_image(image_id: UUID, user=Depends(get_current_user)):
 
 
 @router.post("/plants/{plant_id}", response_model=ImageItem)
-async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_current_user)):
+async def create_image(
+    plant_id: UUID,
+    image_file: Annotated[UploadFile, File()],
+    user=Depends(get_current_user),
+    timestamp: Annotated[Optional[datetime], Form()] = None,
+):
 
     # Check if plant exists
     table = get_db_table()
-    response = table.get_item(Key={"PK": f"USER#{user.google_id}", "SK": f"PLANT#{str(plant_id)}"})
+    response = table.get_item(Key={"PK": f"USER#{user.google_id}", "SK": f"PLANT#{plant_id}"})
     if "Item" not in response:
         raise HTTPException(status_code=404, detail="Coul not find plant to attach image to for user.")
 
@@ -92,12 +101,16 @@ async def create_image(plant_id: UUID, image_file: UploadFile, user=Depends(get_
     thumbnail_s3_path = upload_image_to_s3(thumbnail, image_id, plant_id, ImageSuffixes.THUMB)
 
     # Save reference to DynamoDB
+    if timestamp is None:
+        timestamp = datetime.utcnow()
+
     image_item = ImageItem(
         PK=f"PLANT#{plant_id}",
         SK=f"IMAGE#{image_id}",
         entity_type=EntityType.IMAGE,
         full_photo_s3_url=original_s3_path,
         thumbnail_photo_s3_url=thumbnail_s3_path,
+        timestamp=timestamp,
     )
     table.put_item(Item=image_item.dynamodb_dump())
     return image_item
@@ -121,7 +134,7 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user)):
     if plant_response.PK != f"USER#{user.google_id}":
         raise HTTPException(status_code=403, detail="User does not own plant.")
 
-    table.delete_item(Key=make_image_query(image_plant_id, image_id))
+    table.delete_item(Key=make_image_query_key(image_plant_id, image_id))
     return {"message": "Image deleted successfully"}
 
 
