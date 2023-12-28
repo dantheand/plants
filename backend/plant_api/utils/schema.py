@@ -136,6 +136,7 @@ class ImageBase(BaseModel):
         return data
 
 
+# TODO: remove signed photo URLs from this model since they are not stored in the DB
 class ImageItem(ImageBase):
     PK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     SK: str = Field(..., pattern=IMAGE_KEY_PATTERN)

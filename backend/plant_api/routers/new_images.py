@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 
 from boto3.dynamodb.conditions import Key
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from pydantic import TypeAdapter
 from starlette import status
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
@@ -49,7 +50,7 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
 
 
 @router.get("/plants/{plant_id}", response_model=list[ImageItem])
-async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user)):
+async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user)) -> list[ImageItem]:
     table = get_db_table()
     response = table.query(
         KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
@@ -57,7 +58,12 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     # Catch the case where there are no images for this plant
     if "Items" not in response or response["Count"] == 0:
         raise HTTPException(status_code=404, detail="Could not find images for plant.")
-    return response["Items"]
+
+    parsed_response = TypeAdapter(list[ImageItem]).validate_python(response["Items"])
+    # for image in parsed_response:
+    #     create_presigned_urls_for_image(image)
+
+    return parsed_response
 
 
 # TODO: cleanup routes: /new_images/plant/<plant_id>
