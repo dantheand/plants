@@ -54,7 +54,7 @@ interface PlantFormProps {
 
 export const PlantFormPlaceholder = () => {
   return (
-    <Card>
+    <Card className="mb-3">
       <Card.Header as="h4">Plant Information</Card.Header>
       <Card.Body>
         {[...Array(8)].map((_, idx) => (

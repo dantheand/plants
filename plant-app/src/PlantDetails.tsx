@@ -5,7 +5,7 @@ import "./PlantImagesTimeline.css";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { PlantImages } from "./PlantImages";
+import { PlantImages, PlantImagesPlaceholder } from "./PlantImages";
 import { ApiResponse, Plant } from "./interfaces";
 import { PlantLayout } from "./Layouts";
 import { initialNewPlantState, NewPlant } from "./PlantCreate";
@@ -165,6 +165,7 @@ export function PlantDetails() {
     return (
       <PlantLayout>
         <PlantFormPlaceholder />
+        <PlantImagesPlaceholder />
       </PlantLayout>
     );
   }

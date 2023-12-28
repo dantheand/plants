@@ -8,7 +8,18 @@ import { Card, Image, Modal, Spinner } from "react-bootstrap";
 import { NewPlantImage } from "./interfaces";
 import { SHOW_IMAGES } from "./featureFlags";
 
-// TODO: switch this over to using the plant_id UUID value (need to switch over the API)
+export const PlantImagesPlaceholder = () => {
+  return (
+    <Card className="mb-3">
+      <Card.Header as="h4">Images</Card.Header>
+      <Card.Body>
+        <Spinner />
+        Loading images...
+      </Card.Body>
+    </Card>
+  );
+};
+
 export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
