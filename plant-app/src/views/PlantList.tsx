@@ -1,12 +1,12 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "../constants";
 import { Button, Container, ListGroup, Placeholder } from "react-bootstrap";
 
-import { Plant } from "./interfaces";
+import { Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
 
-import "./styles.css";
+import "../styles/styles.css";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);

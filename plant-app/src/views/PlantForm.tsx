@@ -1,7 +1,6 @@
 // Define props for EditableInput component
-import { NewPlant } from "./PlantCreate";
 import React, { useState } from "react";
-import { Plant } from "./interfaces";
+import { NewPlant, Plant } from "../types/interfaces";
 import { Button, Card, Col, Form, Placeholder, Row } from "react-bootstrap";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 
@@ -52,6 +51,7 @@ interface PlantFormProps {
   isFormNewPlant?: boolean;
 }
 
+// TODO: make the placeholder and form share more components
 export const PlantFormPlaceholder = () => {
   return (
     <Card className="mb-3">

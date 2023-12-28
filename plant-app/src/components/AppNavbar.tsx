@@ -1,11 +1,11 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import plantBrandIcon from "./assets/plant_logo_leaf_only_small.png";
-import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "./constants";
+import plantBrandIcon from "../assets/plant_logo_leaf_only_small.png";
+import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "../constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAlert } from "./AlertComponents"; // Assuming you are using react-router
+import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
 
-import "./styles.css";
+import "../styles/styles.css";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();

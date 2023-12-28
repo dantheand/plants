@@ -1,9 +1,9 @@
 import { Container } from "react-bootstrap";
-import { BackButton } from "./commonComponents";
+import { BackButton } from "./CommonComponents";
 import React, { ReactNode } from "react";
-import { AlertComponent, AlertProvider } from "./AlertComponents";
+import { AlertComponent, AlertProvider } from "../context/Alerts";
 
-import "./styles.css";
+import "../styles/styles.css";
 import { useLocation } from "react-router-dom";
 import { AppNavbar } from "./AppNavbar";
 

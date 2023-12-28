@@ -5,12 +5,12 @@ import {
   BASE_API_URL,
   GOOGLE_CLIENT_ID,
   JWT_TOKEN_STORAGE,
-} from "./constants";
+} from "../constants";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
-import logo from "./assets/plant_logo_big.png";
+import logo from "../assets/plant_logo_big.png";
 
 function generateNonce(length = 32) {
   let result = "";

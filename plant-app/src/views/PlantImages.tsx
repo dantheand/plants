@@ -3,10 +3,10 @@ import {
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
 import React, { useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
-import { NewPlantImage } from "./interfaces";
-import { SHOW_IMAGES } from "./featureFlags";
+import { NewPlantImage } from "../types/interfaces";
+import { SHOW_IMAGES } from "../featureFlags";
 
 export const PlantImagesPlaceholder = () => {
   return (
