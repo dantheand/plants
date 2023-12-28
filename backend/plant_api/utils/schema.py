@@ -36,9 +36,15 @@ class SinkType(str, Enum):
     OTHER = "Other"
 
 
+USER_KEY_PATTERN = f"^{ItemKeys.USER}#"
+PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT}#"
+IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
+SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
+
+
 class UserItem(BaseModel):
-    pk: str = Field(..., alias="PK", pattern=rf"^{ItemKeys.USER}#")
-    sk: str = Field(..., alias="SK", pattern=rf"^{ItemKeys.USER}#")
+    PK: str = Field(..., pattern=USER_KEY_PATTERN)
+    SK: str = Field(..., pattern=USER_KEY_PATTERN)
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
@@ -90,8 +96,8 @@ class PlantUpdate(PlantBase):
 class PlantItem(PlantCreate):
     """The DB model for a plant item."""
 
-    PK: str = Field(..., alias="PK", pattern=rf"^{ItemKeys.USER}#")
-    SK: str = Field(..., alias="SK", pattern=rf"^{ItemKeys.PLANT}#")
+    PK: str = Field(..., pattern=USER_KEY_PATTERN)
+    SK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
 
@@ -100,6 +106,10 @@ class PlantItem(PlantCreate):
         """Break out the plant_id UUID as a separate field"""
         values["plant_id"] = values["SK"].split("#")[1]
         return values
+
+
+class ImageCreate(BaseModel):
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
 class ImageBase(BaseModel):
@@ -126,22 +136,35 @@ class ImageBase(BaseModel):
         return data
 
 
+# TODO: remove signed photo URLs from this model since they are not stored in the DB
 class ImageItem(ImageBase):
-    PK: str = Field(..., pattern=rf"^{ItemKeys.PLANT}#")
-    SK: str = Field(..., pattern=rf"^{ItemKeys.IMAGE}#")
+    PK: str = Field(..., pattern=PLANT_KEY_PATTERN)
+    SK: str = Field(..., pattern=IMAGE_KEY_PATTERN)
     entity_type: str = Field(EntityType.IMAGE)
+    image_id: Optional[str] = None
+    plant_id: Optional[str] = None
+
+    @model_validator(mode="before")
+    def extract_image_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Break out the plant_id UUID as a separate field"""
+        values["image_id"] = values["SK"].split("#")[1]
+        return values
+
+    @model_validator(mode="before")
+    def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Break out the plant_id UUID as a separate field"""
+        values["plant_id"] = values["PK"].split("#")[1]
+        return values
 
 
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem
 class PlantSourceItem(BaseModel):
     PK: str = Field(
         ...,
-        pattern=f"^{ItemKeys.PLANT}#",
+        pattern=PLANT_KEY_PATTERN,
         description="Child's plant key in the link.",
     )
-    SK: str = Field(
-        ..., pattern=f"^{ItemKeys.SOURCE}#", description="Either the parent plant, or someone/something else"
-    )
+    SK: str = Field(..., pattern=SOURCE_KEY_PATTERN, description="Either the parent plant, or someone/something else")
     entity_type: str = Field(EntityType.LINEAGE)
     source_type: SourceType
     source_date: date

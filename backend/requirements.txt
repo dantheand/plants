@@ -18,3 +18,4 @@ types-Pillow
 types-python-jose
 boto3-stubs
 google-auth-stubs
+types-ujson

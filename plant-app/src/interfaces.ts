@@ -1,7 +1,9 @@
-export interface PlantImage {
-  ImageID: string;
-  Timestamp: string;
-  SignedUrl: string;
+export interface NewPlantImage {
+  image_id: string;
+  plant_id: string;
+  signed_full_photo_url: string;
+  signed_thumbnail_photo_url: string;
+  timestamp: string;
 }
 
 export interface Plant {

@@ -6,8 +6,8 @@ from boto3.dynamodb.conditions import Attr, Key
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from backend.plant_api.dependencies import get_current_user
-from backend.plant_api.utils.db import get_db_table
-from backend.plant_api.utils.schema import PlantBase, PlantCreate, PlantItem, PlantUpdate, User
+from backend.plant_api.utils.db import get_db_table, query_by_plant_id
+from backend.plant_api.utils.schema import PlantCreate, PlantItem, PlantUpdate, User
 
 PLANT_ROUTE = "/new_plants"
 
@@ -29,16 +29,10 @@ async def read_all_plants_for_user(user_id=str):
 
 
 @router.get("/{plant_id}", response_model=PlantItem)
-def get_plant_for_user(plant_id: UUID):
-    idx_pk_value = f"PLANT#{plant_id}"
+def get_plant(plant_id: UUID):
     table = get_db_table()
-
-    response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(idx_pk_value))
-    items = response.get("Items", [])
-    if items:
-        return items[0]
-    else:
-        raise HTTPException(status_code=404, detail="Plant not found")
+    response = query_by_plant_id(table, plant_id)
+    return response
 
 
 @router.post("/", response_model=PlantItem, status_code=status.HTTP_201_CREATED)

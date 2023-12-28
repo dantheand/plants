@@ -3,7 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 from backend.plant_api.constants import S3_BUCKET_NAME, PLANT_IMAGES_FOLDER
-from backend.plant_api.utils.schema import Image
+from backend.plant_api.utils.schema import Image, ImageItem
 
 
 def get_s3_client():
@@ -23,6 +23,11 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600
         return None
 
     return response
+
+
+def create_presigned_urls_for_image(image: ImageItem) -> None:
+    image.signed_full_photo_url = create_presigned_url(S3_BUCKET_NAME, image.full_photo_s3_url)
+    image.signed_thumbnail_photo_url = create_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
 
 
 def assign_presigned_url_to_img(img: Image) -> None:

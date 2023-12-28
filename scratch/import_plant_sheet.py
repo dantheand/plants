@@ -1,17 +1,21 @@
 import csv
 import io
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
+from uuid import UUID
 
 import requests
+from boto3.dynamodb.conditions import Key
 from dotenv import load_dotenv
 import os
 import boto3
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
+from pydantic import BaseModel, TypeAdapter
 
 from backend.plant_api.constants import BASE_URL, IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
+from backend.plant_api.utils.db import get_db_table
 from backend.plant_api.utils.schema import PlantCreate, PlantItem
 
 load_dotenv()
@@ -22,6 +26,7 @@ aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 google_client_id = os.getenv("GOOGLE_CLIENT_ID")
 google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
 google_project_id = os.getenv("GOOGLE_PROJECT_ID")
+google_id = os.getenv("GOOGLE_ID")
 
 
 def get_db_connection():
@@ -198,6 +203,9 @@ def convert_date_str_to_iso(date_str: Optional[str]):
     return iso_date_str
 
 
+######### Uploading plants
+
+
 def format_new_plant_row(row):
     # Convert empty strings to None
     for key in row:
@@ -226,12 +234,7 @@ def create_new_plant(plant_item: PlantCreate):
 
     post_url = f"{BASE_URL}/new_plants/"
 
-    # You'll need to get this from the app manually, check your localStorage once you've logged in
-    load_dotenv()
-    jwt_token = os.getenv("TEMP_JWT_TOKEN")
-    headers = {"Authorization": f"Bearer {jwt_token}", "Content-Type": "application/json"}
-
-    return requests.post(post_url, json=plant_item.model_dump(), headers=headers)
+    return requests.post(post_url, json=plant_item.model_dump(), headers=get_jwt_token_header())
 
 
 def upload_plants_from_csv():
@@ -245,8 +248,100 @@ def upload_plants_from_csv():
             print(create_new_plant(item).json())
 
 
+def get_jwt_token_header(set_content_type=True) -> dict[str, Any]:
+    # You'll need to get this from the app manually, check your localStorage once you've logged in
+    load_dotenv()
+    jwt_token = os.getenv("TEMP_JWT_TOKEN")
+    headers = {"Authorization": f"Bearer {jwt_token}"}
+    if set_content_type:
+        headers["Content-Type"] = "application/json"
+    return headers
+
+
+######## Uploading images
+
+
+class ImageCreate(BaseModel):
+    human_id: int
+    plant_id: UUID
+    timestamp: datetime
+    gdrive_url: str
+
+
+def format_new_image_row(row, all_plants: list[PlantItem]) -> Optional[ImageCreate]:
+    # if row is empty return None
+    if row["Timestamp"] == "":
+        return None
+
+    # Convert timestamp to correct format
+    input_format = "%m/%d/%Y %H:%M:%S"
+    parsed_datetime = datetime.strptime(row["Timestamp"], input_format)
+    # output_format = "%Y-%m-%dT%H:%M:%S.%f"
+    # output_datetime_str = parsed_datetime.strftime(output_format)
+
+    # Get plant_id for human_id
+    plant_id = get_plant_id_for_human_id(row["plant_id"], all_plants)
+
+    return ImageCreate(
+        human_id=row["plant_id"],
+        plant_id=plant_id,
+        timestamp=parsed_datetime,
+        gdrive_url=row["Photo:::"].split("id=")[1],
+    )
+
+
+def get_plant_id_for_human_id(human_id: int, all_plants: list[PlantItem]) -> Optional[UUID]:
+    for plant in all_plants:
+        if plant.human_id == int(human_id):
+            return plant.plant_id
+    return None
+
+
+def create_new_image(gdrive_service, image_item: ImageCreate):
+    headers = get_jwt_token_header(set_content_type=False)
+
+    # Get the full image from gdrive
+    image_file = download_file_from_drive(gdrive_service, image_item.gdrive_url)
+
+    post_url = f"{BASE_URL}/new_images/plants/{image_item.plant_id}"
+    return requests.post(
+        post_url,
+        headers=headers,
+        data={
+            "timestamp": image_item.timestamp,
+        },
+        files={"image_file": ("filename", image_file, "image/png")},
+    )
+
+
+def upload_images_from_csv():
+    """Load in image data, format it to proper schema, and use our app to POST to database"""
+
+    gdrive_service = get_gdrive_connection()
+
+    # First get all plants since we need to know the human_id -> plant_id mapping
+    pk_value = f"USER#{google_id}"
+    sk_value = f"PLANT#"
+    table = get_db_table()
+
+    response = table.query(KeyConditionExpression=Key("PK").eq(pk_value) & Key("SK").begins_with(sk_value))
+    all_plants = TypeAdapter(list[PlantItem]).validate_python(response.get("Items", []))
+
+    with open("../data/photos_sheet.csv", "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for i, row in enumerate(reader):
+            # if i == 1:
+            #     break
+            item = format_new_image_row(row, all_plants)
+
+            if item is None:
+                continue
+
+            print(create_new_image(gdrive_service, item).json())
+
+
 def main():
-    upload_plants_from_csv()
+    upload_images_from_csv()
     pass
 
 

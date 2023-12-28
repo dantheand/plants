@@ -184,7 +184,7 @@ export function PlantDetails() {
         isFormEditable={isFormEditable}
         setIsFormEditable={setIsFormEditable}
       />
-      <PlantImages human_id={plant.human_id} />
+      <PlantImages plant_id={plantId} />
     </PlantLayout>
   );
 }

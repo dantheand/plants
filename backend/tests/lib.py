@@ -9,6 +9,7 @@ from moto import mock_dynamodb, mock_s3
 from starlette.testclient import TestClient
 
 from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.routers.new_images import ImageSuffixes, make_s3_path_for_image
 
 # from backend.plant_api.main import app
 from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
@@ -100,7 +101,7 @@ DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=Fal
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 
-def create_fake_plant_record(
+def plant_record_factory(
     human_name: Optional[str] = None,
     human_id: Optional[int] = None,
     species: Optional[str] = None,
@@ -127,18 +128,27 @@ def create_fake_plant_record(
     )
 
 
-def create_fake_image_record(
+def image_record_factory(
     plant_id: Optional[uuid.UUID] = None,
     image_id: Optional[uuid.UUID] = None,
     full_photo_s3_url: Optional[str] = None,
     thumbnail_photo_s3_url: Optional[str] = None,
     timestamp: Optional[datetime] = None,
 ) -> ImageItem:
+    if plant_id is None:
+        plant_id = fake.uuid4()
+    if image_id is None:
+        image_id = fake.uuid4()
     return ImageItem(
-        PK=f"{ItemKeys.PLANT}#{plant_id or fake.uuid4()}",
-        SK=f"{ItemKeys.IMAGE}#{image_id or fake.uuid4()}",
+        PK=f"{ItemKeys.PLANT}#{plant_id}",
+        SK=f"{ItemKeys.IMAGE}#{image_id}",
         entity_type=EntityType.IMAGE,
-        full_photo_s3_url=full_photo_s3_url or fake.url(),
-        thumbnail_photo_s3_url=thumbnail_photo_s3_url or fake.url(),
+        full_photo_s3_url=full_photo_s3_url or make_s3_path_for_image(image_id, plant_id, ImageSuffixes.ORIGINAL),
+        thumbnail_photo_s3_url=(
+            thumbnail_photo_s3_url or make_s3_path_for_image(image_id, plant_id, ImageSuffixes.THUMB)
+        ),
         timestamp=timestamp or fake.date_time(),
     )
+
+
+TEST_FIXTURE_DIR = "./tests/fixture_data/"
