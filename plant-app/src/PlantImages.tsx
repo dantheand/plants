@@ -5,12 +5,12 @@ import {
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
-import { PlantImage } from "./interfaces";
+import { NewPlantImage } from "./interfaces";
 import { SHOW_IMAGES } from "./featureFlags";
 
 // TODO: switch this over to using the plant_id UUID value (need to switch over the API)
-export function PlantImages({ human_id }: { human_id: number }) {
-  const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
+export function PlantImages({ plant_id }: { plant_id: string }) {
+  const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
 
   //TODO: get the modal working again
@@ -25,8 +25,7 @@ export function PlantImages({ human_id }: { human_id: number }) {
 
   useEffect(() => {
     if (SHOW_IMAGES) {
-      // TODO: only fetch if the plant_id has been loaded
-      fetch(`${BASE_API_URL}/images/${human_id}`, {
+      fetch(`${BASE_API_URL}/new_images/plants/${plant_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
         },
@@ -39,7 +38,7 @@ export function PlantImages({ human_id }: { human_id: number }) {
           setImagesIsLoading(false);
         });
     }
-  }, [human_id]);
+  }, [plant_id]);
 
   return (
     <Card className="mb-3">
@@ -68,14 +67,14 @@ export function PlantImages({ human_id }: { human_id: number }) {
 export function PlantImagesTimeline3({
   plant_images,
 }: {
-  plant_images: PlantImage[];
+  plant_images: NewPlantImage[];
 }) {
   return (
     <VerticalTimeline className="verticalTimeline">
       {plant_images.map((plant_image) => (
         <VerticalTimelineElement
-          key={plant_image.Timestamp}
-          date={new Date(plant_image.Timestamp).toLocaleDateString("en-US")}
+          key={plant_image.timestamp}
+          date={new Date(plant_image.timestamp).toLocaleDateString("en-US")}
           className="verticalTimelineElement"
           contentStyle={{ background: "none", boxShadow: "none" }} // Override default styles
           contentArrowStyle={{ borderRight: "none" }} // Override default styles
@@ -84,8 +83,8 @@ export function PlantImagesTimeline3({
         >
           <div className="timelineElementContent">
             <img
-              src={plant_image.SignedUrl}
-              alt={`Plant taken on ${plant_image.Timestamp}`}
+              src={plant_image.signed_thumbnail_photo_url}
+              alt={`Plant taken on ${plant_image.timestamp}`}
               className="img-fluid timelineImage"
             />
           </div>
