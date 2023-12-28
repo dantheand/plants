@@ -261,6 +261,3 @@ class TestUtils:
         with img.open(tmp_file.name) as saved_img:
             # Add assertions based on the expected orientation
             assert saved_img.width < saved_img.height  # Example assertion
-
-    def test_get_signed_s3_link(self):
-        ...

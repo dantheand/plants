@@ -13,7 +13,7 @@ from starlette import status
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
-from backend.plant_api.utils.s3 import get_s3_client
+from backend.plant_api.utils.s3 import create_presigned_urls_for_image, get_s3_client
 from backend.plant_api.utils.schema import EntityType, ImageCreate, ImageItem
 from PIL import Image as img, ImageOps
 from PIL.Image import Image
@@ -60,8 +60,8 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
         raise HTTPException(status_code=404, detail="Could not find images for plant.")
 
     parsed_response = TypeAdapter(list[ImageItem]).validate_python(response["Items"])
-    # for image in parsed_response:
-    #     create_presigned_urls_for_image(image)
+    for image in parsed_response:
+        create_presigned_urls_for_image(image)
 
     return parsed_response
 
