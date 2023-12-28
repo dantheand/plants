@@ -69,6 +69,11 @@ export function PlantImagesTimeline3({
 }: {
   plant_images: NewPlantImage[];
 }) {
+  // Reorder plants in reverse chronological order
+  plant_images.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  );
+
   return (
     <VerticalTimeline className="verticalTimeline">
       {plant_images.map((plant_image) => (
