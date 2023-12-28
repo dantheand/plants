@@ -27,6 +27,7 @@ aws lambda create-function \
 
 # Install AWS compatible dependencies into a local directory to be packaged with the FastAPI backend
 cd ~/projects/plants/backend
+rm -rf ../backend_deps
 pip install \
 --platform manylinux2014_x86_64 \
 --target=../backend_deps \
@@ -38,6 +39,7 @@ pip install \
 
 # Package FastAPI backend and dependencies into a single zip file so it can be deployed to lambda
 cd ~/projects/plants/backend_deps
+rm -rf ../api_lambda.zip
 zip -r ~/projects/plants/api_lambda.zip .
 cd ~/projects/plants/
 zip -g ./api_lambda.zip -r backend

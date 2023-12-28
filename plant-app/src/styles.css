@@ -32,3 +32,9 @@
   align-items: center;
   justify-content: center;
 }
+
+.nav-link-disabled {
+  color: grey !important; /* Make the text grey */
+  pointer-events: none;   /* Disable click events */
+  cursor: default;        /* Set cursor to default instead of pointer */
+}

@@ -2,7 +2,7 @@
 import { NewPlant } from "./PlantCreate";
 import React, { useState } from "react";
 import { Plant } from "./interfaces";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Placeholder, Row } from "react-bootstrap";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 
 interface EditableInputProps {
@@ -51,6 +51,21 @@ interface PlantFormProps {
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
   isFormNewPlant?: boolean;
 }
+
+export const PlantFormPlaceholder = () => {
+  return (
+    <Card>
+      <Card.Header as="h4">Plant Information</Card.Header>
+      <Card.Body>
+        {[...Array(8)].map((_, idx) => (
+          <Placeholder key={idx} as="p" animation="glow">
+            <Placeholder xs={12} />
+          </Placeholder>
+        ))}
+      </Card.Body>
+    </Card>
+  );
+};
 
 export const PlantForm = ({
   plant,

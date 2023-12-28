@@ -5,6 +5,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "./AlertComponents"; // Assuming you are using react-router
 
+import "./styles.css";
+
 export const AppNavbar = () => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
@@ -29,12 +31,15 @@ export const AppNavbar = () => {
         </Navbar.Brand>
 
         <Nav className="me-auto">
-          <Nav.Link href="/users">Users</Nav.Link>
           <Nav.Link href="/plants">My Plants</Nav.Link>
-          <Nav.Link href="/lineages">Lineages</Nav.Link>
+          <Nav.Link href="/users" className="nav-link-disabled">
+            Users
+          </Nav.Link>
+          <Nav.Link href="/lineages" className="nav-link-disabled">
+            Lineages
+          </Nav.Link>
         </Nav>
 
-        {/* Separate Nav for Logout link to align it to the right */}
         <Nav>
           <Nav.Link className="btn btn-outline-primary" onClick={handleLogout}>
             Logout

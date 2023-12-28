@@ -12,7 +12,7 @@ import { initialNewPlantState, NewPlant } from "./PlantCreate";
 import { DeleteButtonWConfirmation } from "./commonComponents";
 import { useAlert } from "./AlertComponents";
 import "./styles.css";
-import { PlantForm } from "./PlantForm";
+import { PlantForm, PlantFormPlaceholder } from "./PlantForm";
 
 const updatePlant = async (
   plantData: NewPlant,
@@ -162,7 +162,11 @@ export function PlantDetails() {
   };
 
   if (plantIsLoading || !plantInForm) {
-    return <p>Loading plant...</p>;
+    return (
+      <PlantLayout>
+        <PlantFormPlaceholder />
+      </PlantLayout>
+    );
   }
 
   if (!plant || error) {
