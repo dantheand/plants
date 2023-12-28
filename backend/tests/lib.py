@@ -151,4 +151,4 @@ def image_record_factory(
     )
 
 
-TEST_FIXTURE_DIR = "./fixture_data/"
+TEST_FIXTURE_DIR = "./tests/fixture_data/"
