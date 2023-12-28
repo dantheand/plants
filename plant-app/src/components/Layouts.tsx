@@ -11,7 +11,9 @@ export const GlobalLayout = ({ children }: { children: ReactNode }) => {
   // Exclude the navbar from the login page
   const location = useLocation();
   const isLoginPage =
-    location.pathname === "/login" || location.pathname === "/logout";
+    location.pathname === "/login" ||
+    location.pathname === "/" ||
+    location.pathname === "/logout";
 
   return (
     <AlertProvider>
