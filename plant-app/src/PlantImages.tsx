@@ -9,7 +9,7 @@ import { NewPlantImage } from "./interfaces";
 import { SHOW_IMAGES } from "./featureFlags";
 
 // TODO: switch this over to using the plant_id UUID value (need to switch over the API)
-export function PlantImages({ plant_id }: { plant_id: string }) {
+export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
 
