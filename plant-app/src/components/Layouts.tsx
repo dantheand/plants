@@ -6,8 +6,7 @@ import { AlertComponent, AlertProvider } from "../context/Alerts";
 import "../styles/styles.css";
 import { useLocation } from "react-router-dom";
 import { AppNavbar } from "./AppNavbar";
-import { FaPlus } from "react-icons/fa";
-import { FaCamera } from "react-icons/fa6";
+import { FaCamera } from "react-icons/fa";
 
 export const GlobalLayout = ({ children }: { children: ReactNode }) => {
   // Exclude the navbar from the login page
@@ -31,7 +30,7 @@ export const PlantLayout = ({ children }: { children: ReactNode }) => {
     <Container className="my-4">
       <BackButton /> {children}
       <FloatingActionButton
-        icon={<FaCamera />}
+        icon={<FaCamera size="lg" />}
         handleOnClick={() => console.log("Clicked!")}
       />
     </Container>

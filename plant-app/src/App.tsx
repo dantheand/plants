@@ -14,6 +14,7 @@ import { PlantCreate } from "./views/PlantCreate";
 import { GlobalLayout } from "./components/Layouts";
 
 import "./styles/styles.css";
+import { PlantImageUpload } from "./views/PlantImageUpload";
 
 // TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
 //
@@ -78,6 +79,7 @@ function App() {
             <Route path="/plants" element={<PlantList />} />
             <Route path="/plants/:plantId" element={<PlantDetails />} />
             <Route path="/plants/create" element={<PlantCreate />} />
+            <Route path="/plants/image" element={<PlantImageUpload />} />
           </Route>
         </Routes>
       </GlobalLayout>
