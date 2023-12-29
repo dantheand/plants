@@ -23,6 +23,7 @@ export const PlantImagesPlaceholder = () => {
 export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
+  const [hasImages, setHasImages] = useState<boolean>(false);
 
   //TODO: get the modal working again
   // Modal Stuff
@@ -41,9 +42,19 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 404) {
+              return [];
+            }
+            throw new Error(`Error: ${response.status}`);
+          }
+          return response.json();
+        })
+        // TODO: add error handling for no images
         .then((data) => {
           setPlantImages(data);
+          setHasImages(data.length > 0);
         })
         .then(() => {
           setImagesIsLoading(false);
@@ -60,8 +71,12 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
             <Spinner />
             Loading images...
           </div>
-        ) : (
+        ) : hasImages ? (
           <PlantImagesTimeline3 plant_images={plantImages} />
+        ) : (
+          <div className="text-center">
+            <p></p>
+          </div>
         )}
       </Card.Body>
 
