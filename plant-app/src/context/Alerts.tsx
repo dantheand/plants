@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import { Alert } from "react-bootstrap";
-import "./styles.css";
+import "../styles/styles.css";
 
 interface Alert {
   show: boolean;

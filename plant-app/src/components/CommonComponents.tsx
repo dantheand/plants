@@ -86,3 +86,23 @@ export const DeleteButtonWConfirmation = ({
     </div>
   );
 };
+
+interface FloatingActionButtonProps {
+  icon: React.ReactNode;
+  handleOnClick: () => void;
+}
+
+export const FloatingActionButton = ({
+  icon,
+  handleOnClick,
+}: FloatingActionButtonProps) => {
+  return (
+    <Button
+      variant="primary"
+      className="floating-action-button"
+      onClick={handleOnClick}
+    >
+      {icon}
+    </Button>
+  );
+};

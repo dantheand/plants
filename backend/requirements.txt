@@ -10,12 +10,12 @@ authlib
 google-auth-oauthlib
 Pillow
 # for testing
-moto
-faker
-mypy
+#moto
+#faker
+#mypy
 # type stubs
-types-Pillow
-types-python-jose
-boto3-stubs
-google-auth-stubs
-types-ujson
+#types-Pillow
+#types-python-jose
+#boto3-stubs
+#google-auth-stubs
+#types-ujson

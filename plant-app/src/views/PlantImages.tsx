@@ -3,15 +3,30 @@ import {
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
 import React, { useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
-import { NewPlantImage } from "./interfaces";
-import { SHOW_IMAGES } from "./featureFlags";
+import { NewPlantImage } from "../types/interfaces";
+import { SHOW_IMAGES } from "../featureFlags";
+import "../styles/styles.css";
+import { FaCamera } from "react-icons/fa";
+import ImageUpload from "../components/ImageUpload";
 
-// TODO: switch this over to using the plant_id UUID value (need to switch over the API)
+export const PlantImagesLoadingPlaceholder = () => {
+  return (
+    <Card className="mb-3">
+      <Card.Header as="h4">Images</Card.Header>
+      <Card.Body>
+        <Spinner />
+        Loading images...
+      </Card.Body>
+    </Card>
+  );
+};
+
 export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
+  const [hasImages, setHasImages] = useState<boolean>(false);
 
   //TODO: get the modal working again
   // Modal Stuff
@@ -30,13 +45,25 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
         },
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 404) {
+              return [];
+            }
+            throw new Error(`Error: ${response.status}`);
+          }
+          return response.json();
+        })
         .then((data) => {
           setPlantImages(data);
+          setHasImages(data.length > 0);
         })
         .then(() => {
           setImagesIsLoading(false);
         });
+    } else {
+      setImagesIsLoading(false);
+      setHasImages(false);
     }
   }, [plant_id]);
 
@@ -49,8 +76,20 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
             <Spinner />
             Loading images...
           </div>
-        ) : (
+        ) : hasImages ? (
           <PlantImagesTimeline3 plant_images={plantImages} />
+        ) : (
+          <div className="text-center no-images-message">
+            <FaCamera className="no-images-icon" />
+            <p>Have a picture of this plant? Upload it!</p>
+            {plant_id ? (
+              <ImageUpload plant_id={plant_id} />
+            ) : (
+              <p>
+                <em>Save this plant first to upload images.</em>
+              </p>
+            )}
+          </div>
         )}
       </Card.Body>
 

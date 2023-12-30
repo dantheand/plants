@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
-import "./PlantImagesTimeline.css";
+import "../styles/plantImagesTimeline.css";
 
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { PlantImages } from "./PlantImages";
-import { ApiResponse, Plant } from "./interfaces";
-import { PlantLayout } from "./Layouts";
-import { initialNewPlantState, NewPlant } from "./PlantCreate";
-import { DeleteButtonWConfirmation } from "./commonComponents";
-import { useAlert } from "./AlertComponents";
-import "./styles.css";
-import { PlantForm } from "./PlantForm";
+import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
+import { PlantLayout } from "../components/Layouts";
+import { DeleteButtonWConfirmation } from "../components/CommonComponents";
+import { useAlert } from "../context/Alerts";
+import "../styles/styles.css";
+import { PlantForm, PlantFormPlaceholder } from "./PlantForm";
+import { PlantImages, PlantImagesLoadingPlaceholder } from "./PlantImages";
+import { initialNewPlantState } from "./PlantCreate";
 
 const updatePlant = async (
   plantData: NewPlant,
@@ -162,7 +162,12 @@ export function PlantDetails() {
   };
 
   if (plantIsLoading || !plantInForm) {
-    return <p>Loading plant...</p>;
+    return (
+      <PlantLayout>
+        <PlantFormPlaceholder />
+        <PlantImagesLoadingPlaceholder />
+      </PlantLayout>
+    );
   }
 
   if (!plant || error) {

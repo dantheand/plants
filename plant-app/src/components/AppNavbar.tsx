@@ -1,9 +1,11 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import plantBrandIcon from "./assets/plant_logo_leaf_only_small.png";
-import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "./constants";
+import plantBrandIcon from "../assets/plant_logo_leaf_only_small.png";
+import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "../constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAlert } from "./AlertComponents"; // Assuming you are using react-router
+import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
+
+import "../styles/styles.css";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();
@@ -29,12 +31,15 @@ export const AppNavbar = () => {
         </Navbar.Brand>
 
         <Nav className="me-auto">
-          <Nav.Link href="/users">Users</Nav.Link>
           <Nav.Link href="/plants">My Plants</Nav.Link>
-          <Nav.Link href="/lineages">Lineages</Nav.Link>
+          <Nav.Link href="/users" className="nav-link-disabled">
+            Users
+          </Nav.Link>
+          <Nav.Link href="/lineages" className="nav-link-disabled">
+            Lineages
+          </Nav.Link>
         </Nav>
 
-        {/* Separate Nav for Logout link to align it to the right */}
         <Nav>
           <Nav.Link className="btn btn-outline-primary" onClick={handleLogout}>
             Logout

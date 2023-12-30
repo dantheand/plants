@@ -1,12 +1,13 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "./constants";
-import { Button, Container, ListGroup, Placeholder } from "react-bootstrap";
+import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "../constants";
+import { Container, ListGroup, Placeholder } from "react-bootstrap";
 
-import { Plant } from "./interfaces";
+import { Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
 
-import "./styles.css";
+import "../styles/styles.css";
+import { FloatingActionButton } from "../components/CommonComponents";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
@@ -74,13 +75,10 @@ export function PlantList(): JSX.Element {
   return (
     <Container className="p-5 mb-4 bg-light rounded-3">
       <h2>All Plants</h2>
-      <Button
-        variant="primary"
-        className="floating-action-button"
-        onClick={navigateToCreatePlant}
-      >
-        <FaPlus />
-      </Button>
+      <FloatingActionButton
+        icon={<FaPlus />}
+        handleOnClick={navigateToCreatePlant}
+      />
       <ListGroup>
         {renderListItems({ isLoading, plants, handlePlantClick, navigate })}
       </ListGroup>

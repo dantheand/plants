@@ -21,6 +21,8 @@ export interface Plant {
   notes: string | undefined;
 }
 
+export type NewPlant = Partial<Plant>;
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T | null;
