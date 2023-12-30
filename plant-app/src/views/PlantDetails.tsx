@@ -11,7 +11,7 @@ import { DeleteButtonWConfirmation } from "../components/CommonComponents";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.css";
 import { PlantForm, PlantFormPlaceholder } from "./PlantForm";
-import { PlantImages, PlantImagesPlaceholder } from "./PlantImages";
+import { PlantImages, PlantImagesLoadingPlaceholder } from "./PlantImages";
 import { initialNewPlantState } from "./PlantCreate";
 
 const updatePlant = async (
@@ -165,7 +165,7 @@ export function PlantDetails() {
     return (
       <PlantLayout>
         <PlantFormPlaceholder />
-        <PlantImagesPlaceholder />
+        <PlantImagesLoadingPlaceholder />
       </PlantLayout>
     );
   }

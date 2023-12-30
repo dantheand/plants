@@ -38,3 +38,19 @@
   pointer-events: none;   /* Disable click events */
   cursor: default;        /* Set cursor to default instead of pointer */
 }
+
+.no-images-icon {
+  font-size: 10rem; /* Adjusts the size of the icon */
+  color: #6c757d; /* A subtle, neutral color; you can adjust this based on your theme */
+  margin-bottom: 1rem; /* Adds space between the icon and the text */
+}
+
+.no-images-text {
+  color: #495057; /* Slightly darker color for text for readability */
+  margin-bottom: 0.5rem; /* Adds a little space below each text line */
+}
+
+.no-images-message {
+  padding: 2rem 0; /* Adds padding around the whole message for better spacing */
+  text-align: center; /* Centers the message and icon */
+}

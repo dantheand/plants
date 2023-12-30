@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { Button, Form, Image } from "react-bootstrap";
 
 const ImageUpload = ({ plant_id }: { plant_id: string }) => {
-  // This is used to store the image previes as a "data URL" (string)
+  // This is used to store the image preview as a "data URL" (string)
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,20 +25,27 @@ const ImageUpload = ({ plant_id }: { plant_id: string }) => {
 
   return (
     <div>
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileChange}
-      />
+      <Form.Group controlId="formFile" className="mb-3">
+        <Form.Control
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleFileChange}
+        />
+      </Form.Group>
       {imagePreview && (
         <div>
-          <img
+          <Image
             src={imagePreview}
-            alt="Preview"
+            alt="Image preview"
+            fluid
             style={{ maxWidth: "100%", maxHeight: "300px" }}
           />
-          <button onClick={handleUpload}>Upload Image</button>
+          <br />
+          <br />
+          <Button variant="primary" onClick={handleUpload}>
+            Upload Image
+          </Button>
         </div>
       )}
     </div>

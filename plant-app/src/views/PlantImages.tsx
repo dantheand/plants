@@ -7,8 +7,11 @@ import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
 import { NewPlantImage } from "../types/interfaces";
 import { SHOW_IMAGES } from "../featureFlags";
+import "../styles/styles.css";
+import { FaCamera } from "react-icons/fa";
+import ImageUpload from "../components/ImageUpload";
 
-export const PlantImagesPlaceholder = () => {
+export const PlantImagesLoadingPlaceholder = () => {
   return (
     <Card className="mb-3">
       <Card.Header as="h4">Images</Card.Header>
@@ -51,7 +54,6 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           }
           return response.json();
         })
-        // TODO: add error handling for no images
         .then((data) => {
           setPlantImages(data);
           setHasImages(data.length > 0);
@@ -59,6 +61,9 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
         .then(() => {
           setImagesIsLoading(false);
         });
+    } else {
+      setImagesIsLoading(false);
+      setHasImages(false);
     }
   }, [plant_id]);
 
@@ -74,8 +79,16 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
         ) : hasImages ? (
           <PlantImagesTimeline3 plant_images={plantImages} />
         ) : (
-          <div className="text-center">
-            <p></p>
+          <div className="text-center no-images-message">
+            <FaCamera className="no-images-icon" />
+            <p>Have a picture of this plant? Upload it!</p>
+            {plant_id ? (
+              <ImageUpload plant_id={plant_id} />
+            ) : (
+              <p>
+                <em>Save this plant first to upload images.</em>
+              </p>
+            )}
           </div>
         )}
       </Card.Body>

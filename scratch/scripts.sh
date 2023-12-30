@@ -43,6 +43,7 @@ rm -rf ../api_lambda.zip
 zip -r ~/projects/plants/api_lambda.zip .
 cd ~/projects/plants/
 zip -g ./api_lambda.zip -r backend
+rm -rf ./backend_deps
 
 # Deploy .zip to AWS lambda function
 aws lambda update-function-code \
