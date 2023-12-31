@@ -40,7 +40,7 @@
 }
 
 .no-images-icon {
-  font-size: 10rem; /* Adjusts the size of the icon */
+  font-size: 5rem; /* Adjusts the size of the icon */
   color: #6c757d; /* A subtle, neutral color; you can adjust this based on your theme */
   margin-bottom: 1rem; /* Adds space between the icon and the text */
 }

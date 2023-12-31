@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, Form, Image } from "react-bootstrap";
+import { useAlert } from "../context/Alerts";
 
 const ImageUpload = ({ plant_id }: { plant_id: string }) => {
   // This is used to store the image preview as a "data URL" (string)
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { showAlert } = useAlert();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -18,15 +21,23 @@ const ImageUpload = ({ plant_id }: { plant_id: string }) => {
     }
   };
 
+  const resetFileInput = () => {
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleUpload = () => {
     // You would need to implement this function to handle the actual file upload to your server
-    console.log("Handle the image upload here");
+    showAlert(`Image upload trigger for ${plant_id}`, "warning");
   };
 
   return (
     <div>
       <Form.Group controlId="formFile" className="mb-3">
         <Form.Control
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           capture="environment"
@@ -39,10 +50,14 @@ const ImageUpload = ({ plant_id }: { plant_id: string }) => {
             src={imagePreview}
             alt="Image preview"
             fluid
-            style={{ maxWidth: "100%", maxHeight: "300px" }}
+            style={{ maxWidth: "100%", maxHeight: "450px" }}
           />
           <br />
           <br />
+          <Button variant="secondary" onClick={resetFileInput}>
+            Cancel
+          </Button>
+          {"  "}
           <Button variant="primary" onClick={handleUpload}>
             Upload Image
           </Button>

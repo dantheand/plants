@@ -26,7 +26,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-MAX_X_PIXELS = 400
+MAX_X_PIXELS = 500
 
 
 class ImageSuffixes(str, Enum):

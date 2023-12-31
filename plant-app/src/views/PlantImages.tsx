@@ -8,8 +8,9 @@ import { Card, Image, Modal, Spinner } from "react-bootstrap";
 import { NewPlantImage } from "../types/interfaces";
 import { SHOW_IMAGES } from "../featureFlags";
 import "../styles/styles.css";
-import { FaCamera } from "react-icons/fa";
+import { FaCamera, FaSeedling } from "react-icons/fa";
 import ImageUpload from "../components/ImageUpload";
+import { FloatingActionButton } from "../components/CommonComponents";
 
 export const PlantImagesLoadingPlaceholder = () => {
   return (
@@ -27,6 +28,14 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  const handleShowUploadModal = () => {
+    if (plant_id) {
+      setShowUploadModal(true);
+    }
+  };
+  const handleCloseUploadModal = () => setShowUploadModal(false);
 
   //TODO: get the modal working again
   // Modal Stuff
@@ -80,15 +89,8 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           <PlantImagesTimeline3 plant_images={plantImages} />
         ) : (
           <div className="text-center no-images-message">
-            <FaCamera className="no-images-icon" />
+            <FaSeedling className="no-images-icon" />
             <p>Have a picture of this plant? Upload it!</p>
-            {plant_id ? (
-              <ImageUpload plant_id={plant_id} />
-            ) : (
-              <p>
-                <em>Save this plant first to upload images.</em>
-              </p>
-            )}
           </div>
         )}
       </Card.Body>
@@ -99,6 +101,20 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           <Image src={selectedImageUrl} alt="Plant" fluid />
         </Modal.Body>
       </Modal>
+      {plant_id && (
+        <Modal show={showUploadModal} onHide={handleCloseUploadModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Upload Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <ImageUpload plant_id={plant_id} />
+          </Modal.Body>
+        </Modal>
+      )}
+      <FloatingActionButton
+        icon={<FaCamera size="lg" />}
+        handleOnClick={handleShowUploadModal}
+      />
     </Card>
   );
 }
