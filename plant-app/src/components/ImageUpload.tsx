@@ -4,6 +4,7 @@ import { useAlert } from "../context/Alerts";
 
 const ImageUpload = ({ plant_id }: { plant_id: string }) => {
   // This is used to store the image preview as a "data URL" (string)
+  const [useCamera, setUseCamera] = useState<boolean>(true);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showAlert } = useAlert();
@@ -21,6 +22,10 @@ const ImageUpload = ({ plant_id }: { plant_id: string }) => {
     }
   };
 
+  const toggleCapture = () => {
+    setUseCamera(!useCamera);
+  };
+
   const resetFileInput = () => {
     setImagePreview(null);
     if (fileInputRef.current) {
@@ -35,15 +40,25 @@ const ImageUpload = ({ plant_id }: { plant_id: string }) => {
 
   return (
     <div>
-      <Form.Group controlId="formFile" className="mb-3">
-        <Form.Control
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onChange={handleFileChange}
-        />
-      </Form.Group>
+      <Form>
+        <Form.Group controlId="formFile" className="m-3">
+          <Form.Control
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture={useCamera ? "environment" : undefined}
+            onChange={handleFileChange}
+          />
+          <Form.Check
+            className="mt-2"
+            type="switch"
+            id="custom-switch"
+            label={"Use Camera"}
+            checked={useCamera}
+            onChange={() => setUseCamera(!useCamera)}
+          />
+        </Form.Group>
+      </Form>
       {imagePreview && (
         <div>
           <Image
