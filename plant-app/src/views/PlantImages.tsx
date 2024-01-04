@@ -107,7 +107,10 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
             <Modal.Title>Upload Image</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <ImageUpload plant_id={plant_id} />
+            <ImageUpload
+              plant_id={plant_id}
+              close_modal={handleCloseUploadModal}
+            />
           </Modal.Body>
         </Modal>
       )}
