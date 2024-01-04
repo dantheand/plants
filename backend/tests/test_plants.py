@@ -64,7 +64,7 @@ class TestPlantCreate:
     def test_create(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
         new_plant = plant_record_factory(human_name="New Plant")
-        response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["human_name"] == "New Plant"
 
@@ -80,7 +80,7 @@ class TestPlantCreate:
         mock_db.insert_mock_data(existing_plant)
 
         new_plant = plant_record_factory(human_id=42)
-        response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_create_with_duplicate_plant_id(self, client, mock_db):
@@ -90,7 +90,7 @@ class TestPlantCreate:
         mock_db.insert_mock_data(existing_plant)
 
         new_plant = plant_record_factory(plant_id=plant_id)
-        _ = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
+        _ = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
 
         # Check that the plants were created with different UUIDs
         db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
@@ -101,7 +101,7 @@ class TestPlantCreate:
         test_client = client(DEFAULT_TEST_USER)
         new_plant = plant_record_factory(human_name="New Plant")
         new_plant.human_id = None
-        response = test_client.post(f"{PLANT_ROUTE}/", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 

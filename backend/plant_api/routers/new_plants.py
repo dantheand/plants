@@ -35,7 +35,7 @@ def get_plant(plant_id: UUID):
     return response
 
 
-@router.post("/", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
+@router.post("/create", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
 async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(get_current_user)]):
     table = get_db_table()
     # Query to check if a plant with the same human_id already exists for this user
