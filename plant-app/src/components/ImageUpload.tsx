@@ -3,15 +3,19 @@ import { Button, Form, Image, Spinner } from "react-bootstrap";
 import { useAlert } from "../context/Alerts";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 
+interface ImageUploadProps {
+  plant_id: string;
+  closeModal: () => void;
+  onUploadSuccess: () => void;
+}
+
 const ImageUpload = ({
   plant_id,
-  close_modal,
-}: {
-  plant_id: string;
-  close_modal: () => void;
-}) => {
-  // This is used to store the image preview as a "data URL" (string)
+  closeModal,
+  onUploadSuccess,
+}: ImageUploadProps) => {
   const [useCamera, setUseCamera] = useState<boolean>(true);
+  // This is used to store the image preview as a "data URL" (string)
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -63,20 +67,25 @@ const ImageUpload = ({
           headers: {
             Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
           },
-          // Include headers for authentication if necessary
         },
       );
 
       if (response.ok) {
         const result = await response.json();
-        close_modal();
-        showAlert(`Image uploaded successfully: ${result.message}`, "success");
+        closeModal();
+        onUploadSuccess();
+        showAlert(
+          `Image uploaded successfully. Image ID: ${result.image_id}`,
+          "success",
+        );
+        // TODO: figure out why this error handling isn't working (can upload a .png and get a 500 error)
       } else {
-        showAlert("Upload failed", "error");
+        console.error(`Upload failed with status: ${response.status}`);
+        showAlert(`Upload failed. HTTP status: ${response.status}`, "error");
       }
     } catch (error) {
-      showAlert("Network error", "error");
       console.error("Upload error:", error);
+      showAlert(`Network error, ${error}`, "error");
     } finally {
       setIsUploading(false);
     }

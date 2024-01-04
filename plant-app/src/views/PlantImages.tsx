@@ -29,6 +29,11 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  // State to trigger re-render
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const onUploadSuccess = () => {
+    setReloadTrigger((current) => current + 1);
+  };
 
   const handleShowUploadModal = () => {
     if (plant_id) {
@@ -37,7 +42,7 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   };
   const handleCloseUploadModal = () => setShowUploadModal(false);
 
-  //TODO: get the modal working again
+  //TODO: get the image modal working again
   // Modal Stuff
   const [showModal, setShowModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
@@ -74,7 +79,7 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
       setImagesIsLoading(false);
       setHasImages(false);
     }
-  }, [plant_id]);
+  }, [plant_id, reloadTrigger]);
 
   return (
     <Card className="mb-3">
@@ -109,7 +114,8 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           <Modal.Body>
             <ImageUpload
               plant_id={plant_id}
-              close_modal={handleCloseUploadModal}
+              closeModal={handleCloseUploadModal}
+              onUploadSuccess={onUploadSuccess}
             />
           </Modal.Body>
         </Modal>
