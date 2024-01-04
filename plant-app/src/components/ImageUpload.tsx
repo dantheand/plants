@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Button, Form, Image, Spinner } from "react-bootstrap";
 import { useAlert } from "../context/Alerts";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import resizeImageWithPica from "../utils/images";
 
 interface ImageUploadProps {
   plant_id: string;
@@ -52,13 +53,14 @@ const ImageUpload = ({
       return;
     }
     const file = fileInputRef.current?.files[0];
-
-    const formData = new FormData();
-    formData.append("image_file", file);
-    // TODO: enable timestamp data input
-    // formData.append('timestamp', new Date().toISOString());
-
     try {
+      const resizedImage = await resizeImageWithPica(file, 1000, 1000);
+
+      const formData = new FormData();
+      formData.append("image_file", resizedImage);
+      // TODO: enable timestamp data input
+      // formData.append('timestamp', new Date().toISOString());
+
       const response = await fetch(
         `${BASE_API_URL}/new_images/plants/${plant_id}`,
         {
