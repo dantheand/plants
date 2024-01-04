@@ -6,7 +6,7 @@ from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
 from boto3.dynamodb.conditions import Key
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import Depends, File, HTTPException, UploadFile
 from pydantic import TypeAdapter
 from starlette import status
 
@@ -20,6 +20,10 @@ from PIL import Image as img, ImageOps
 from PIL.Image import Image
 
 from fastapi import Form
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 router = BaseRouter(
     prefix="/new_images",
@@ -95,7 +99,13 @@ async def create_image(
     image_id = uuid4()
     image_content = await image_file.read()
 
+    logger.info(f"Received file: {image_file.filename}, Content Type: {image_file.content_type}")
+    logger.info(f"File Size: {len(image_content)} bytes")
+    logger.debug(f"File Content (first 100 bytes): {image_content[:100]}")
+    logger.debug(f"File Content (last 100 bytes): {image_content[-100:]}")
+
     # Save Original to S3
+
     image = img.open(io.BytesIO(image_content))
     image = _orient_image(image)
     original_s3_path = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.ORIGINAL)
@@ -106,7 +116,7 @@ async def create_image(
         new_size = (MAX_X_PIXELS, int(image.height * ratio))
         thumbnail = image.resize(new_size, img.Resampling.LANCZOS)
     else:
-        logging.warning(f"Image {image_id} is already smaller than {MAX_X_PIXELS} pixels on the x-axis")
+        logger.warning(f"Image {image_id} is already smaller than {MAX_X_PIXELS} pixels on the x-axis")
         thumbnail = image
     thumbnail_s3_path = upload_image_to_s3(thumbnail, image_id, plant_id, ImageSuffixes.THUMB)
 
