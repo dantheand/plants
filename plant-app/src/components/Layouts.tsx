@@ -29,10 +29,6 @@ export const PlantLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Container className="my-4">
       <BackButton /> {children}
-      <FloatingActionButton
-        icon={<FaCamera size="lg" />}
-        handleOnClick={() => console.log("Clicked!")}
-      />
     </Container>
   );
 };
