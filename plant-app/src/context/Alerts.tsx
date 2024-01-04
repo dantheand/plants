@@ -1,21 +1,22 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import { Alert } from "react-bootstrap";
 import "../styles/styles.css";
+import { Variant } from "react-bootstrap/types";
 
-interface Alert {
+interface AlertProps {
   show: boolean;
   message: string;
-  variant: string;
+  variant: Variant;
 }
 
-const defaultAlert: Alert = {
+const defaultAlert: AlertProps = {
   show: false,
   message: "",
-  variant: "",
+  variant: "info",
 };
 
 interface AlertContextType {
-  alert: Alert;
+  alert: AlertProps;
   showAlert: (message: string, variant: string) => void;
 }
 
@@ -27,7 +28,7 @@ const AlertContext: React.Context<AlertContextType> = createContext({
 export const useAlert = () => useContext(AlertContext);
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
-  const [alert, setAlert] = useState<Alert>(defaultAlert);
+  const [alert, setAlert] = useState<AlertProps>(defaultAlert);
   const showAlert = (message: string, variant: string) => {
     setAlert({ show: true, message, variant });
     setTimeout(() => setAlert({ ...alert, show: false }), 3000); // auto-hide after 3 seconds

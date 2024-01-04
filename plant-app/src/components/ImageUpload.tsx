@@ -83,11 +83,11 @@ const ImageUpload = ({
         // TODO: figure out why this error handling isn't working (can upload a .png and get a 500 error)
       } else {
         console.error(`Upload failed with status: ${response.status}`);
-        showAlert(`Upload failed. HTTP status: ${response.status}`, "error");
+        showAlert(`Upload failed. HTTP status: ${response.status}`, "danger");
       }
     } catch (error) {
       console.error("Upload error:", error);
-      showAlert(`Network error, ${error}`, "error");
+      showAlert(`Network error, ${error}`, "danger");
     } finally {
       setIsUploading(false);
     }
