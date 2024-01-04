@@ -9,13 +9,3 @@ passlib[bcrypt]
 authlib
 google-auth-oauthlib
 Pillow
-# for testing
-moto
-faker
-mypy
-# type stubs
-types-Pillow
-types-python-jose
-boto3-stubs
-google-auth-stubs
-types-ujson

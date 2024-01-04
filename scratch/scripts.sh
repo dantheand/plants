@@ -50,6 +50,7 @@ aws lambda update-function-code \
 --profile plants \
 --zip-file fileb://api_lambda.zip \
 --function-name new-plant-app
+rm ./api_lambda.zip
 
 ####################################################################################################
 ################################## Local Development Environment ###################################

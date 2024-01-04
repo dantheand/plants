@@ -1,0 +1,12 @@
+# for testing
+flake8
+pytest
+moto
+faker
+mypy
+# type stubs for linting
+types-Pillow
+types-python-jose
+boto3-stubs
+google-auth-stubs
+types-ujson

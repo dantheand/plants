@@ -121,7 +121,7 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
         </Modal>
       )}
       <FloatingActionButton
-        icon={<FaCamera size="lg" />}
+        icon={<FaCamera size="2em" />}
         handleOnClick={handleShowUploadModal}
       />
     </Card>
