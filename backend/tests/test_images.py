@@ -7,7 +7,7 @@ from pydantic import TypeAdapter
 from starlette import status
 
 from backend.plant_api.constants import S3_BUCKET_NAME
-from backend.plant_api.routers.new_images import MAX_X_PIXELS, _orient_image
+from backend.plant_api.routers.new_images import MAX_THUMB_X_PIXELS, _orient_image
 from backend.plant_api.utils.db import make_image_query_key
 from backend.plant_api.utils.schema import ImageItem
 from backend.tests.lib import (
@@ -140,7 +140,7 @@ class TestImageUpload:
         plant = plant_record_factory(plant_id=plant_id, user_id=DEFAULT_TEST_USER.google_id)
         mock_db.insert_mock_data(plant)
 
-        image_size = (MAX_X_PIXELS + 10, MAX_X_PIXELS + 10)
+        image_size = (MAX_THUMB_X_PIXELS + 10, MAX_THUMB_X_PIXELS + 10)
         test_image = create_test_image(image_size)
         response = client(DEFAULT_TEST_USER).post(
             f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
@@ -159,7 +159,7 @@ class TestImageUpload:
             fake_s3.download_file(Bucket=S3_BUCKET_NAME, Key=parsed_response.thumbnail_photo_s3_url, Filename=f.name)
             with open(f.name, "rb") as image:
                 thumbnail = img.open(image)
-                assert thumbnail.size == (MAX_X_PIXELS, MAX_X_PIXELS)
+                assert thumbnail.size == (MAX_THUMB_X_PIXELS, MAX_THUMB_X_PIXELS)
 
     def test_upload_image_w_timestamp(self, mock_db, client, fake_s3):
         plant = plant_record_factory()

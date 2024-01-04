@@ -14,6 +14,7 @@ app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_jwt_secret())
 
 
+# TODO: remove localhosts in production environment
 origins = [
     "http://localhost",
     "http://localhost:3000",

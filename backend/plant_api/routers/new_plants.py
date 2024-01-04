@@ -6,12 +6,13 @@ from boto3.dynamodb.conditions import Attr, Key
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.routers.common import BaseRouter
 from backend.plant_api.utils.db import get_db_table, query_by_plant_id
 from backend.plant_api.utils.schema import PlantCreate, PlantItem, PlantUpdate, User
 
 PLANT_ROUTE = "/new_plants"
 
-router = APIRouter(
+router = BaseRouter(
     prefix=PLANT_ROUTE,
     dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
