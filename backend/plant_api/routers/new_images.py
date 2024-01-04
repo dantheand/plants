@@ -12,6 +12,7 @@ from starlette import status
 
 from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.routers.common import BaseRouter
 from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
 from backend.plant_api.utils.s3 import create_presigned_urls_for_image, get_s3_client
 from backend.plant_api.utils.schema import EntityType, ImageItem
@@ -20,7 +21,7 @@ from PIL.Image import Image
 
 from fastapi import Form
 
-router = APIRouter(
+router = BaseRouter(
     prefix="/new_images",
     dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},

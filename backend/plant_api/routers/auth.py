@@ -18,11 +18,12 @@ from backend.plant_api.constants import (
     get_jwt_secret,
 )
 from backend.plant_api.dependencies import get_current_user
+from backend.plant_api.routers.common import BaseRouter
 from backend.plant_api.utils.schema import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-router = APIRouter()
+router = BaseRouter()
 
 
 @router.get("/check_token")
