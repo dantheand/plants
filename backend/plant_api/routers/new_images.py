@@ -14,7 +14,7 @@ from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
 from backend.plant_api.utils.s3 import create_presigned_urls_for_image, get_s3_client
-from backend.plant_api.utils.schema import EntityType, ImageCreate, ImageItem
+from backend.plant_api.utils.schema import EntityType, ImageItem
 from PIL import Image as img, ImageOps
 from PIL.Image import Image
 
@@ -32,6 +32,8 @@ MAX_X_PIXELS = 500
 class ImageSuffixes(str, Enum):
     ORIGINAL = "original"
     THUMB = "thumb"
+
+    # Function to extract datetime from EXIF
 
 
 def make_s3_path_for_image(image_id: UUID, plant_id: UUID, image_suffix: str) -> str:
@@ -107,10 +109,10 @@ async def create_image(
         thumbnail = image
     thumbnail_s3_path = upload_image_to_s3(thumbnail, image_id, plant_id, ImageSuffixes.THUMB)
 
-    # Save reference to DynamoDB
     if timestamp is None:
         timestamp = datetime.utcnow()
 
+    # Save reference to DynamoDB
     image_item = ImageItem(
         PK=f"PLANT#{plant_id}",
         SK=f"IMAGE#{image_id}",
