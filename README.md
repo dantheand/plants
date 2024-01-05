@@ -1,7 +1,8 @@
+![plant_logo_leaf_only_small](https://github.com/dantheand/plants/assets/16441200/a2ef5002-8abb-4f2c-81ba-9bb8575df8bd)
 # Plant App
-![DALL·E 2023-12-19 00 28 16 - A minimalist logo for a plant growth tracking app  The logo should include a stylized depiction of a growing plant, symbolizing growth and progression](https://github.com/dantheand/plants/assets/16441200/000dde1f-9b1d-4d54-b54f-e655b0466c6e)
 
-# Development environment setup
+
+## Development environment setup
 ### Dependencies
 - Python >=3.9
 - node 18?
@@ -10,8 +11,8 @@
 - aws CLI
 - aws credentials set up (use a profile)
 
-# Services used
-## AWS 
+## Services used
+### AWS 
 - AWS Amplify for front-end builds and deployment
 - AWS Lambda function hosts and runs FastAPI through `Mangum` handler
 - API Gateway in "proxy" mode triggers lambda function
@@ -21,26 +22,26 @@
 - IAM for role and permissions management for each of the above services
 - Cloudwatch for logging output from FastAPI lambda
 
-## Google
+### Google
 - Oauth authentication tokens
   
-# Running/Deploying the App
+## Running/Deploying the App
 
-## Local
+### Local
 Start FastAPI backend and react frontend using scripts in `/scratch/scripts.sh`
 
-## Production (on the internet)
+### Production (on the internet)
+On pushes to `master`:
 
-### Frontend
-- AWS Amplify pointed at this GitHub repository does automated builds and deployment everytime `master` branch changes
+#### Frontend
+- AWS Amplify pointed at this GitHub repository does automated builds and deployment
 
-### Backend
-- use scripts in `/scratch/scripts.sh` to package up FastAPI backend and its dependencies into a .zip file
-- then update the lambda function
+#### Backend
+- Github actions package and deploy FastAPI backend to lambda
  
 
-# plant
-## Possible features
+## plant
+## Feature ideas
 - DB-driven plant tracking
   - add/remove plants
   - fixed properties for each plant
@@ -58,6 +59,9 @@ Start FastAPI backend and react frontend using scripts in `/scratch/scripts.sh`
 - interface:
   - sort by plants
   - look at photos
+- viewing users plants:
+  - default view of your own plants
+  - ability to see other user's plants (for now)
 - data access
   - initially just provide easy export to .csv
   - timeline view of plants
