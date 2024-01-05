@@ -1,22 +1,15 @@
-from typing import Optional
-
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
 
 from backend.plant_api.utils.aws import get_aws_secret
 
-PLANTS_TABLE_NAME = "plants"
-IMAGES_TABLE_NAME = "images"
-NEW_PLANTS_TABLE = "new_plants"
+TABLE_NAME = "new_plants"
 
 AWS_REGION = "us-west-2"
 S3_BUCKET_NAME = "0bf665f0db5b-plant-app"
-PLANT_IMAGES_FOLDER = "images"
-NEW_PLANT_IMAGES_FOLDER = "new_images"
+IMAGES_FOLDER = "new_images"
 
-BASE_URL = "http://localhost:8000"
-DEPLOYED_BASE_URL = "https://master.d1g3nlvs6mpirt.amplifyapp.com/prod"
 GOOGLE_CLIENT_ID = "323044269310-jpacaee5fqigd05rolak62uto6mfnmcb.apps.googleusercontent.com"
 TOKEN_URL = "token"
 ALGORITHM = "HS256"

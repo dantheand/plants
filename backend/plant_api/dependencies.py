@@ -9,7 +9,6 @@ from pydantic import ValidationError
 
 from backend.plant_api.constants import (
     ALGORITHM,
-    BASE_URL,
     CREDENTIALS_EXCEPTION,
     GoogleOauthPayload,
     TOKEN_URL,

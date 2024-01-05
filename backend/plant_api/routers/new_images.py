@@ -10,7 +10,7 @@ from fastapi import Depends, File, HTTPException, UploadFile
 from pydantic import TypeAdapter
 from starlette import status
 
-from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
+from backend.plant_api.constants import IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.routers.common import BaseRouter
 from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
@@ -42,7 +42,7 @@ class ImageSuffixes(str, Enum):
 
 
 def make_s3_path_for_image(image_id: UUID, plant_id: UUID, image_suffix: str) -> str:
-    return f"{NEW_PLANT_IMAGES_FOLDER}/{plant_id}/{image_id}_{image_suffix}.jpg"
+    return f"{IMAGES_FOLDER}/{plant_id}/{image_id}_{image_suffix}.jpg"
 
 
 def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffix) -> str:

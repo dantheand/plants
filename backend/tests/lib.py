@@ -14,7 +14,7 @@ from backend.plant_api.routers.new_images import ImageSuffixes, make_s3_path_for
 # from backend.plant_api.main import app
 from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
 
-from backend.plant_api.constants import AWS_REGION, NEW_PLANTS_TABLE, S3_BUCKET_NAME
+from backend.plant_api.constants import AWS_REGION, TABLE_NAME, S3_BUCKET_NAME
 
 
 def get_app():
@@ -25,7 +25,7 @@ def get_app():
 
 class MockDB:
     def __init__(self):
-        self.table_name = NEW_PLANTS_TABLE
+        self.table_name = TABLE_NAME
         self.dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 
     def create_table(self):
