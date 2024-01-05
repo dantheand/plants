@@ -45,6 +45,5 @@ jobs:
           aws lambda update-function-code \
           --region us-west-2 \
           --zip-file fileb://api_lambda.zip \
-          --function-name new-plant-app \
-          --debug
+          --function-name new-plant-app 
 
