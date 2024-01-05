@@ -43,8 +43,7 @@ jobs:
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
           aws lambda update-function-code \
+          --region us-west-2 \
           --zip-file fileb://api_lambda.zip \
-          --function-name new-plant-app \
-          --debug
-
+          --function-name new-plant-app
 
