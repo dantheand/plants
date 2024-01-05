@@ -1,0 +1,49 @@
+# This workflow deploys the FastAPI backend to the lambda function in AWS.
+
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies (to local folder so it can be zipped with source code)
+        working-directory: backend/
+        run: |
+          pip install \
+          --platform manylinux2014_x86_64 \
+          --target=../backend_deps \
+          --implementation cp \
+          --python-version 3.9 \
+          --only-binary=:all: --upgrade \
+          --index https://pypi.org/simple/ \
+          -r requirements.txt
+      - name: Zip dependencies with source code
+        working-directory: ./
+        run: |
+          cd backend_deps
+          zip -r ../api_lambda.zip .
+          cd ..
+          zip -g ./api_lambda.zip -r backend
+      - name: Deploy to AWS Lambda
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        working-directory: ./
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws lambda update-function-code \
+          --zip-file fileb://api_lambda.zip \
+          --function-name new-plant-app
+
+
