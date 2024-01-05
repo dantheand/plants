@@ -86,8 +86,8 @@ const ImageUpload = ({
         showAlert(`Upload failed. HTTP status: ${response.status}`, "danger");
       }
     } catch (error) {
-      console.error("Upload error:", error);
-      showAlert(`Network error, ${error}`, "danger");
+      console.error("Error:", error);
+      showAlert(`Resizer error, ${error}`, "danger");
     } finally {
       setIsUploading(false);
     }
