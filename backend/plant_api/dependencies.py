@@ -2,8 +2,8 @@ import logging
 from typing import Annotated
 
 import jose
-from fastapi import Depends, Security
-from fastapi.security import APIKeyHeader, OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
 
@@ -14,7 +14,7 @@ from backend.plant_api.constants import (
     TOKEN_URL,
     get_jwt_secret,
 )
-from backend.plant_api.utils.schema import User
+from backend.plant_api.schema import User
 
 # TODO: figure out what magic this is doing may be able to replace with OpenIdConnect()
 oauth2_google = OAuth2PasswordBearer(

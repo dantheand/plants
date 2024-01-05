@@ -16,7 +16,7 @@ from pydantic import BaseModel, TypeAdapter
 
 from backend.plant_api.constants import IMAGES_TABLE_NAME, PLANTS_TABLE_NAME, S3_BUCKET_NAME
 from backend.plant_api.utils.db import get_db_table
-from backend.plant_api.utils.schema import PlantCreate, PlantItem
+from backend.plant_api.schema import PlantCreate, PlantItem
 
 BASE_URL = "http://localhost:8000"
 

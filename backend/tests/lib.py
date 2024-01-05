@@ -12,7 +12,7 @@ from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.routers.new_images import ImageSuffixes, make_s3_path_for_image
 
 # from backend.plant_api.main import app
-from backend.plant_api.utils.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
+from backend.plant_api.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
 
 from backend.plant_api.constants import AWS_REGION, TABLE_NAME, S3_BUCKET_NAME
 
