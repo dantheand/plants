@@ -31,7 +31,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alert, setAlert] = useState<AlertProps>(defaultAlert);
   const showAlert = (message: string, variant: string) => {
     setAlert({ show: true, message, variant });
-    setTimeout(() => setAlert({ ...alert, show: false }), 3000); // auto-hide after 3 seconds
+    setTimeout(() => setAlert({ ...alert, show: false }), 10000); // auto-hide after 10 seconds
   };
   return (
     <AlertContext.Provider value={{ alert, showAlert }}>

@@ -29,22 +29,26 @@ export const AppNavbar = () => {
           />{" "}
           {APP_BRAND_NAME}
         </Navbar.Brand>
-
-        <Nav className="me-auto">
-          <Nav.Link href="/plants">My Plants</Nav.Link>
-          <Nav.Link href="/users" className="nav-link-disabled">
-            Users
-          </Nav.Link>
-          <Nav.Link href="/lineages" className="nav-link-disabled">
-            Lineages
-          </Nav.Link>
-        </Nav>
-
-        <Nav>
-          <Nav.Link className="btn btn-outline-primary" onClick={handleLogout}>
-            Logout
-          </Nav.Link>
-        </Nav>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link href="/plants">My Plants</Nav.Link>
+            <Nav.Link href="/users" className="nav-link-disabled">
+              Users
+            </Nav.Link>
+            <Nav.Link href="/lineages" className="nav-link-disabled">
+              Lineages
+            </Nav.Link>
+          </Nav>
+          <Nav>
+            <Nav.Link
+              className="btn btn-outline-primary"
+              onClick={handleLogout}
+            >
+              Logout
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
