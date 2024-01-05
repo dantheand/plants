@@ -38,8 +38,6 @@ class ImageSuffixes(str, Enum):
     ORIGINAL = "original"
     THUMB = "thumb"
 
-    # Function to extract datetime from EXIF
-
 
 def make_s3_path_for_image(image_id: UUID, plant_id: UUID, image_suffix: str) -> str:
     return f"{IMAGES_FOLDER}/{plant_id}/{image_id}_{image_suffix}.jpg"
@@ -99,10 +97,10 @@ async def create_image(
     image_id = uuid4()
     image_content = await image_file.read()
 
-    logger.info(f"Received file: {image_file.filename}, Content Type: {image_file.content_type}")
-    logger.info(f"File Size: {len(image_content)} bytes")
-    logger.debug(f"File Content (first 100 bytes): {image_content[:100]}")
-    logger.debug(f"File Content (last 100 bytes): {image_content[-100:]}")
+    # logger.info(f"Received file: {image_file.filename}, Content Type: {image_file.content_type}")
+    # logger.info(f"File Size: {len(image_content)} bytes")
+    # logger.debug(f"File Content (first 100 bytes): {image_content[:100]}")
+    # logger.debug(f"File Content (last 100 bytes): {image_content[-100:]}")
 
     # Save Original to S3
 
