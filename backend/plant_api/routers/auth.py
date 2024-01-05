@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
 import jose
-from fastapi import APIRouter, Depends
+from fastapi import Depends
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from jose import jwt
@@ -19,7 +19,7 @@ from backend.plant_api.constants import (
 )
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.routers.common import BaseRouter
-from backend.plant_api.utils.schema import User
+from backend.plant_api.schema import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

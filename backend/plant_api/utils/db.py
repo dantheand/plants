@@ -5,7 +5,7 @@ from boto3.dynamodb.conditions import Key
 from fastapi import HTTPException
 
 from backend.plant_api.constants import AWS_REGION, TABLE_NAME
-from backend.plant_api.utils.schema import ImageItem, PlantItem
+from backend.plant_api.schema import ImageItem, PlantItem
 
 
 def get_db_connection():

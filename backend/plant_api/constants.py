@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
 
-from backend.plant_api.utils.aws import get_aws_secret
+from backend.plant_api.utils.secrets import get_aws_secret
 
 TABLE_NAME = "new_plants"
 
@@ -19,6 +19,9 @@ CREDENTIALS_EXCEPTION = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 JWT_KEY_IN_SECRETS_MANAGER = "jwt_signing_key"
+DEPLOYMENT_ENV_VAR = "DEPLOYMENT_ENV"
+LOCAL_DEPLOYMENT_ENV = "local"
+AWS_DEPLOYMENT_ENV = "aws"
 
 
 def get_jwt_secret() -> str:

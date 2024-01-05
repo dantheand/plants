@@ -9,7 +9,7 @@ from starlette import status
 from backend.plant_api.constants import S3_BUCKET_NAME
 from backend.plant_api.routers.new_images import MAX_THUMB_X_PIXELS, _orient_image
 from backend.plant_api.utils.db import make_image_query_key
-from backend.plant_api.utils.schema import ImageItem
+from backend.plant_api.schema import ImageItem
 from backend.tests.lib import (
     DEFAULT_TEST_USER,
     OTHER_TEST_USER,

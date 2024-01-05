@@ -3,12 +3,12 @@ from typing import Annotated
 from uuid import UUID
 
 from boto3.dynamodb.conditions import Attr, Key
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status
 
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.routers.common import BaseRouter
 from backend.plant_api.utils.db import get_db_table, query_by_plant_id
-from backend.plant_api.utils.schema import PlantCreate, PlantItem, PlantUpdate, User
+from backend.plant_api.schema import PlantCreate, PlantItem, PlantUpdate, User
 
 PLANT_ROUTE = "/new_plants"
 

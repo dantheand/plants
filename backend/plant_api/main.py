@@ -5,21 +5,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from starlette.middleware.sessions import SessionMiddleware
 
-from backend.plant_api.constants import get_jwt_secret
+from backend.plant_api.constants import AWS_DEPLOYMENT_ENV, LOCAL_DEPLOYMENT_ENV, get_jwt_secret
 from backend.plant_api.routers import auth, new_plants, new_images
-
+from backend.plant_api.utils.deployment import get_deployment_env
 
 app = FastAPI()
 
 app.add_middleware(SessionMiddleware, secret_key=get_jwt_secret())
 
+if get_deployment_env() == LOCAL_DEPLOYMENT_ENV:
+    origins = ["http://localhost", "http://localhost:3000"]
+elif get_deployment_env() == AWS_DEPLOYMENT_ENV:
+    origins = ["https://master.d1g3nlvs6mpirt.amplifyapp.com"]
+else:
+    raise ValueError(f"Unknown deployment environment: {get_deployment_env()}")
 
-# TODO: remove localhosts in production environment
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "https://master.d1g3nlvs6mpirt.amplifyapp.com",
-]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

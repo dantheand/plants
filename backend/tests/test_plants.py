@@ -5,7 +5,7 @@ from fastapi import status
 
 from backend.plant_api.routers.new_plants import PLANT_ROUTE
 from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, plant_record_factory, mock_db
-from backend.plant_api.utils.schema import ItemKeys, PlantBase, PlantItem
+from backend.plant_api.schema import ItemKeys, PlantBase, PlantItem
 
 
 class TestPlantRead:
