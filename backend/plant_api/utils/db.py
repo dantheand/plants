@@ -4,23 +4,16 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from fastapi import HTTPException
 
-from backend.plant_api.constants import NEW_PLANTS_TABLE
+from backend.plant_api.constants import AWS_REGION, TABLE_NAME
 from backend.plant_api.utils.schema import ImageItem, PlantItem
 
 
 def get_db_connection():
-    return boto3.resource("dynamodb", region_name="us-west-2")
+    return boto3.resource("dynamodb", region_name=AWS_REGION)
 
 
 def get_db_table():
-    return get_db_connection().Table(NEW_PLANTS_TABLE)
-
-
-def scan_table(table_name):
-    session = get_db_connection()
-    table = session.Table(table_name)
-    response = table.scan()
-    return response["Items"]
+    return get_db_connection().Table(TABLE_NAME)
 
 
 def query_by_plant_id(table, plant_id: UUID) -> PlantItem:

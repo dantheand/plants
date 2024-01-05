@@ -1,15 +1,8 @@
-import uuid
 from datetime import date, datetime
 from enum import Enum
 from typing import Any, Dict, Optional, Union
-from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator, model_validator, root_validator, validator
-
-
-############################################
-######### New DynamoDB Models ##############
-############################################
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ItemKeys(str, Enum):
@@ -171,41 +164,6 @@ class PlantSourceItem(BaseModel):
 
 
 DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem]
-
-
-############################################
-############### Original Models #############
-############################################
-
-
-class MyBaseModel(BaseModel):
-    @validator("*", pre=True)
-    def empty_str_to_none(cls, v):
-        if v == "":
-            return None
-        return v
-
-
-class Plant(MyBaseModel):
-    PlantID: str
-    HumanName: Optional[str] = None
-    Species: Optional[str] = None
-    Location: str
-    ParentID: Optional[str] = None
-    Source: str
-    SourceDate: str
-    Sink: Optional[str] = None
-    SinkDate: Optional[datetime] = None
-    Notes: Optional[str] = None
-
-
-class Image(MyBaseModel):
-    ImageID: str
-    PlantID: str
-    S3Url: str
-    SignedUrl: Optional[str] = None
-    Timestamp: str
-    # Timestamp: datetime
 
 
 class User(BaseModel):

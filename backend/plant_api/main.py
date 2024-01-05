@@ -30,7 +30,6 @@ app.add_middleware(
 
 
 app.include_router(auth.router)
-# New endpoints
 app.include_router(new_plants.router)
 app.include_router(new_images.router)
 

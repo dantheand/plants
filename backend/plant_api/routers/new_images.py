@@ -10,7 +10,7 @@ from fastapi import Depends, File, HTTPException, UploadFile
 from pydantic import TypeAdapter
 from starlette import status
 
-from backend.plant_api.constants import NEW_PLANT_IMAGES_FOLDER, S3_BUCKET_NAME
+from backend.plant_api.constants import IMAGES_FOLDER, S3_BUCKET_NAME
 from backend.plant_api.dependencies import get_current_user
 from backend.plant_api.routers.common import BaseRouter
 from backend.plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
@@ -38,11 +38,9 @@ class ImageSuffixes(str, Enum):
     ORIGINAL = "original"
     THUMB = "thumb"
 
-    # Function to extract datetime from EXIF
-
 
 def make_s3_path_for_image(image_id: UUID, plant_id: UUID, image_suffix: str) -> str:
-    return f"{NEW_PLANT_IMAGES_FOLDER}/{plant_id}/{image_id}_{image_suffix}.jpg"
+    return f"{IMAGES_FOLDER}/{plant_id}/{image_id}_{image_suffix}.jpg"
 
 
 def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffix) -> str:
@@ -99,10 +97,10 @@ async def create_image(
     image_id = uuid4()
     image_content = await image_file.read()
 
-    logger.info(f"Received file: {image_file.filename}, Content Type: {image_file.content_type}")
-    logger.info(f"File Size: {len(image_content)} bytes")
-    logger.debug(f"File Content (first 100 bytes): {image_content[:100]}")
-    logger.debug(f"File Content (last 100 bytes): {image_content[-100:]}")
+    # logger.info(f"Received file: {image_file.filename}, Content Type: {image_file.content_type}")
+    # logger.info(f"File Size: {len(image_content)} bytes")
+    # logger.debug(f"File Content (first 100 bytes): {image_content[:100]}")
+    # logger.debug(f"File Content (last 100 bytes): {image_content[-100:]}")
 
     # Save Original to S3
 
