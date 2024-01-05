@@ -1,9 +1,5 @@
-import os
-
-import pytest
-
 from backend.plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER
-from backend.plant_api.utils.aws import get_aws_secret
+from backend.plant_api.utils.secrets import get_aws_secret
 
 
 class TestAWSAccess:
