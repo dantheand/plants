@@ -45,7 +45,7 @@ class UserItem(BaseModel):
 class PlantBase(BaseModel):
     human_name: str
     species: Optional[str] = None
-    location: str
+    location: Optional[str] = None
     # TODO: Migrate these over to the PlantSourceItem system
     parent_id: Optional[list[int]] = None
     source: str

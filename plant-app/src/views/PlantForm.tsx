@@ -151,7 +151,6 @@ export const PlantForm = ({
           value={plantInForm.location}
           OnChange={handleInputChange("location")}
           isEditable={isFormEditable}
-          isRequired={true}
         />
 
         {/*<div*/}
@@ -163,7 +162,7 @@ export const PlantForm = ({
         {/*  {" "}*/}
         {/*</div>*/}
         <EditableInput
-          label="Parent ID"
+          label="Plant Parent ID(s)"
           type="text"
           value={plantInForm.parent_id}
           OnChange={handleInputChange("parent_id")}

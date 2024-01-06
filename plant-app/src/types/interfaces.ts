@@ -11,7 +11,7 @@ export interface Plant {
   human_id: number;
   human_name: string;
   species: string | undefined;
-  location: string;
+  location: string | undefined;
   // TODO: figure out how to handle this as list of int
   parent_id: string[] | undefined;
   source: string;
