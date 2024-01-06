@@ -51,7 +51,6 @@ interface PlantFormProps {
   isFormNewPlant?: boolean;
 }
 
-// TODO: make the placeholder and form share more components
 export const PlantFormPlaceholder = () => {
   return (
     <Card className="mb-3">
@@ -113,14 +112,6 @@ export const PlantForm = ({
             </Button>
           </div>
         </Card.Header>
-        {/*<EditableInput*/}
-        {/*  label="UUID"*/}
-        {/*  type="text"*/}
-        {/*  value={plantInForm.plant_id}*/}
-        {/*  OnChange={handleInputChange("plant_id")}*/}
-        {/*  isEditable={isFormEditable}*/}
-        {/*  editsAllowed={false}*/}
-        {/*/>*/}
         <EditableInput
           label="ID Number"
           type="text"
@@ -152,7 +143,7 @@ export const PlantForm = ({
           OnChange={handleInputChange("location")}
           isEditable={isFormEditable}
         />
-
+        {/* TODO make it so you can navigate to parent plants by clicking*/}
         {/*<div*/}
         {/*  onClick={() =>*/}
         {/*    plant.ParentID && handlePlantClick(plant.ParentID, navigate)*/}
