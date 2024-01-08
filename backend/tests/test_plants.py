@@ -201,6 +201,9 @@ class TestPlantDelete:
         response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    def test_delete_plant_deletes_images(self):
+        pass
+
 
 class TestParsing:
     def test_parses_mult_parent_id(self):
