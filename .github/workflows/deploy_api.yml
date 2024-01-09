@@ -1,13 +1,14 @@
-# This workflow deploys the FastAPI backend to the lambda function in AWS.
+# This workflow deploys the FastAPI backend to the lambda function in AWS
+#   whenever the master branch is pushed to.
 
 name: Deploy API
 
 on:
-#  push:
-#    branches:
-#      - master
-#    paths:
-#      - "backend/**"
+  push:
+    branches:
+      - master
+    paths:
+      - "backend/**"
   workflow_dispatch:
 
 jobs:
@@ -30,8 +31,6 @@ jobs:
       - name: Package dependencies
         working-directory: backend/
         run: |
-          # source $(poetry env info --path)/bin/activate
-          # Pull out dependencies from poetry.lock
           poetry export -f requirements.txt --output requirements_from_poetry.txt --without-hashes
           pip install \
           --platform manylinux2014_x86_64 \
