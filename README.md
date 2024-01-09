@@ -38,9 +38,29 @@ On pushes to `master`:
 
 #### Backend
 - Github actions package and deploy FastAPI backend to lambda
- 
 
-## plant
+## Screenshots
+
+### Google SSO
+<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/0be0a861-7d87-4ba3-81f7-452753dc1608">
+
+### Plant List
+<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/866ca19b-d628-443a-9e0f-6578e4bb420a">
+
+### Create New Plants
+<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/6b0af217-2f15-4925-b411-e8fc84055852">
+
+### Edit Existing Plants
+<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/11c49463-2f22-408e-b2d7-8fca5f19ad79">
+
+### Upload Images
+<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/83b4bad2-806d-46db-9ba3-64f82c153ef4">
+
+### Timeline View of Images
+https://github.com/dantheand/plants/assets/16441200/4888f693-cb10-490a-9b87-25aa4097205f
+
+
+
 ## Feature ideas
 - DB-driven plant tracking
   - add/remove plants
