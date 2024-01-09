@@ -30,7 +30,8 @@ jobs:
       - name: Package dependencies
         working-directory: backend/
         run: |
-          poetry shell
+          # source $(poetry env info --path)/bin/activate
+          # Pull out dependencies from poetry.lock
           poetry export -f requirements.txt --output requirements_from_poetry.txt --without-hashes
           pip install \
           --platform manylinux2014_x86_64 \
