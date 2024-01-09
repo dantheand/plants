@@ -14,14 +14,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
-      - name: Install dependencies (to local folder so it can be zipped with source code)
+          python-version: '3.9'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      # Installed to local folder so it can be zipped with source code
+      - name: Package dependencies
         working-directory: backend/
         run: |
+          poetry shell
+          # Pull out dependencies from poetry.lock
+          poetry export -f requirements.txt --output requirements_from_poetry.txt --without-hashes
           pip install \
           --platform manylinux2014_x86_64 \
           --target=../backend_deps \
@@ -29,14 +40,14 @@ jobs:
           --python-version 3.9 \
           --only-binary=:all: --upgrade \
           --index https://pypi.org/simple/ \
-          -r requirements.txt
+          -r requirements_from_poetry.txt
       - name: Zip dependencies with source code
         working-directory: ./
         run: |
           cd backend_deps
-          zip -r ../api_lambda.zip .
-          cd ..
-          zip -g ./api_lambda.zip -r backend
+          zip -r ~/projects/plants/api_lambda.zip .
+          cd ../backend 
+          zip -g ../api_lambda.zip -r plant_api
       - name: Deploy to AWS Lambda
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
