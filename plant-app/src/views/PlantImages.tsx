@@ -4,7 +4,7 @@ import {
 } from "react-vertical-timeline-component";
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { Card, Image, Modal, Spinner } from "react-bootstrap";
+import { Button, Card, Image, Modal, Spinner } from "react-bootstrap";
 import { NewPlantImage } from "../types/interfaces";
 import { SHOW_IMAGES } from "../featureFlags";
 import "../styles/styles.css";
@@ -29,6 +29,10 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<
+    NewPlantImage | undefined
+  >();
   // State to trigger re-render
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const onUploadSuccess = () => {
@@ -44,13 +48,15 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
 
   //TODO: get the image modal working again
   // Modal Stuff
-  const [showModal, setShowModal] = useState(false);
-  const [selectedImageUrl, setSelectedImageUrl] = useState("");
-  const handleThumbnailClick = (imageUrl: string) => {
-    setSelectedImageUrl(imageUrl);
-    setShowModal(true);
+  const handleThumbnailClick = (image: NewPlantImage) => {
+    setSelectedImage(image);
+    setShowImageModal(true);
   };
-  const handleCloseModal = () => setShowModal(false);
+  const handleCloseImageModal = () => setShowImageModal(false);
+
+  const handleDeletePlant = () => {
+    console.log("delete plant");
+  };
 
   useEffect(() => {
     if (SHOW_IMAGES) {
@@ -91,7 +97,10 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
             Loading images...
           </div>
         ) : hasImages ? (
-          <PlantImagesTimeline3 plant_images={plantImages} />
+          <PlantImagesTimeline3
+            plant_images={plantImages}
+            onImageClick={handleThumbnailClick}
+          />
         ) : (
           <div className="text-center no-images-message">
             <FaSeedling className="no-images-icon" />
@@ -100,11 +109,18 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
         )}
       </Card.Body>
 
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton></Modal.Header>
+      <Modal show={showImageModal} onHide={handleCloseImageModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Full-sized image</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
-          <Image src={selectedImageUrl} alt="Plant" fluid />
+          <Image src={selectedImage?.signed_full_photo_url} alt="Plant" fluid />
         </Modal.Body>
+        <Modal.Footer className="justify-content-center">
+          <Button variant="danger" onClick={handleDeletePlant}>
+            Delete Image
+          </Button>
+        </Modal.Footer>
       </Modal>
       {plant_id && (
         <Modal show={showUploadModal} onHide={handleCloseUploadModal}>
@@ -130,8 +146,10 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
 
 export function PlantImagesTimeline3({
   plant_images,
+  onImageClick,
 }: {
   plant_images: NewPlantImage[];
+  onImageClick: (image: NewPlantImage) => void;
 }) {
   // Reorder plants in reverse chronological order
   plant_images.sort(
@@ -154,7 +172,8 @@ export function PlantImagesTimeline3({
             <img
               src={plant_image.signed_thumbnail_photo_url}
               alt={`Plant taken on ${plant_image.timestamp}`}
-              className="img-fluid timelineImage"
+              className="img-fluid timelineImage clickable-item"
+              onClick={() => onImageClick(plant_image)}
             />
           </div>
         </VerticalTimelineElement>

@@ -3,9 +3,9 @@ import uuid
 from pydantic import TypeAdapter
 from fastapi import status
 
-from backend.plant_api.routers.new_plants import PLANT_ROUTE
-from backend.tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, plant_record_factory, mock_db
-from backend.plant_api.schema import ItemKeys, PlantBase, PlantItem
+from plant_api.routers.new_plants import PLANT_ROUTE
+from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, plant_record_factory, mock_db
+from plant_api.schema import ItemKeys, PlantBase, PlantItem
 
 
 class TestPlantRead:
@@ -200,6 +200,9 @@ class TestPlantDelete:
         test_client = client()
         response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_plant_deletes_images(self):
+        pass
 
 
 class TestParsing:

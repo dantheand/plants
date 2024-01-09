@@ -5,9 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from starlette.middleware.sessions import SessionMiddleware
 
-from backend.plant_api.constants import AWS_DEPLOYMENT_ENV, LOCAL_DEPLOYMENT_ENV, get_jwt_secret
-from backend.plant_api.routers import auth, new_plants, new_images
-from backend.plant_api.utils.deployment import get_deployment_env
+from plant_api.constants import AWS_DEPLOYMENT_ENV, LOCAL_DEPLOYMENT_ENV, get_jwt_secret
+from plant_api.routers import auth, new_plants, new_images
+from plant_api.utils.deployment import get_deployment_env
 
 app = FastAPI()
 

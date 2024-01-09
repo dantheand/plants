@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
 
-from backend.plant_api.utils.secrets import get_aws_secret
+from plant_api.utils.secrets import get_aws_secret
 
 TABLE_NAME = "new_plants"
 
