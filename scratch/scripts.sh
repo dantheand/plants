@@ -16,6 +16,9 @@ poetry run mypy .
 cd ~/projects/plants/backend/
 poetry run pytest tests
 
+poetry run flake8 ./plant_api --count --select=E9,F63,F7,F82 --show-source --statistics
+poetry run flake8 ./plant_api --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
 ####################################################################################################
 ################################ Lambda function build and deploy ##################################
 ####################################################################################################
