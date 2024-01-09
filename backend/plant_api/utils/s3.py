@@ -2,8 +2,8 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-from backend.plant_api.constants import S3_BUCKET_NAME
-from backend.plant_api.schema import ImageItem
+from plant_api.constants import S3_BUCKET_NAME
+from plant_api.schema import ImageItem
 
 
 def get_s3_client():

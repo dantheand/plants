@@ -7,14 +7,14 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
 
-from backend.plant_api.constants import (
+from plant_api.constants import (
     ALGORITHM,
     CREDENTIALS_EXCEPTION,
     GoogleOauthPayload,
     TOKEN_URL,
     get_jwt_secret,
 )
-from backend.plant_api.schema import User
+from plant_api.schema import User
 
 # TODO: figure out what magic this is doing may be able to replace with OpenIdConnect()
 oauth2_google = OAuth2PasswordBearer(

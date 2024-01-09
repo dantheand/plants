@@ -1,5 +1,5 @@
 import os
-from backend.plant_api.constants import DEPLOYMENT_ENV_VAR, LOCAL_DEPLOYMENT_ENV
+from plant_api.constants import DEPLOYMENT_ENV_VAR, LOCAL_DEPLOYMENT_ENV
 
 
 def get_deployment_env():

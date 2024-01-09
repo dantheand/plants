@@ -4,8 +4,8 @@ import boto3
 import pytest
 from moto import mock_secretsmanager
 
-from backend.plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER
-from backend.tests.lib import AWS_REGION
+from plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER
+from tests.lib import AWS_REGION
 
 
 # These fixtures are ran before any tests are run
