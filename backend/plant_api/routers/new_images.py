@@ -156,6 +156,8 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user)):
     if plant_response.PK != f"USER#{user.google_id}":
         raise HTTPException(status_code=403, detail="User does not own plant.")
 
+    # TODO: delete item from S3 as well
+
     table.delete_item(Key=make_image_query_key(image_plant_id, image_id))
     return {"message": "Image deleted successfully"}
 

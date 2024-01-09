@@ -46,16 +46,14 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   };
   const handleCloseUploadModal = () => setShowUploadModal(false);
 
-  //TODO: get the image modal working again
-  // Modal Stuff
   const handleThumbnailClick = (image: NewPlantImage) => {
     setSelectedImage(image);
     setShowImageModal(true);
   };
   const handleCloseImageModal = () => setShowImageModal(false);
 
-  const handleDeletePlant = () => {
-    console.log("delete plant");
+  const handleDeletePlant = (image: NewPlantImage) => {
+    console.log("delete image with id: ", image.image_id);
   };
 
   useEffect(() => {
@@ -109,19 +107,28 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
         )}
       </Card.Body>
 
-      <Modal show={showImageModal} onHide={handleCloseImageModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Full-sized image</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Image src={selectedImage?.signed_full_photo_url} alt="Plant" fluid />
-        </Modal.Body>
-        <Modal.Footer className="justify-content-center">
-          <Button variant="danger" onClick={handleDeletePlant}>
-            Delete Image
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {selectedImage && (
+        <Modal show={showImageModal} onHide={handleCloseImageModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Full-sized image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Image
+              src={selectedImage.signed_full_photo_url}
+              alt="Plant"
+              fluid
+            />
+          </Modal.Body>
+          <Modal.Footer className="justify-content-center">
+            <Button
+              variant="danger"
+              onClick={() => handleDeletePlant(selectedImage)}
+            >
+              Delete Image
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
       {plant_id && (
         <Modal show={showUploadModal} onHide={handleCloseUploadModal}>
           <Modal.Header closeButton>
