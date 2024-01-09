@@ -46,6 +46,8 @@ pip install \
 -r requirements.txt
 
 ###### Using poetry requirements (note: doesn't export dev requirements by default) ######
+poetry shell
+poetry use 3.9
 poetry export -f requirements.txt --output requirements_from_poetry.txt --without-hashes
 rm -rf ../backend_deps
 pip install \
