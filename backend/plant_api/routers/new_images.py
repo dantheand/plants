@@ -138,6 +138,12 @@ def _orient_image(image: Image) -> Image:
     return ImageOps.exif_transpose(image)
 
 
+def delete_image_from_s3(image: ImageItem):
+    s3_client = get_s3_client()
+    s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=image.full_photo_s3_url)
+    s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=image.thumbnail_photo_s3_url)
+
+
 @router.delete("/{image_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_image(image_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
@@ -156,9 +162,7 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user)):
     if plant_response.PK != f"USER#{user.google_id}":
         raise HTTPException(status_code=403, detail="User does not own plant.")
 
-    s3_client = get_s3_client()
-    s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=image_response.full_photo_s3_url)
-    s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=image_response.thumbnail_photo_s3_url)
+    delete_image_from_s3(image_response)
 
     table.delete_item(Key=make_image_query_key(image_plant_id, image_id))
     return {"message": "Image deleted successfully"}

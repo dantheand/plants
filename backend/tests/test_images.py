@@ -160,7 +160,7 @@ class TestImageUpload:
 
 
 class TestImageDelete:
-    def test_delete_image(self, mock_db, client):
+    def test_delete_image(self, mock_db, client, fake_s3):
         plant = plant_record_factory()
         image_id = uuid.uuid4()
         image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
