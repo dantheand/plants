@@ -1,10 +1,11 @@
 ![plant_logo_leaf_only_small](https://github.com/dantheand/plants/assets/16441200/a2ef5002-8abb-4f2c-81ba-9bb8575df8bd)
 # Plant App
 
+A plant tracking app meant to make it easy to track plant growth and lineages.
 
 ## Development environment setup
 ### Dependencies
-- Python >=3.9
+- Python 3.9
 - node 18?
 
 ### AWS stuff
@@ -20,7 +21,7 @@
   - Created global secondary index 'SK-PK-index' to allow querying by plant_id directly 
 - S3 for image hosting
 - IAM for role and permissions management for each of the above services
-- Cloudwatch for logging output from FastAPI lambda
+- Cloudwatch for logging outputs
 
 ### Google
 - Oauth authentication tokens
@@ -65,9 +66,10 @@ https://github.com/dantheand/plants/assets/16441200/4888f693-cb10-490a-9b87-25aa
 - DB-driven plant tracking
   - add/remove plants
   - fixed properties for each plant
-    - species (another DB table)
+    - species
     - name
-  - care reccomendations (keyed to species)
+    - ...
+  - care recommendations (keyed to species)
   - timeline of properties for each plant
     - height, number of leaves, number of branches
   - plant lineage tracking (plant parent/children)
@@ -80,13 +82,15 @@ https://github.com/dantheand/plants/assets/16441200/4888f693-cb10-490a-9b87-25aa
   - sort by plants
   - look at photos
 - viewing users plants:
+  - filter by "current" plants (haven't sunk anywhere)
   - default view of your own plants
   - ability to see other user's plants (for now)
-- data access
+- general data access
   - initially just provide easy export to .csv
   - timeline view of plants
 - data entry
   - allow automated recognition of plant ID (increasing order of difficulty):
+     - plant ID number ML
      - small QR codes
      - OCR of numbers written on tags
      - matching to previous photos of plant (way too hard)
