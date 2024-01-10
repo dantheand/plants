@@ -5,17 +5,19 @@ from PIL import Image as img
 from pydantic import TypeAdapter
 from starlette import status
 
-from lib import check_object_exists_in_s3, create_test_image, image_in_s3_factory
 from plant_api.constants import S3_BUCKET_NAME
 from plant_api.routers.new_images import MAX_THUMB_X_PIXELS, _orient_image
 from plant_api.utils.db import make_image_query_key
 from plant_api.schema import ImageItem
 from tests.lib import (
+    check_object_exists_in_s3,
+    create_test_image,
     DEFAULT_TEST_USER,
     OTHER_TEST_USER,
     TEST_FIXTURE_DIR,
     client,
     image_record_factory,
+    image_in_s3_factory,
     plant_record_factory,
     mock_db,
     fake_s3,
