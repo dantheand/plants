@@ -3,7 +3,7 @@ import uuid
 from pydantic import TypeAdapter
 from fastapi import status
 
-from plant_api.routers.new_plants import PLANT_ROUTE
+from plant_api.routers.plants import PLANT_ROUTE
 from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, client, plant_record_factory, mock_db
 from plant_api.schema import ItemKeys, PlantBase, PlantItem
 

@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 from starlette import status
 
 from plant_api.constants import S3_BUCKET_NAME
-from plant_api.routers.new_images import MAX_THUMB_X_PIXELS, _orient_image
+from plant_api.routers.images import MAX_THUMB_X_PIXELS, _orient_image
 from plant_api.utils.db import make_image_query_key
 from plant_api.schema import ImageItem
 from tests.lib import (

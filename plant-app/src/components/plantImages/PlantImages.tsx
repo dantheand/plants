@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
 import { Card } from "react-bootstrap";
-import { NewPlantImage } from "../../types/interfaces";
+import { PlantImage } from "../../types/interfaces";
 import { SHOW_IMAGES } from "../../featureFlags";
 import "../../styles/styles.css";
 import { FaCamera } from "react-icons/fa";
@@ -14,7 +14,7 @@ import { PlantImagesTimeline } from "./PlantImagesTimeline";
 import { PlantImagesLoadingPlaceholder } from "./PlantImagesLoadingPlaceholder";
 import { ImageUploadModal } from "./ImageUploadModal";
 
-const deletePlantImage = async (image: NewPlantImage) => {
+const deletePlantImage = async (image: PlantImage) => {
   return fetch(`${BASE_API_URL}/new_images/${image.image_id}`, {
     method: "DELETE",
     headers: {
@@ -33,15 +33,13 @@ const getPlantImages = async (plant_id: string | undefined) => {
 
 export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const { showAlert } = useAlert();
-  const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
+  const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<
-    NewPlantImage | undefined
-  >();
+  const [selectedImage, setSelectedImage] = useState<PlantImage | undefined>();
   // State to trigger re-render
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const onUploadSuccess = () => {
@@ -55,17 +53,17 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   };
   const handleCloseUploadModal = () => setShowUploadModal(false);
 
-  const handleThumbnailClick = (image: NewPlantImage) => {
+  const handleThumbnailClick = (image: PlantImage) => {
     setSelectedImage(image);
     setShowImageModal(true);
   };
   const handleCloseImageModal = () => setShowImageModal(false);
 
-  const handleDeleteClick = (image: NewPlantImage) => {
+  const handleDeleteClick = (image: PlantImage) => {
     setSelectedImage(image);
     setShowConfirmDeleteModal(true);
   };
-  const confirmDeleteImage = (image: NewPlantImage) => {
+  const confirmDeleteImage = (image: PlantImage) => {
     deletePlantImage(image)
       .then((response) => {
         if (!response.ok) {

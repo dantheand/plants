@@ -13,7 +13,7 @@ from starlette.testclient import TestClient
 from PIL.Image import Image
 
 from plant_api.dependencies import get_current_user
-from plant_api.routers.new_images import ImageSuffixes, make_s3_path_for_image, upload_image_to_s3
+from plant_api.routers.images import ImageSuffixes, make_s3_path_for_image, upload_image_to_s3
 
 # from plant_api.main import app
 from plant_api.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
