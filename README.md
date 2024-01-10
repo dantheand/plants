@@ -1,6 +1,7 @@
 ![plant_logo_leaf_only_small](https://github.com/dantheand/plants/assets/16441200/a2ef5002-8abb-4f2c-81ba-9bb8575df8bd)
 # Plant App
 
+A plant tracking app meant to make it easy to track plant growth and lineages.
 
 ## Development environment setup
 ### Dependencies
