@@ -65,35 +65,27 @@ https://github.com/dantheand/plants/assets/16441200/4888f693-cb10-490a-9b87-25aa
 
 
 
-## Feature ideas
-- DB-driven plant tracking
-  - add/remove plants
-  - fixed properties for each plant
-    - species
-    - name
-    - ...
-  - care recommendations (keyed to species)
-  - timeline of properties for each plant
-    - height, number of leaves, number of branches
-  - plant lineage tracking (plant parent/children)
-  - plant event tracker
-    - watering, fertilizing, repotting
-- photo taking and sorting
-  - photos over time attached to plants
-  - photo "ghost" overlay to previous photo to help make timelapses
-- interface:
-  - sort by plants
-  - look at photos
-- viewing users plants:
-  - filter by "current" plants (haven't sunk anywhere)
+## Upcoming Feature ideas
+In rough order of decreasing priority:
+- Multiple users
   - default view of your own plants
-  - ability to see other user's plants (for now)
-- general data access
-  - initially just provide easy export to .csv
-  - timeline view of plants
-- data entry
-  - allow automated recognition of plant ID (increasing order of difficulty):
-     - plant ID number ML
-     - small QR codes
-     - OCR of numbers written on tags
-     - matching to previous photos of plant (way too hard)
+  - ability to see any other user's plants (for inital set of users)
+- Improving plant view
+  - Filter by "current" or not (e.g. has the plant died or been given away)
+- lineage visualization and traversing
+  - [Tangled tree](https://observablehq.com/@nitaku/tangled-tree-visualization-ii) vizualization of plant lineages
+- personal data export:
+  - ability for users to export their plant data so they can analyze it or migrate it
+- timelapse views
+  - creating timelapse view of plant growth from photos
+  - would be made easier by having a photo "ghost" overlay to previous photo when adding a new image
+- plant event tracker
+  - watering, fertilizing, repotting
+- extracted features from images
+  - machine vision to extract height, number of leaves, number of branches
+  - species identification
+- care recommendations (keyed to species)
+- allow automated recognition of plant ID (increasing order of difficulty):
+   - OCR of numbers written on tags
+   - small QR codes
+   - matching to previous photos of plant (way too hard)
