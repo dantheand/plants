@@ -15,7 +15,7 @@ import { PlantImagesLoadingPlaceholder } from "./PlantImagesLoadingPlaceholder";
 import { ImageUploadModal } from "./ImageUploadModal";
 
 const deletePlantImage = async (image: PlantImage) => {
-  return fetch(`${BASE_API_URL}/new_images/${image.image_id}`, {
+  return fetch(`${BASE_API_URL}/images/${image.image_id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
@@ -24,7 +24,7 @@ const deletePlantImage = async (image: PlantImage) => {
 };
 
 const getPlantImages = async (plant_id: string | undefined) => {
-  return fetch(`${BASE_API_URL}/new_images/plants/${plant_id}`, {
+  return fetch(`${BASE_API_URL}/images/plants/${plant_id}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
     },

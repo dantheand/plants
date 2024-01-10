@@ -62,7 +62,7 @@ const ImageUpload = ({
       // formData.append('timestamp', new Date().toISOString());
 
       const response = await fetch(
-        `${BASE_API_URL}/new_images/plants/${plant_id}`,
+        `${BASE_API_URL}/images/plants/${plant_id}`,
         {
           method: "POST",
           body: formData,

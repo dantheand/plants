@@ -71,8 +71,8 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return parsed_response
 
 
-# TODO: cleanup routes: /new_images/plant/<plant_id>
-#   /new_images/image/<image_id>
+# TODO: cleanup routes: /images/plant/<plant_id>
+#   /images/image/<image_id>
 @router.get("/{image_id}", response_model=ImageItem)
 async def get_image(image_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
