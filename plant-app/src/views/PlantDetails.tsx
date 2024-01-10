@@ -21,7 +21,7 @@ const updatePlant = async (
 ): Promise<ApiResponse<Plant>> => {
   try {
     const response = await fetch(
-      `${BASE_API_URL}/new_plants/${plantData.plant_id}`,
+      `${BASE_API_URL}/plants/${plantData.plant_id}`,
       {
         method: "PATCH",
         headers: {
@@ -56,7 +56,7 @@ const usePlantDetails = (plantId: string | undefined) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/new_plants/${plantId}`, {
+    fetch(`${BASE_API_URL}/plants/${plantId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
@@ -86,7 +86,7 @@ const deletePlant = async (
   }
   try {
     // Perform the DELETE request
-    const response = await fetch(`${BASE_API_URL}/new_plants/${plantId}`, {
+    const response = await fetch(`${BASE_API_URL}/plants/${plantId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,

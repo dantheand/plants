@@ -7,7 +7,7 @@ import { useAlert } from "../context/Alerts";
 import { PlantForm } from "./PlantForm";
 
 const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
-  const response = await fetch(`${BASE_API_URL}/new_plants/create`, {
+  const response = await fetch(`${BASE_API_URL}/plants/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

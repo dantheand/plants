@@ -10,7 +10,7 @@ from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import get_db_table, query_by_plant_id
 from plant_api.schema import PlantCreate, PlantItem, PlantUpdate, User
 
-PLANT_ROUTE = "/new_plants"
+PLANT_ROUTE = "/plants"
 
 router = BaseRouter(
     prefix=PLANT_ROUTE,

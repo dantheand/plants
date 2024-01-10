@@ -234,7 +234,7 @@ def format_new_plant_row(row):
 
 def create_new_plant(plant_item: PlantCreate):
 
-    post_url = f"{BASE_URL}/new_plants/"
+    post_url = f"{BASE_URL}/plants/"
 
     return requests.post(post_url, json=plant_item.model_dump(), headers=get_jwt_token_header())
 

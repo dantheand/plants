@@ -57,7 +57,7 @@ export function PlantList(): JSX.Element {
   };
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/new_plants/user/${HARDCODED_USER}`, {
+    fetch(`${BASE_API_URL}/plants/user/${HARDCODED_USER}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
