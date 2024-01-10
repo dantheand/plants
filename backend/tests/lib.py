@@ -3,6 +3,7 @@ import uuid
 from datetime import date, datetime
 from typing import Optional
 
+from botocore.exceptions import ClientError
 import boto3
 import pytest
 from PIL import Image as img
@@ -178,4 +179,24 @@ def image_in_s3_factory(
         image_id = fake.uuid4()
     if plant_id is None:
         plant_id = fake.uuid4()
-    return upload_image_to_s3(image, image_id, plant_id, "foo")
+
+    _ = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.ORIGINAL)
+    _ = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.THUMB)
+
+
+def check_object_exists_in_s3(s3_client, bucket_name: str, object_key: str) -> bool:
+    """
+    Check if an object exists in an S3 bucket.
+
+    True if object exists, False otherwise
+    """
+    try:
+        s3_client.head_object(Bucket=bucket_name, Key=object_key)
+        return True
+    except ClientError as e:
+        # Check if the error was because the object does not exist
+        error_code = e.response["Error"]["Code"]
+        if error_code == "404":
+            return False
+        else:
+            raise  # re-raise if it's a different error
