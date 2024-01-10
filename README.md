@@ -16,6 +16,8 @@ A plant tracking app meant to make it easy to track plant growth and lineages.
 - aws credentials set up (use a profile)
 
 ## Services used
+The AWS infrastructure is currently an artisinal, hand-crafted set of services. In the future, I will make it reproducible with some sort of IaC approach. 
+
 ### AWS 
 - AWS Amplify for front-end builds and deployment
 - AWS Lambda function hosts and runs FastAPI through `Mangum` handler
