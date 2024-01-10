@@ -10,11 +10,12 @@ import { PlantLayout } from "../components/Layouts";
 import { DeleteButtonWConfirmation } from "../components/CommonComponents";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.css";
-import { PlantForm, PlantFormPlaceholder } from "./PlantForm";
 import { PlantImages } from "../components/plantImages/PlantImages";
 import { initialNewPlantState } from "./PlantCreate";
 import { Card } from "react-bootstrap";
 import { PlantImagesLoadingPlaceholder } from "../components/plantImages/PlantImagesLoadingPlaceholder";
+import { PlantForm } from "../components/plantForm/PlantForm";
+import { PlantFormPlaceholder } from "../components/plantForm/PlantFormPlaceholder";
 
 const updatePlant = async (
   plantData: NewPlant,

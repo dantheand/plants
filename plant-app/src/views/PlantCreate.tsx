@@ -4,7 +4,8 @@ import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
-import { PlantForm } from "./PlantForm";
+
+import { PlantForm } from "../components/plantForm/PlantForm";
 
 const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
   const response = await fetch(`${BASE_API_URL}/plants/create`, {

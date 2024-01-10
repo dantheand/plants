@@ -1,45 +1,8 @@
-// Define props for EditableInput component
 import React, { useState } from "react";
-import { NewPlant, Plant } from "../types/interfaces";
-import { Button, Card, Col, Form, Placeholder, Row } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
+import { NewPlant, Plant } from "../../types/interfaces";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
-
-interface EditableInputProps {
-  label: string;
-  type: string;
-  value: string | number | string[] | undefined;
-  editsAllowed?: boolean;
-  OnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  isEditable: boolean;
-  isRequired?: boolean;
-}
-
-const EditableInput = ({
-  label,
-  type,
-  value,
-  editsAllowed = true,
-  OnChange,
-  isEditable,
-  isRequired = false,
-}: EditableInputProps) => {
-  return (
-    <Form.Group as={Row} className="m-2">
-      <Form.Label column md={3}>
-        {label} {isRequired && <span className="required-asterisk">*</span>}
-      </Form.Label>
-      <Col md={9}>
-        <Form.Control
-          required={isRequired}
-          type={type}
-          value={value}
-          onChange={OnChange}
-          disabled={!(isEditable && editsAllowed)}
-        />
-      </Col>
-    </Form.Group>
-  );
-};
+import { EditableInput } from "./EditableInput";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -50,21 +13,6 @@ interface PlantFormProps {
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
   isFormNewPlant?: boolean;
 }
-
-export const PlantFormPlaceholder = () => {
-  return (
-    <Card className="mb-3">
-      <Card.Header as="h4">Plant Information</Card.Header>
-      <Card.Body>
-        {[...Array(8)].map((_, idx) => (
-          <Placeholder key={idx} as="p" animation="glow">
-            <Placeholder xs={12} />
-          </Placeholder>
-        ))}
-      </Card.Body>
-    </Card>
-  );
-};
 
 export const PlantForm = ({
   plant,
