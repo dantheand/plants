@@ -11,8 +11,10 @@ import { DeleteButtonWConfirmation } from "../components/CommonComponents";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.css";
 import { PlantForm, PlantFormPlaceholder } from "./PlantForm";
-import { PlantImages, PlantImagesLoadingPlaceholder } from "./PlantImages";
+import { PlantImages } from "../components/plantImages/PlantImages";
 import { initialNewPlantState } from "./PlantCreate";
+import { Card } from "react-bootstrap";
+import { PlantImagesLoadingPlaceholder } from "../components/plantImages/PlantImagesLoadingPlaceholder";
 
 const updatePlant = async (
   plantData: NewPlant,
@@ -165,7 +167,12 @@ export function PlantDetails() {
     return (
       <PlantLayout>
         <PlantFormPlaceholder />
-        <PlantImagesLoadingPlaceholder />
+        <Card className="mb-3">
+          <Card.Header as="h4">Images</Card.Header>
+          <Card.Body>
+            <PlantImagesLoadingPlaceholder />
+          </Card.Body>
+        </Card>
       </PlantLayout>
     );
   }

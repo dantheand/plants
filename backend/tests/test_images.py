@@ -1,4 +1,3 @@
-import io
 import tempfile
 import uuid
 
@@ -11,25 +10,18 @@ from plant_api.routers.new_images import MAX_THUMB_X_PIXELS, _orient_image
 from plant_api.utils.db import make_image_query_key
 from plant_api.schema import ImageItem
 from tests.lib import (
+    check_object_exists_in_s3,
+    create_test_image,
     DEFAULT_TEST_USER,
     OTHER_TEST_USER,
     TEST_FIXTURE_DIR,
     client,
     image_record_factory,
+    image_in_s3_factory,
     plant_record_factory,
     mock_db,
     fake_s3,
 )
-
-
-def create_test_image(size=(100, 100)):
-    # Create a simple image for testing
-    file = io.BytesIO()
-    image = img.new("RGB", size, color="red")
-    image.save(file, "PNG")
-    file.name = "test.png"
-    file.seek(0)
-    return file
 
 
 class TestImageRead:
@@ -95,18 +87,8 @@ class TestImageUpload:
         assert parsed_response.PK == f"PLANT#{plant_id}"
 
         # Check that the images were uploaded to S3
-        assert (
-            fake_s3.head_object(Bucket=S3_BUCKET_NAME, Key=parsed_response.full_photo_s3_url)["ResponseMetadata"][
-                "HTTPStatusCode"
-            ]
-            == 200
-        )
-        assert (
-            fake_s3.head_object(Bucket=S3_BUCKET_NAME, Key=parsed_response.thumbnail_photo_s3_url)["ResponseMetadata"][
-                "HTTPStatusCode"
-            ]
-            == 200
-        )
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, parsed_response.full_photo_s3_url) is True
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, parsed_response.thumbnail_photo_s3_url) is True
 
         # Check that the image was saved to the database
         image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(
@@ -215,8 +197,23 @@ class TestImageDelete:
         response = client(DEFAULT_TEST_USER).delete(f"/new_images/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_delete_image_deletes_s3_files(self):
-        ...
+    def test_delete_image_deletes_s3_files(self, mock_db, client, fake_s3):
+        plant = plant_record_factory()
+        image_id = uuid.uuid4()
+        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
+        mock_db.insert_mock_data(plant)
+        mock_db.insert_mock_data(image)
+        image_in_s3_factory(image_id=image.image_id, plant_id=image.plant_id)
+
+        # Check that the image was uploaded to S3
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is True
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.thumbnail_photo_s3_url) is True
+
+        _ = client(DEFAULT_TEST_USER).delete(f"/new_images/{image_id}")
+
+        # Make sure it was deleted from S3
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is False
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.thumbnail_photo_s3_url) is False
 
 
 class TestImageUpdate:

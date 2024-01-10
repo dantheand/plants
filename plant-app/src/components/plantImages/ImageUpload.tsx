@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Button, Form, Image, Spinner } from "react-bootstrap";
-import { useAlert } from "../context/Alerts";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import resizeImageWithPica from "../utils/images";
+import { useAlert } from "../../context/Alerts";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
+import resizeImageWithPica from "../../utils/images";
 
 interface ImageUploadProps {
   plant_id: string;

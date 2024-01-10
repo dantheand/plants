@@ -1,20 +1,27 @@
+import io
 import uuid
 from datetime import date, datetime
 from typing import Optional
 
+from botocore.exceptions import ClientError
 import boto3
 import pytest
+from PIL import Image as img
 from faker import Faker
 from moto import mock_dynamodb, mock_s3
 from starlette.testclient import TestClient
+from PIL.Image import Image
 
 from plant_api.dependencies import get_current_user
-from plant_api.routers.new_images import ImageSuffixes, make_s3_path_for_image
+from plant_api.routers.new_images import ImageSuffixes, make_s3_path_for_image, upload_image_to_s3
 
 # from plant_api.main import app
 from plant_api.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
 
 from plant_api.constants import AWS_REGION, TABLE_NAME, S3_BUCKET_NAME
+
+
+TEST_FIXTURE_DIR = "./tests/fixture_data/"
 
 
 def get_app():
@@ -151,4 +158,45 @@ def image_record_factory(
     )
 
 
-TEST_FIXTURE_DIR = "./tests/fixture_data/"
+def create_test_image(size=(100, 100)):
+    # Create a simple image for testing
+    file = io.BytesIO()
+    image = img.new("RGB", size, color="red")
+    image.save(file, "PNG")
+    file.name = "test.png"
+    file.seek(0)
+    return file
+
+
+def image_in_s3_factory(
+    image: Optional[Image] = None,
+    image_id: Optional[uuid.UUID] = None,
+    plant_id: Optional[uuid.UUID] = None,
+):
+    if image is None:
+        image = img.open(io.BytesIO(create_test_image().read()))
+    if image_id is None:
+        image_id = fake.uuid4()
+    if plant_id is None:
+        plant_id = fake.uuid4()
+
+    _ = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.ORIGINAL)
+    _ = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.THUMB)
+
+
+def check_object_exists_in_s3(s3_client, bucket_name: str, object_key: str) -> bool:
+    """
+    Check if an object exists in an S3 bucket.
+
+    True if object exists, False otherwise
+    """
+    try:
+        s3_client.head_object(Bucket=bucket_name, Key=object_key)
+        return True
+    except ClientError as e:
+        # Check if the error was because the object does not exist
+        error_code = e.response["Error"]["Code"]
+        if error_code == "404":
+            return False
+        else:
+            raise  # re-raise if it's a different error
