@@ -42,6 +42,7 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const [hasImages, setHasImages] = useState<boolean>(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<
     NewPlantImage | undefined
   >();
@@ -64,7 +65,11 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   };
   const handleCloseImageModal = () => setShowImageModal(false);
 
-  const handleDeletePlant = (image: NewPlantImage) => {
+  const handleDeleteClick = (image: NewPlantImage) => {
+    setSelectedImage(image);
+    setShowConfirmDeleteModal(true);
+  };
+  const confirmDeleteImage = (image: NewPlantImage) => {
     deletePlantImage(image)
       .then((response) => {
         if (!response.ok) {
@@ -74,6 +79,7 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
         console.log("deleted image");
         showAlert("Successfuly deleted image!", "success");
         handleCloseImageModal();
+        setShowConfirmDeleteModal(false);
         setReloadTrigger((current) => current + 1);
       })
       .catch((error) => {
@@ -150,9 +156,35 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           <Modal.Footer className="justify-content-center">
             <Button
               variant="danger"
-              onClick={() => handleDeletePlant(selectedImage)}
+              onClick={() => handleDeleteClick(selectedImage)}
             >
               Delete Image
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {selectedImage && showConfirmDeleteModal && (
+        <Modal
+          show={showConfirmDeleteModal}
+          onHide={() => setShowConfirmDeleteModal(false)}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Deletion</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete this image?</Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowConfirmDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => confirmDeleteImage(selectedImage)}
+            >
+              Delete
             </Button>
           </Modal.Footer>
         </Modal>
