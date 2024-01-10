@@ -305,7 +305,7 @@ def create_new_image(gdrive_service, image_item: ImageCreate):
     # Get the full image from gdrive
     image_file = download_file_from_drive(gdrive_service, image_item.gdrive_url)
 
-    post_url = f"{BASE_URL}/new_images/plants/{image_item.plant_id}"
+    post_url = f"{BASE_URL}/images/plants/{image_item.plant_id}"
     return requests.post(
         post_url,
         headers=headers,

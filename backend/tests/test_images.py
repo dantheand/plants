@@ -31,7 +31,7 @@ class TestImageRead:
         mock_db.insert_mock_data(image)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"/new_images/{image_id}")
+        response = test_client.get(f"/images/{image_id}")
         assert response.status_code == 200
         parsed_response = ImageItem(**response.json())
         assert parsed_response.SK == f"IMAGE#{image_id}"
@@ -45,7 +45,7 @@ class TestImageRead:
             mock_db.insert_mock_data(image)
 
         test_client = client(DEFAULT_TEST_USER)
-        response = test_client.get(f"/new_images/plants/{plant.plant_id}")
+        response = test_client.get(f"/images/plants/{plant.plant_id}")
         assert response.status_code == 200
         parsed_response = TypeAdapter(list[ImageItem]).validate_python(response.json())
         assert len(parsed_response) == 10
@@ -62,7 +62,7 @@ class TestImageRead:
             mock_db.insert_mock_data(image)
 
         test_client = client(OTHER_TEST_USER)
-        response = test_client.get(f"/new_images/plants/{plant.plant_id}")
+        response = test_client.get(f"/images/plants/{plant.plant_id}")
         assert response.status_code == 200
         parsed_response = TypeAdapter(list[ImageItem]).validate_python(response.json())
         assert len(parsed_response) == 10
@@ -78,7 +78,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/plants/{plant_id}",
+            f"/images/plants/{plant_id}",
             files={"image_file": ("filename", test_image, "image/png")},
         )
         assert response.status_code == 200
@@ -104,7 +104,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(OTHER_TEST_USER).post(
-            f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         assert response.status_code == 404
 
@@ -113,7 +113,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/plants/{non_existent_plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/images/plants/{non_existent_plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         assert response.status_code == 404
 
@@ -125,7 +125,7 @@ class TestImageUpload:
         image_size = (MAX_THUMB_X_PIXELS + 10, MAX_THUMB_X_PIXELS + 10)
         test_image = create_test_image(image_size)
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
+            f"/images/plants/{plant_id}", files={"image_file": ("filename", test_image, "image/png")}
         )
         parsed_response = ImageItem(**response.json())
 
@@ -150,7 +150,7 @@ class TestImageUpload:
 
         test_image = create_test_image()
         response = client(DEFAULT_TEST_USER).post(
-            f"/new_images/plants/{plant.plant_id}",
+            f"/images/plants/{plant.plant_id}",
             data={"timestamp": timestamp},
             files={"image_file": ("filename", test_image, "image/png")},
         )
@@ -172,7 +172,7 @@ class TestImageDelete:
         image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key=db_query).get("Item")
         assert image_in_db == image.model_dump()
 
-        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{image_id}")
+        response = client(DEFAULT_TEST_USER).delete(f"/images/{image_id}")
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         # Check that the image was deleted by scanning the table
@@ -187,14 +187,14 @@ class TestImageDelete:
         mock_db.insert_mock_data(plant)
         mock_db.insert_mock_data(image)
 
-        response = client(OTHER_TEST_USER).delete(f"/new_images/{image_id}")
+        response = client(OTHER_TEST_USER).delete(f"/images/{image_id}")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_non_existant_image(self, mock_db, client):
         plant = plant_record_factory()
         mock_db.insert_mock_data(plant)
 
-        response = client(DEFAULT_TEST_USER).delete(f"/new_images/{uuid.uuid4()}")
+        response = client(DEFAULT_TEST_USER).delete(f"/images/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_delete_image_deletes_s3_files(self, mock_db, client, fake_s3):
@@ -209,7 +209,7 @@ class TestImageDelete:
         assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is True
         assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.thumbnail_photo_s3_url) is True
 
-        _ = client(DEFAULT_TEST_USER).delete(f"/new_images/{image_id}")
+        _ = client(DEFAULT_TEST_USER).delete(f"/images/{image_id}")
 
         # Make sure it was deleted from S3
         assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is False
@@ -227,7 +227,7 @@ class TestImageUpdate:
         updated_image = ImageItem(**image.model_dump())
         updated_image.timestamp = "2005-06-18T00:59:59.408150"
 
-        response = client(DEFAULT_TEST_USER).patch(f"/new_images/{image_id}", json=updated_image.model_dump())
+        response = client(DEFAULT_TEST_USER).patch(f"/images/{image_id}", json=updated_image.model_dump())
         parsed_response = ImageItem(**response.json())
         assert response.status_code == status.HTTP_200_OK
         assert parsed_response.timestamp == updated_image.timestamp
@@ -243,7 +243,7 @@ class TestImageUpdate:
         updated_image = ImageItem(**image.model_dump())
         updated_image.timestamp = "2005-06-18T00:59:59.408150"
 
-        response = client(OTHER_TEST_USER).patch(f"/new_images/{image_id}", json=updated_image.model_dump())
+        response = client(OTHER_TEST_USER).patch(f"/images/{image_id}", json=updated_image.model_dump())
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 router = BaseRouter(
-    prefix="/new_images",
+    prefix="/images",
     dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
