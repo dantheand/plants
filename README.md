@@ -3,6 +3,9 @@
 
 A plant tracking app meant to make it easy to track plant growth and lineages.
 
+- `backend` is the FastAPI backend (Python)
+- `plant-app` is the React frontend (Typescript)
+
 ## Development environment setup
 ### Dependencies
 - Python 3.9
