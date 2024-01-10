@@ -11,6 +11,8 @@ import "../styles/styles.css";
 import { FaCamera, FaSeedling } from "react-icons/fa";
 import ImageUpload from "../components/ImageUpload";
 import { FloatingActionButton } from "../components/CommonComponents";
+import { useAlert } from "../context/Alerts";
+import { convertTimestampToDateString } from "../utils/utils";
 
 export const PlantImagesLoadingPlaceholder = () => {
   return (
@@ -24,7 +26,17 @@ export const PlantImagesLoadingPlaceholder = () => {
   );
 };
 
+const deletePlantImage = async (image: NewPlantImage) => {
+  return fetch(`${BASE_API_URL}/new_images/${image.image_id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+    },
+  });
+};
+
 export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
+  const { showAlert } = useAlert();
   const [plantImages, setPlantImages] = useState<NewPlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
@@ -53,7 +65,21 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const handleCloseImageModal = () => setShowImageModal(false);
 
   const handleDeletePlant = (image: NewPlantImage) => {
-    console.log("delete image with id: ", image.image_id);
+    deletePlantImage(image)
+      .then((response) => {
+        if (!response.ok) {
+          showAlert("Error deleting image.", "danger");
+          return;
+        }
+        console.log("deleted image");
+        showAlert("Successfuly deleted image!", "success");
+        handleCloseImageModal();
+        setReloadTrigger((current) => current + 1);
+      })
+      .catch((error) => {
+        console.error("Error deleting image:", error);
+        showAlert("Network error deleting image.", "danger");
+      });
   };
 
   useEffect(() => {
@@ -110,7 +136,9 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
       {selectedImage && (
         <Modal show={showImageModal} onHide={handleCloseImageModal} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Full-sized image</Modal.Title>
+            <Modal.Title>
+              {convertTimestampToDateString(selectedImage.timestamp)}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Image
@@ -168,7 +196,7 @@ export function PlantImagesTimeline3({
       {plant_images.map((plant_image) => (
         <VerticalTimelineElement
           key={plant_image.timestamp}
-          date={new Date(plant_image.timestamp).toLocaleDateString("en-US")}
+          date={convertTimestampToDateString(plant_image.timestamp)}
           className="verticalTimelineElement"
           contentStyle={{ background: "none", boxShadow: "none" }} // Override default styles
           contentArrowStyle={{ borderRight: "none" }} // Override default styles
