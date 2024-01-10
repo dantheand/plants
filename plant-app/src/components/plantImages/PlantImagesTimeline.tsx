@@ -1,4 +1,4 @@
-import { NewPlantImage } from "../../types/interfaces";
+import { PlantImage } from "../../types/interfaces";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
@@ -10,8 +10,8 @@ export function PlantImagesTimeline({
   plant_images,
   onImageClick,
 }: {
-  plant_images: NewPlantImage[];
-  onImageClick: (image: NewPlantImage) => void;
+  plant_images: PlantImage[];
+  onImageClick: (image: PlantImage) => void;
 }) {
   // Reorder plants in reverse chronological order
   plant_images.sort(

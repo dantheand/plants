@@ -1,4 +1,4 @@
-import { NewPlantImage } from "../../types/interfaces";
+import { PlantImage } from "../../types/interfaces";
 import { Button, Image, Modal } from "react-bootstrap";
 import { convertTimestampToDateString } from "../../utils/utils";
 import React from "react";
@@ -6,8 +6,8 @@ import React from "react";
 interface ImageDisplayModalProps {
   show: boolean;
   onHide: () => void;
-  image: NewPlantImage;
-  onDelete: (image: NewPlantImage) => void;
+  image: PlantImage;
+  onDelete: (image: PlantImage) => void;
 }
 
 export function ImageDisplayModal({

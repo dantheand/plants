@@ -1,4 +1,4 @@
-export interface NewPlantImage {
+export interface PlantImage {
   image_id: string;
   plant_id: string;
   signed_full_photo_url: string;

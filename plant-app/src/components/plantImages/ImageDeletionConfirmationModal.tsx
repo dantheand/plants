@@ -1,12 +1,12 @@
 import { Button, Modal } from "react-bootstrap";
 import React from "react";
-import { NewPlantImage } from "../../types/interfaces";
+import { PlantImage } from "../../types/interfaces";
 
 interface ImageDeletionConfirmationModalProps {
   show: boolean;
   onHide: () => void;
-  onConfirm: (image: NewPlantImage) => void;
-  image: NewPlantImage;
+  onConfirm: (image: PlantImage) => void;
+  image: PlantImage;
 }
 
 export function ImageDeletionConfirmationModal({
