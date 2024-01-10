@@ -1,4 +1,3 @@
-import io
 import tempfile
 import uuid
 
@@ -6,6 +5,7 @@ from PIL import Image as img
 from pydantic import TypeAdapter
 from starlette import status
 
+from lib import create_test_image, image_in_s3_factory
 from plant_api.constants import S3_BUCKET_NAME
 from plant_api.routers.new_images import MAX_THUMB_X_PIXELS, _orient_image
 from plant_api.utils.db import make_image_query_key
@@ -20,16 +20,6 @@ from tests.lib import (
     mock_db,
     fake_s3,
 )
-
-
-def create_test_image(size=(100, 100)):
-    # Create a simple image for testing
-    file = io.BytesIO()
-    image = img.new("RGB", size, color="red")
-    image.save(file, "PNG")
-    file.name = "test.png"
-    file.seek(0)
-    return file
 
 
 class TestImageRead:
@@ -215,8 +205,20 @@ class TestImageDelete:
         response = client(DEFAULT_TEST_USER).delete(f"/new_images/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_delete_image_deletes_s3_files(self):
-        ...
+    def test_delete_image_deletes_s3_files(self, mock_db, client, fake_s3):
+        plant = plant_record_factory()
+        image_id = uuid.uuid4()
+        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
+        mock_db.insert_mock_data(plant)
+        mock_db.insert_mock_data(image)
+        img_s3_path = image_in_s3_factory(image_id=image.image_id, plant_id=plant.plant_id)
+
+        # Check that the image was uploaded to S3
+        assert fake_s3.head_object(Bucket=S3_BUCKET_NAME, Key=img_s3_path)["ResponseMetadata"]["HTTPStatusCode"] == 200
+        _ = client(DEFAULT_TEST_USER).delete(f"/new_images/{image_id}")
+
+        # Make sure it was deleted from S3
+        assert fake_s3.head_object(Bucket=S3_BUCKET_NAME, Key=img_s3_path)["ResponseMetadata"]["HTTPStatusCode"] == 404
 
 
 class TestImageUpdate:
