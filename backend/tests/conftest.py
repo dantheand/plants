@@ -38,18 +38,31 @@ def set_mock_aws_env_vars():
 
 
 @pytest.fixture
-def plant_with_image_in_s3(mock_db, fake_s3, plant_with_image):
-    plant, image = plant_with_image
-    image_in_s3_factory(image_id=image.image_id, plant_id=plant.plant_id)
+def default_user_plant(mock_db):
+    plant = plant_record_factory()
+    mock_db.insert_mock_data(plant)
+    return plant
+
+
+@pytest.fixture
+def image_record(mock_db):
+    image = image_record_factory()
+    mock_db.insert_mock_data(image)
+    return image
+
+
+@pytest.fixture
+def plant_with_image_record(mock_db, default_user_plant, image_record):
+    plant = default_user_plant
+    image = image_record_factory(plant_id=plant.plant_id)
+    mock_db.insert_mock_data(image)
     return plant, image
 
 
 @pytest.fixture
-def plant_with_image(mock_db):
-    plant = plant_record_factory()
-    mock_db.insert_mock_data(plant)
-    image = image_record_factory(plant_id=plant.plant_id)
-    mock_db.insert_mock_data(image)
+def plant_with_image_in_s3(mock_db, fake_s3, plant_with_image_record):
+    plant, image = plant_with_image_record
+    image_in_s3_factory(image_id=image.image_id, plant_id=plant.plant_id)
     return plant, image
 
 
