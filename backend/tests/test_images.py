@@ -15,12 +15,9 @@ from tests.lib import (
     DEFAULT_TEST_USER,
     OTHER_TEST_USER,
     TEST_FIXTURE_DIR,
-    client,
     image_record_factory,
     image_in_s3_factory,
     plant_record_factory,
-    mock_db,
-    fake_s3,
 )
 
 
@@ -197,19 +194,14 @@ class TestImageDelete:
         response = client(DEFAULT_TEST_USER).delete(f"/images/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_delete_image_deletes_s3_files(self, mock_db, client, fake_s3):
-        plant = plant_record_factory()
-        image_id = uuid.uuid4()
-        image = image_record_factory(plant_id=plant.plant_id, image_id=image_id)
-        mock_db.insert_mock_data(plant)
-        mock_db.insert_mock_data(image)
-        image_in_s3_factory(image_id=image.image_id, plant_id=image.plant_id)
+    def test_delete_image_deletes_s3_files(self, mock_db, client, fake_s3, plant_with_image_in_s3):
+        plant, image = plant_with_image_in_s3
 
         # Check that the image was uploaded to S3
         assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is True
         assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.thumbnail_photo_s3_url) is True
 
-        _ = client(DEFAULT_TEST_USER).delete(f"/images/{image_id}")
+        _ = client(DEFAULT_TEST_USER).delete(f"/images/{image.image_id}")
 
         # Make sure it was deleted from S3
         assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is False
