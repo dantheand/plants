@@ -3,8 +3,9 @@ import uuid
 from pydantic import TypeAdapter
 from fastapi import status
 
+from constants import S3_BUCKET_NAME
 from plant_api.routers.plants import PLANT_ROUTE
-from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, plant_record_factory
+from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, check_object_exists_in_s3, plant_record_factory
 from plant_api.schema import ItemKeys, PlantBase, PlantItem
 
 
@@ -175,8 +176,23 @@ class TestPlantDelete:
         response = test_client.delete(f"{PLANT_ROUTE}/{plant_id}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_delete_plant_deletes_images(self):
-        pass
+    def test_delete_plant_deletes_images_in_db(self, client, mock_db, fake_s3, plant_with_image_record):
+        plant, image = plant_with_image_record
+
+        test_client = client(DEFAULT_TEST_USER)
+        response = test_client.delete(f"{PLANT_ROUTE}/{plant.plant_id}")
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
+        assert len(db_items) == 0
+
+    def test_delete_plant_deletes_images_in_s3(self, client, mock_db, fake_s3, plant_with_image_in_s3):
+        plant, image = plant_with_image_in_s3
+
+        test_client = client(DEFAULT_TEST_USER)
+        response = test_client.delete(f"{PLANT_ROUTE}/{plant.plant_id}")
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.full_photo_s3_url) is False
+        assert check_object_exists_in_s3(fake_s3, S3_BUCKET_NAME, image.thumbnail_photo_s3_url) is False
 
 
 class TestParsing:

@@ -56,7 +56,7 @@ def image_record(mock_db):
 
 
 @pytest.fixture
-def plant_with_image_record(mock_db, default_user_plant, image_record):
+def plant_with_image_record(mock_db, default_user_plant):
     plant = default_user_plant
     image = create_and_insert_image_record(mock_db, plant_id=plant.plant_id)
     return plant, image
