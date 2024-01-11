@@ -8,7 +8,8 @@ from fastapi import Depends, HTTPException, status
 from plant_api.dependencies import get_current_user
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import get_db_table, query_by_plant_id
-from plant_api.schema import PlantCreate, PlantItem, PlantUpdate, User
+from plant_api.schema import ImageItem, PlantCreate, PlantItem, PlantUpdate, User
+from plant_api.routers.images import delete_image_from_s3
 
 PLANT_ROUTE = "/plants"
 
@@ -86,6 +87,18 @@ async def delete_plant(plant_id: UUID, user=Depends(get_current_user)):
     if "Item" not in response:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Plant not found")
 
-    # Delete the plant item
+    # Delete the plant item from DB
     table.delete_item(Key={"PK": pk, "SK": sk})
+
+    # Delete all images associated with the plant from DB and S3
+    response = table.query(
+        KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
+    )
+    # Parse the response out as a list of ImageItems
+    image_items = [ImageItem(**item) for item in response["Items"]]
+    for image_item in image_items:
+        table.delete_item(Key={"PK": image_item.PK, "SK": image_item.SK})
+        # delete from S3
+        delete_image_from_s3(image_item)
+
     return {"message": "Plant deleted successfully"}
