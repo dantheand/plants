@@ -44,18 +44,21 @@ def default_user_plant(mock_db):
     return plant
 
 
-@pytest.fixture
-def image_record(mock_db):
-    image = image_record_factory()
+def create_and_insert_image_record(mock_db, plant_id=None):
+    image = image_record_factory(plant_id=plant_id)
     mock_db.insert_mock_data(image)
     return image
 
 
 @pytest.fixture
+def image_record(mock_db):
+    return create_and_insert_image_record(mock_db)
+
+
+@pytest.fixture
 def plant_with_image_record(mock_db, default_user_plant, image_record):
     plant = default_user_plant
-    image = image_record_factory(plant_id=plant.plant_id)
-    mock_db.insert_mock_data(image)
+    image = create_and_insert_image_record(mock_db, plant_id=plant.plant_id)
     return plant, image
 
 
