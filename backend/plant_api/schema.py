@@ -93,11 +93,18 @@ class PlantItem(PlantCreate):
     SK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
+    user_id: Optional[str] = None
 
     @model_validator(mode="before")
     def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Break out the plant_id UUID as a separate field"""
         values["plant_id"] = values["SK"].split("#")[1]
+        return values
+
+    @model_validator(mode="before")
+    def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Break out the user_id UUID as a separate field"""
+        values["user_id"] = values["PK"].split("#")[1]
         return values
 
 

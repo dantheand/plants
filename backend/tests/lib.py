@@ -4,104 +4,16 @@ from datetime import date, datetime
 from typing import Optional
 
 from botocore.exceptions import ClientError
-import boto3
-import pytest
 from PIL import Image as img
 from faker import Faker
-from moto import mock_dynamodb, mock_s3
-from starlette.testclient import TestClient
 from PIL.Image import Image
 
-from plant_api.dependencies import get_current_user
 from plant_api.routers.images import ImageSuffixes, make_s3_path_for_image, upload_image_to_s3
 
 # from plant_api.main import app
-from plant_api.schema import DbModelType, EntityType, ImageItem, ItemKeys, PlantItem, User
-
-from plant_api.constants import AWS_REGION, TABLE_NAME, S3_BUCKET_NAME
-
+from plant_api.schema import EntityType, ImageItem, ItemKeys, PlantItem, User
 
 TEST_FIXTURE_DIR = "./tests/fixture_data/"
-
-
-def get_app():
-    from plant_api.main import app
-
-    return app
-
-
-class MockDB:
-    def __init__(self):
-        self.table_name = TABLE_NAME
-        self.dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
-
-    def create_table(self):
-        self.dynamodb.create_table(
-            TableName=self.table_name,
-            KeySchema=[
-                {"AttributeName": "PK", "KeyType": "HASH"},
-                {"AttributeName": "SK", "KeyType": "RANGE"},
-            ],
-            AttributeDefinitions=[
-                {"AttributeName": "PK", "AttributeType": "S"},
-                {"AttributeName": "SK", "AttributeType": "S"},
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    "IndexName": "SK-PK-index",
-                    "KeySchema": [
-                        {"AttributeName": "SK", "KeyType": "HASH"},
-                        {"AttributeName": "PK", "KeyType": "HASH"},
-                    ],
-                    "Projection": {"ProjectionType": "ALL"},
-                },
-            ],
-            ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
-        )
-
-    def insert_mock_data(self, db_item: DbModelType):
-        self.dynamodb.Table(self.table_name).put_item(Item=db_item.model_dump())
-
-    def delete_table(self):
-        table = self.dynamodb.Table(self.table_name)
-        table.delete()
-
-
-@pytest.fixture(scope="function")
-def fake_s3():
-    with mock_s3():
-        client = boto3.client("s3", region_name=AWS_REGION)
-        client.create_bucket(Bucket=S3_BUCKET_NAME, CreateBucketConfiguration={"LocationConstraint": AWS_REGION})
-        yield client
-
-
-@pytest.fixture(scope="function")
-def mock_db():
-    with mock_dynamodb():
-        mock_db = MockDB()
-        mock_db.create_table()
-
-        yield mock_db
-
-        mock_db.delete_table()
-
-
-@pytest.fixture(scope="function")
-def client():
-    app = get_app()
-
-    def _get_client(current_user: User = DEFAULT_TEST_USER):
-        def mock_get_current_user():
-            return current_user
-
-        app.dependency_overrides[get_current_user] = mock_get_current_user
-        test_client = TestClient(app)
-        return test_client
-
-    yield _get_client
-    # Clear overrides after the test
-    app.dependency_overrides.clear()
-
 
 fake = Faker()
 DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=False)
