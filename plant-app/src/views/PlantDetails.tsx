@@ -186,7 +186,7 @@ export function PlantDetails() {
     <PlantLayout>
       <DeleteButtonWConfirmation
         entityName="Plant"
-        confirmationText={`delete ${plant.human_id}`}
+        confirmationText={`delete plant`}
         deleteFunction={handleDelete}
       />
       <PlantForm

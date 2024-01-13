@@ -23,6 +23,7 @@ interface DeleteButtonProps {
   deleteFunction: () => void;
 }
 
+// TODO: reuse this component for image deletion
 export const DeleteButtonWConfirmation = ({
   entityName,
   confirmationText,
@@ -61,12 +62,17 @@ export const DeleteButtonWConfirmation = ({
             This action cannot be undone.
           </p>
           <p>
+            If the plant has died, been gifted, or turned into another plant,
+            add a "sink" value to this plant instead of deleting it.
+          </p>
+          <p>
             Type <b>{confirmationText}</b> to confirm:
           </p>
           <Form.Control
             type="text"
             value={confirmationInput}
             onChange={handleInputChange}
+            placeholder={confirmationText}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 handleDelete();
