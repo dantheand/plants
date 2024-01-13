@@ -38,6 +38,7 @@ async function responseGoogle(
     const backendUrl = BASE_API_URL + "/token";
     const res = await fetch(backendUrl, {
       method: "POST",
+      credentials: "include", // This is important for cookies to be sent and received
       headers: {
         "Content-Type": "application/json",
       },

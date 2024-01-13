@@ -49,4 +49,5 @@ def valid_email_from_db(email):
     return email in FAKE_DB
 
 
+# TODO: make this a real DB that is populated everytime someone tries to log in (default to disallowed user)
 FAKE_DB = ["dan.the.anderson@gmail.com"]

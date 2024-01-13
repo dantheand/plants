@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
 import jose
-from fastapi import Depends
+from fastapi import Depends, Response
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from jose import jwt
@@ -11,6 +11,7 @@ from starlette.requests import Request
 
 from plant_api.constants import (
     ALGORITHM,
+    AWS_DEPLOYMENT_ENV,
     CREDENTIALS_EXCEPTION,
     GOOGLE_CLIENT_ID,
     GoogleOauthPayload,
@@ -20,6 +21,7 @@ from plant_api.constants import (
 from plant_api.dependencies import get_current_user
 from plant_api.routers.common import BaseRouter
 from plant_api.schema import User
+from plant_api.utils.deployment import get_deployment_env
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -34,7 +36,7 @@ async def check_valid_user_token(user: Annotated[User, Depends(get_current_user)
 
 
 @router.post(f"/{TOKEN_URL}")
-async def auth(request: Request):
+async def auth(request: Request, response: Response):
     """Authenticates a users oauth2 token and returns a JWT token with their email encoded in it"""
     body = await request.json()
     token = body.get("token")
@@ -48,6 +50,17 @@ async def auth(request: Request):
             logging.error("Invalid nonce: %s", nonce)
             raise CREDENTIALS_EXCEPTION
         payload = GoogleOauthPayload(**id_info)
+
+        # Set the refresh token cookie
+        response.set_cookie(
+            key="refresh_token",
+            value="test",
+            httponly=True,
+            path="/",
+            secure=True if get_deployment_env() == AWS_DEPLOYMENT_ENV else False,
+            samesite="lax",
+        )
+
         return create_token_for_user(payload)
 
     except Exception as e:
