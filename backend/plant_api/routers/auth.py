@@ -150,7 +150,8 @@ def validate_refresh_token(token: str) -> TokenItem:
     token_in_db = get_token_item_by_token(token)
     if not token_in_db:
         raise CREDENTIALS_EXCEPTION
-    # TODO cleanup getting datetime from token (use model dumps so we dont have to do this
+
+    # TODO cleanup getting datetime from token (use model dumps so we dont have to do this)
     if not token_in_db.revoked and datetime.fromisoformat(token_in_db.expires_at) > datetime.utcnow():
         return token_in_db
     raise CREDENTIALS_EXCEPTION
