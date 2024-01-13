@@ -169,6 +169,7 @@ class TokenItem(BaseModel):
     issued_at: datetime
     expires_at: datetime
     revoked: bool = False
+    token_str: Optional[str] = None
     user_id: Optional[str] = None
 
     # TODO: deduplicate all these datetime_to_string methods
@@ -178,6 +179,11 @@ class TokenItem(BaseModel):
         if isinstance(v, datetime):
             return v.isoformat()
         return v
+
+    @model_validator(mode="before")
+    def extract_token_str(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values["token_str"] = values["PK"].split("#")[1]
+        return values
 
     @model_validator(mode="before")
     def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
@@ -198,7 +204,7 @@ class PlantSourceItem(BaseModel):
     source_date: date
 
 
-DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem]
+DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, TokenItem]
 
 
 class User(BaseModel):

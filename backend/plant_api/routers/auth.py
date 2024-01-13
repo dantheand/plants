@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
@@ -56,11 +57,11 @@ def generate_and_save_refresh_token(user: User):
     """Generates a refresh token for the user and saves it to the DB"""
     token, expiration = create_refresh_token_for_user(GoogleOauthPayload(email=user.email, sub=user.google_id))
     token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{token}",
+        PK=f"{ItemKeys.REFRESH_TOKEN}#{uuid.uuid4()}",
         SK=f"{ItemKeys.USER}#{user.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
+        expires_at=expiration,
     )
     add_refresh_token_to_db(token_item)
     return token
@@ -98,6 +99,14 @@ async def auth(request: Request, response: Response):
 
 @router.post("/refresh_token")
 async def refresh_token(request: Request, response: Response):
+    """Refreshes the access token for the user and returns a new refresh token cookie
+
+    If the refresh token supplied has been used before, we're likely seeing a replay attack,
+    so we revoke all refresh tokens for a user.
+
+    See https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation
+    """
+
     old_refresh_token = request.cookies.get(REFRESH_TOKEN)
     if not old_refresh_token:
         raise CREDENTIALS_EXCEPTION
@@ -180,6 +189,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     else:
         expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
+    to_encode.update({"jti": str(uuid.uuid4())})
     try:
         encoded_jwt = jwt.encode(to_encode, get_jwt_secret(), algorithm=ALGORITHM)
     except jose.JWTError as e:
