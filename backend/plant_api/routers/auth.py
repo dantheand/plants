@@ -20,7 +20,7 @@ from plant_api.constants import (
 )
 from plant_api.dependencies import DB_PLACEHOLDER, get_current_user
 from plant_api.routers.common import BaseRouter
-from plant_api.schema import ItemKeys, TokenItem, User
+from plant_api.schema import EntityType, ItemKeys, TokenItem, User
 from plant_api.utils.deployment import get_deployment_env
 from plant_api.utils.db import get_db_table
 
@@ -56,6 +56,7 @@ def generate_and_save_refresh_token(user: User):
     token_item = TokenItem(
         PK=f"{ItemKeys.REFRESH_TOKEN}#{token}",
         SK=f"{ItemKeys.USER}#{user.google_id}",
+        entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
     )
@@ -113,6 +114,7 @@ async def refresh_token(request: Request, response: Response):
     token_item = TokenItem(
         PK=f"{ItemKeys.REFRESH_TOKEN}{new_refresh_token}",
         SK=f"{ItemKeys.USER}{user.google_id}",
+        entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
     )
@@ -127,7 +129,7 @@ def validate_refresh_token(token: str) -> TokenItem:
     if "Item" not in response:
         raise CREDENTIALS_EXCEPTION
     token_item = TokenItem(**response["Item"])
-    if not token_item.revoked and token_item.expiration > datetime.utcnow():
+    if not token_item.revoked and token_item.expires_at > datetime.utcnow():
         return token_item
     raise CREDENTIALS_EXCEPTION
 

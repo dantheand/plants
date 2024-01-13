@@ -5,9 +5,6 @@ curl https://2jbzjl9rj2.execute-api.us-west-2.amazonaws.com/test/plants
 ############# CI/Tests ################
 ######################################
 
-cd ~/projects/plants
-mypy ./backend
-
 
 ## With poetry
 cd ~/projects/plants/backend/
@@ -37,18 +34,7 @@ aws lambda create-function \
 ###### Updating FastAPI backend lambda ######
 
 # Install AWS compatible dependencies into a local directory to be packaged with the FastAPI backend
-cd ~/projects/plants/backend
-rm -rf ../backend_deps
-pip install \
---platform manylinux2014_x86_64 \
---target=../backend_deps \
---implementation cp \
---python-version 3.9 \
---only-binary=:all: --upgrade \
---index https://pypi.org/simple/ \
--r requirements.txt
-
-###### Using poetry requirements (note: doesn't export dev requirements by default) ######
+# Using poetry requirements (note: doesn't export dev requirements by default) ######
 poetry shell
 poetry use 3.9
 poetry export -f requirements.txt --output requirements_from_poetry.txt --without-hashes
