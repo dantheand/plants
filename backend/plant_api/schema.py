@@ -10,6 +10,7 @@ class ItemKeys(str, Enum):
     PLANT = "PLANT"
     IMAGE = "IMAGE"
     SOURCE = "SOURCE"
+    REFRESH_TOKEN = "TOKEN"
 
 
 class EntityType(str, Enum):
@@ -17,6 +18,7 @@ class EntityType(str, Enum):
     PLANT = "Plant"
     IMAGE = "Image"
     LINEAGE = "Lineage"
+    REFRESH_TOKEN = "Token"
 
 
 class SourceType(str, Enum):
@@ -33,6 +35,7 @@ USER_KEY_PATTERN = f"^{ItemKeys.USER}#"
 PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT}#"
 IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
 SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
+REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN}#"
 
 
 class UserItem(BaseModel):
@@ -154,6 +157,31 @@ class ImageItem(ImageBase):
     def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Break out the plant_id UUID as a separate field"""
         values["plant_id"] = values["PK"].split("#")[1]
+        return values
+
+
+class TokenItem(BaseModel):
+    """Refresh token schema"""
+
+    PK: str = Field(..., pattern=REFRESH_TOKEN_KEY_PATTERN)
+    SK: str = Field(..., pattern=USER_KEY_PATTERN)
+    entity_type: str = Field(EntityType.REFRESH_TOKEN)
+    issued_at: datetime
+    expires_at: datetime
+    revoked: bool = False
+    user_id: Optional[str] = None
+
+    # TODO: deduplicate all these datetime_to_string methods
+    @field_validator("issued_at", "expires_at", mode="after")
+    @classmethod
+    def datetime_to_string(cls, v: Union[str, datetime]) -> str:
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
+
+    @model_validator(mode="before")
+    def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values["user_id"] = values["SK"].split("#")[1]
         return values
 
 

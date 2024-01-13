@@ -49,5 +49,9 @@ def valid_email_from_db(email):
     return email in FAKE_DB
 
 
-# TODO: make this a real DB that is populated everytime someone tries to log in (default to disallowed user)
+# TODO: make this a real DB that is populated every time someone tries to log in (default to disallowed user)
 FAKE_DB = ["dan.the.anderson@gmail.com"]
+
+DB_PLACEHOLDER = [
+    User(email="dan.the.anderson@gmail.com", google_id="106821357176702886816", disabled=False).model_dump()
+]
