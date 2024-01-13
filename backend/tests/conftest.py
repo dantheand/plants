@@ -7,7 +7,7 @@ from starlette.testclient import TestClient
 
 from plant_api.constants import S3_BUCKET_NAME, TABLE_NAME
 from plant_api.dependencies import get_current_user
-from tests.lib import DEFAULT_TEST_USER
+from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER, AWS_REGION
 from plant_api.schema import DbModelType, User
 from tests.lib import image_in_s3_factory, image_record_factory, plant_record_factory
@@ -21,7 +21,7 @@ def mock_jwt_secret():
 
     with mock_secretsmanager():
         boto3.client("secretsmanager", region_name=AWS_REGION).create_secret(
-            Name=JWT_KEY_IN_SECRETS_MANAGER, SecretString="test_secret"
+            Name=JWT_KEY_IN_SECRETS_MANAGER, SecretString=TEST_JWT_SECRET
         )
         yield
 

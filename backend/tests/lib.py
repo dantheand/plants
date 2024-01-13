@@ -14,6 +14,7 @@ from plant_api.routers.images import ImageSuffixes, make_s3_path_for_image, uplo
 from plant_api.schema import EntityType, ImageItem, ItemKeys, PlantItem, User
 
 TEST_FIXTURE_DIR = "./tests/fixture_data/"
+TEST_JWT_SECRET = "test_secret"
 
 fake = Faker()
 DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=False)
