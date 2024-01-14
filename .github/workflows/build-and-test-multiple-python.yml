@@ -1,4 +1,4 @@
-name: Build and Test FastAPI Backend with Poetry
+name: Multiple Python Versions
 
 defaults:
   run:
