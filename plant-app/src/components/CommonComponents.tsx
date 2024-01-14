@@ -2,17 +2,18 @@ import React from "react";
 
 import { Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa6";
 
 export function BackButton() {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate(-1); // Go back to the previous page
+    navigate("/plants"); // Go back to the previous page
   };
 
   return (
     <Button variant="secondary" onClick={handleBackClick} className="mb-3">
-      &#8592; Back
+      <FaArrowLeft /> Back
     </Button>
   );
 }

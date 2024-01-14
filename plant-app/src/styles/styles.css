@@ -54,3 +54,15 @@
   padding: 2rem 0; /* Adds padding around the whole message for better spacing */
   text-align: center; /* Centers the message and icon */
 }
+
+
+/* Plant list table */
+
+.column-id {
+  width: 10%;  /* Adjust the width as needed */
+}
+
+.column-name {
+  width: 90%;  /* Adjust the width as needed */
+}
+

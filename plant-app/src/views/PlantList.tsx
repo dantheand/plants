@@ -1,7 +1,7 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { Container, ListGroup, Placeholder } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 import { JwtPayload, Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
@@ -9,43 +9,10 @@ import { FaPlus } from "react-icons/fa";
 import "../styles/styles.css";
 import { FloatingActionButton } from "../components/CommonComponents";
 import { jwtDecode } from "jwt-decode";
+import { PlantListTable } from "../components/plantList/PlantListTable";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
-};
-
-interface RenderListItemsProps {
-  isLoading: boolean;
-  plants?: Plant[];
-  handlePlantClick: (plantID: string, navigate: NavigateFunction) => void;
-  navigate: NavigateFunction;
-}
-// Function to render List Items
-const renderListItems = ({
-  isLoading,
-  plants,
-  handlePlantClick,
-  navigate,
-}: RenderListItemsProps) => {
-  if (isLoading || !plants) {
-    return [...Array(10)].map((_, idx) => (
-      <ListGroup.Item key={idx}>
-        <Placeholder as="div" animation="glow">
-          <Placeholder xs={12} size="lg" />
-        </Placeholder>
-      </ListGroup.Item>
-    ));
-  } else {
-    return plants.map((plant) => (
-      <ListGroup.Item
-        key={plant.plant_id}
-        onClick={() => handlePlantClick(plant.plant_id, navigate)}
-        className="clickable-item"
-      >
-        {plant.human_id} - {plant.human_name}
-      </ListGroup.Item>
-    ));
-  }
 };
 
 export function PlantList(): JSX.Element {
@@ -93,9 +60,12 @@ export function PlantList(): JSX.Element {
         icon={<FaPlus />}
         handleOnClick={navigateToCreatePlant}
       />
-      <ListGroup>
-        {renderListItems({ isLoading, plants, handlePlantClick, navigate })}
-      </ListGroup>
+      <PlantListTable
+        plants={plants}
+        isLoading={isLoading}
+        handlePlantClick={handlePlantClick}
+        navigate={navigate}
+      />
     </Container>
   );
 }
