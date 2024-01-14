@@ -13,21 +13,10 @@ import React, { useEffect } from "react";
 import logo from "../assets/plant_logo_big.png";
 import { jwtDecode } from "jwt-decode";
 import { LOG_OUT_GOOGLE_ID } from "../featureFlags";
+import cryptoRandomString from "crypto-random-string";
 
 function generateNonce(length = 32) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(
-      Math.floor(
-        (crypto.getRandomValues(new Uint32Array(1))[0] / (0xffffffff + 1)) *
-          charactersLength,
-      ),
-    );
-  }
-  return result;
+  return cryptoRandomString({ length: length, type: "hex" });
 }
 
 async function responseGoogle(

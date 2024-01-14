@@ -14,7 +14,7 @@ def get_aws_secret(secret_name: str):
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
-        logging.error("Could not get secret %s from AWS Secrets Manager.", secret_name)
+        logging.error("Could not get secret from AWS Secrets Manager.")
         raise e
 
     return get_secret_value_response["SecretString"]
