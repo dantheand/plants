@@ -12,7 +12,6 @@ from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
-from plant_api.dependencies import DB_PLACEHOLDER
 from plant_api.constants import (
     ALGORITHM,
     AWS_DEPLOYMENT_ENV,
@@ -25,9 +24,9 @@ from plant_api.constants import (
 )
 from plant_api.dependencies import get_current_user
 from plant_api.routers.common import BaseRouter
-from plant_api.schema import EntityType, ItemKeys, TokenItem
+from plant_api.schema import EntityType, ItemKeys, TokenItem, UserItem
 from plant_api.utils.deployment import get_deployment_env
-from plant_api.utils.db import get_db_table
+from plant_api.utils.db import get_db_table, get_user_by_google_id
 from plant_api.schema import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -36,6 +35,8 @@ REFRESH_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
 REFRESH_TOKEN = "refresh_token"
 
 router = BaseRouter()
+
+LOGGER = logging.getLogger(__name__)
 
 
 @router.get("/check_token")
@@ -56,7 +57,7 @@ def set_refresh_token_cookie(response: Response, token: str):
     )
 
 
-def generate_and_save_refresh_token(user: User):
+def generate_and_save_refresh_token(user: UserItem) -> str:
     """Generates a refresh token for the user and saves it to the DB"""
     token, expiration = create_refresh_token_for_user(GoogleOauthPayload(email=user.email, sub=user.google_id))
     token_item = TokenItem(
@@ -79,15 +80,24 @@ async def auth(request: Request, response: Response):
     try:
         id_info = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
         if not id_info:
-            logging.error("Could not verify id token: %s", id_info)
+            LOGGER.error("Could not verify id token: %s", id_info)
             raise CREDENTIALS_EXCEPTION
         if nonce != id_info["nonce"]:
-            logging.error("Invalid nonce: %s", nonce)
+            LOGGER.error("Invalid nonce: %s", nonce)
             raise CREDENTIALS_EXCEPTION
         payload = GoogleOauthPayload(**id_info)
 
-        user = find_user_by_google_id(payload.sub)
+        # Check to see if the user exists in the DB
+        user = get_user_by_google_id(payload.sub)
         if not user:
+            # If user doesn't exist add them to DB with "disabled" set to True then fail login
+            add_new_user_to_db(payload)
+            LOGGER.info("Adding new user to DB: %s", payload.email)
+            raise CREDENTIALS_EXCEPTION
+
+        # If user does exist, make sure they are not disabled and then return tokens
+        if user.disabled:
+            LOGGER.info("User is disabled: %s", payload.email)
             raise CREDENTIALS_EXCEPTION
 
         new_refresh_token = generate_and_save_refresh_token(user)
@@ -118,7 +128,7 @@ async def refresh_token(request: Request, response: Response):
     old_token_item = validate_refresh_token(old_refresh_token)
     revoke_refresh_token(old_token_item)
     # Create a new refresh token and access token for user
-    user = find_user_by_google_id(old_token_item.user_id)
+    user = get_user_by_google_id(old_token_item.user_id)
     if not user:
         raise CREDENTIALS_EXCEPTION
 
@@ -176,13 +186,17 @@ def add_refresh_token_to_db(token: TokenItem):
     _ = get_db_table().put_item(Item=token.dynamodb_dump())
 
 
-# TODO: swap this out for a real DB call
-def find_user_by_google_id(google_id) -> Optional[User]:
-    # Use list comprehension to filter users by google_id
-    users = [user for user in DB_PLACEHOLDER if user["google_id"] == google_id]
-
-    # Return the first user if found, else None
-    return User(**users[0]) if users else None
+def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
+    """Adds a new user to the DB"""
+    user_item = UserItem(
+        PK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
+        SK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
+        email=google_oauth_payload.email,
+        google_id=google_oauth_payload.sub,
+        entity_type=EntityType.USER,
+        disabled=True,
+    )
+    _ = get_db_table().put_item(Item=user_item.dynamodb_dump())
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> Tuple[str, datetime]:

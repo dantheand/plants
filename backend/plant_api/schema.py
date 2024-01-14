@@ -2,7 +2,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Any, Dict, Generic, Optional, TypeVar, Union
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
 
 
 class ItemKeys(str, Enum):
@@ -48,19 +48,21 @@ class DynamoDBMixin(BaseModel):
         return data
 
 
+# TODO: try to consolidate User and UserItem
 class User(BaseModel):
     email: str
     google_id: str
     disabled: Optional[bool] = None
 
 
+# TODO: separate creation and full item schema (creation doesn't require google_id)
 class UserItem(DynamoDBMixin):
     PK: str = Field(..., pattern=USER_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
     email: str
     entity_type: str = Field(EntityType.USER)
     disabled: Optional[bool] = True
-    google_id: Optional[str] = None
+    google_id: str
 
     @model_validator(mode="before")
     def extract_google_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:

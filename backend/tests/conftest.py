@@ -10,7 +10,7 @@ from plant_api.constants import S3_BUCKET_NAME, TABLE_NAME
 from plant_api.dependencies import get_current_user
 from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER, AWS_REGION
-from plant_api.schema import DbModelType, User
+from plant_api.schema import DbModelType, User, UserItem
 from tests.lib import image_in_s3_factory, image_record_factory, plant_record_factory
 
 
@@ -167,3 +167,15 @@ def mock_google_oauth(monkeypatch):
         return {"sub": DEFAULT_TEST_USER.google_id, "email": DEFAULT_TEST_USER.email, "nonce": "mock_nonce"}
 
     monkeypatch.setattr(id_token, "verify_oauth2_token", mock_verify_oauth2_token)
+
+
+@pytest.fixture
+def default_enabled_user_in_db(mock_db):
+    user = UserItem(
+        PK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        email=DEFAULT_TEST_USER.email,
+        disabled=False,
+    )
+    mock_db.insert_mock_data(user)
+    return user
