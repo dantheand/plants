@@ -185,7 +185,9 @@ class TestImageUpdate:
         updated_image = ImageItem(**image.model_dump())
         updated_image.timestamp = "2005-06-18T00:59:59.408150"
 
-        response = client_logged_in(DEFAULT_TEST_USER).patch(f"/images/{image.image_id}", json=updated_image.dynamodb_dump())
+        response = client_logged_in(DEFAULT_TEST_USER).patch(
+            f"/images/{image.image_id}", json=updated_image.dynamodb_dump()
+        )
         parsed_response = ImageItem(**response.json())
         assert response.status_code == status.HTTP_200_OK
         assert parsed_response.dynamodb_dump()["timestamp"] == updated_image.timestamp
@@ -196,7 +198,9 @@ class TestImageUpdate:
         updated_image = ImageItem(**image.model_dump())
         updated_image.timestamp = "2005-06-18T00:59:59.408150"
 
-        response = client_logged_in(OTHER_TEST_USER).patch(f"/images/{image.image_id}", json=updated_image.dynamodb_dump())
+        response = client_logged_in(OTHER_TEST_USER).patch(
+            f"/images/{image.image_id}", json=updated_image.dynamodb_dump()
+        )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 

@@ -57,7 +57,6 @@ async function responseGoogle(
     const data = await res.json();
     localStorage.setItem(JWT_TOKEN_STORAGE, data);
     setIsLoggedIn(true);
-    console.log("Logged in successfully");
   } catch (error) {
     console.error("Error authenticating with backend:", error);
   }
