@@ -57,7 +57,7 @@ def set_refresh_token_cookie(response: Response, token: str):
     )
 
 
-def generate_and_save_refresh_token(user: User):
+def generate_and_save_refresh_token(user: UserItem) -> str:
     """Generates a refresh token for the user and saves it to the DB"""
     token, expiration = create_refresh_token_for_user(GoogleOauthPayload(email=user.email, sub=user.google_id))
     token_item = TokenItem(
@@ -192,6 +192,8 @@ def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
         PK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
         SK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
         email=google_oauth_payload.email,
+        google_id=google_oauth_payload.sub,
+        entity_type=EntityType.USER,
         disabled=True,
     )
     _ = get_db_table().put_item(Item=user_item.dynamodb_dump())

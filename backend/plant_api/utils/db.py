@@ -66,8 +66,10 @@ def get_all_users() -> List[UserItem]:
     return users
 
 
-def get_user_by_google_id(google_id: str) -> Optional[UserItem]:
+def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
     """Returns the user with the given google_id"""
+    if not google_id:
+        return None
     response = get_db_table().query(KeyConditionExpression=Key("PK").eq(f"{ItemKeys.USER}#{google_id}"))
     if not response["Items"]:
         return None
