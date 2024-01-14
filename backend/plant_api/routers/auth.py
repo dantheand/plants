@@ -207,3 +207,7 @@ def create_refresh_token_for_user(payload: GoogleOauthPayload) -> (str, datetime
 
 def create_access_token_for_user(payload: GoogleOauthPayload) -> (str, datetime):
     return create_access_token(data={"sub": payload.sub, "email": payload.email})
+
+
+def create_token_for_user(payload: GoogleOauthPayload, expires_delta: Optional[timedelta] = None) -> (str, datetime):
+    return create_access_token(data={"sub": payload.sub, "email": payload.email}, expires_delta=expires_delta)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -34,6 +34,21 @@ def mock_find_user(monkeypatch):
 def create_current_refresh_token(mock_db) -> TokenItem:
     payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
     current_refresh_token, exp = auth.create_refresh_token_for_user(payload)
+
+    current_refresh_token_item = TokenItem(
+        PK=f"{ItemKeys.REFRESH_TOKEN}#{current_refresh_token}",
+        SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        entity_type=EntityType.REFRESH_TOKEN,
+        issued_at=datetime.utcnow(),
+        expires_at=exp,
+    )
+    mock_db.insert_mock_data(current_refresh_token_item)
+    return current_refresh_token_item
+
+
+def create_expired_refresh_token(mock_db) -> TokenItem:
+    payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
+    current_refresh_token, exp = auth.create_token_for_user(payload, expires_delta=timedelta(days=-1))
 
     current_refresh_token_item = TokenItem(
         PK=f"{ItemKeys.REFRESH_TOKEN}#{current_refresh_token}",
@@ -89,9 +104,12 @@ class TestTokenFlow:
         assert decoded_access_token["sub"] == DEFAULT_TEST_USER.google_id
         assert decoded_refresh_token["sub"] == DEFAULT_TEST_USER.google_id
 
-    def test_get_access_token_from_expired_refresh_token(self):
-        pass
+    def test_get_access_token_from_expired_refresh_token(self, client, mock_find_user, mock_db):
+        expired_refresh_token = create_expired_refresh_token(mock_db)
+        response = client().post("/refresh_token", cookies={REFRESH_TOKEN: expired_refresh_token.token_str})
 
-    # TODO: implement this to prevent replay attacks
+        assert response.status_code == 401
+
+    # TODO: implement this to prevent refresh token replay attacks
     def test_refresh_token_reuse_invalidates_all_users_tokens(self):
         pass
