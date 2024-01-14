@@ -1,9 +1,9 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, HARDCODED_USER, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Container, ListGroup, Placeholder } from "react-bootstrap";
 
-import { Plant } from "../types/interfaces";
+import { JwtPayload, Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
 
 import "../styles/styles.css";
@@ -48,12 +48,6 @@ const renderListItems = ({
   }
 };
 
-interface JwtPayload {
-  email: string;
-  google_id: string;
-  exp: number;
-}
-
 const getAndReportToken = async () => {
   const token = localStorage.getItem(JWT_TOKEN_STORAGE);
   if (token) {
@@ -75,7 +69,20 @@ export function PlantList(): JSX.Element {
   getAndReportToken();
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/plants/user/${HARDCODED_USER}`, {
+    const token = localStorage.getItem(JWT_TOKEN_STORAGE);
+    let google_id: string | null = null;
+
+    if (token) {
+      const decoded: JwtPayload = jwtDecode<JwtPayload>(token);
+      google_id = decoded.google_id;
+    }
+
+    if (!google_id) {
+      console.error("Google ID not found in token");
+      return;
+    }
+
+    fetch(`${BASE_API_URL}/plants/user/${google_id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
