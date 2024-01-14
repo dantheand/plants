@@ -48,6 +48,7 @@ class DynamoDBMixin(BaseModel):
         return data
 
 
+# TODO: try to consolidate User and UserItem
 class User(BaseModel):
     email: str
     google_id: str
