@@ -179,16 +179,3 @@ def default_enabled_user_in_db(mock_db):
     )
     mock_db.insert_mock_data(user)
     return user
-
-
-@pytest.fixture
-def mock_find_user(monkeypatch):
-    def mock_find_user_by_google_id(google_id):
-        return UserItem(
-            PK=f"USER#{DEFAULT_TEST_USER.google_id}",
-            SK=f"USER#{DEFAULT_TEST_USER.google_id}",
-            email=DEFAULT_TEST_USER.email,
-            disabled=DEFAULT_TEST_USER.disabled,
-        )
-
-    monkeypatch.setattr(db, "get_user_by_google_id", mock_find_user_by_google_id)
