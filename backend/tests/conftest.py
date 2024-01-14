@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 
 from plant_api.constants import S3_BUCKET_NAME, TABLE_NAME
 from plant_api.dependencies import get_current_user
-from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
+from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER, AWS_REGION
 from plant_api.schema import DbModelType, User, UserItem
 from tests.lib import image_in_s3_factory, image_record_factory, plant_record_factory
@@ -174,6 +174,18 @@ def default_enabled_user_in_db(mock_db):
     user = UserItem(
         PK=f"USER#{DEFAULT_TEST_USER.google_id}",
         SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        email=DEFAULT_TEST_USER.email,
+        disabled=False,
+    )
+    mock_db.insert_mock_data(user)
+    return user
+
+
+@pytest.fixture
+def other_enabled_user_in_db(mock_db):
+    user = UserItem(
+        PK=f"USER#{OTHER_TEST_USER.google_id}",
+        SK=f"USER#{OTHER_TEST_USER.google_id}",
         email=DEFAULT_TEST_USER.email,
         disabled=False,
     )

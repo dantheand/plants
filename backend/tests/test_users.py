@@ -1,8 +1,8 @@
-from tests.lib import DEFAULT_TEST_USER
+from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER
 from plant_api.schema import UserItem
 from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id
 
-import pytest
+from pydantic import TypeAdapter
 
 
 class TestAddUser:
@@ -39,7 +39,18 @@ class TestAddUser:
         assert len(users) == 1
 
 
-class TestReadUser:
+class TestGetUsers:
+    def test_get_all_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_logged_in):
+        response = client_logged_in().get("/users")
+        parsed_response = TypeAdapter(list[UserItem]).validate_python(response.json())
+
+        assert len(parsed_response) == 2
+        # Assert that both of the users are there
+        assert any(user.google_id == DEFAULT_TEST_USER.google_id for user in parsed_response)
+        assert any(user.google_id == OTHER_TEST_USER.google_id for user in parsed_response)
+
+
+class TestReadUserDB:
     def test_read_user(self, default_enabled_user_in_db):
         user = get_user_by_google_id(DEFAULT_TEST_USER.google_id)
         assert user.google_id == DEFAULT_TEST_USER.google_id

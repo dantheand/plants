@@ -14,15 +14,33 @@ import { PlantCreate } from "./views/PlantCreate";
 import { GlobalLayout } from "./components/Layouts";
 
 import "./styles/styles.css";
+import { jwtDecode } from "jwt-decode";
+import { JwtPayload } from "./types/interfaces";
 
-// TODO: improve this approach so that it doesn't require a full page refresh to send users to the login page
-//
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const checkTokenExpiration = (token: string) => {
+    try {
+      const decodedToken: JwtPayload = jwtDecode(token);
+      const currentUnixTimestamp = Date.now() / 1000;
+      return decodedToken.exp > currentUnixTimestamp;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      setIsAuthenticated(false);
+      return false;
+    }
+  };
+
   useEffect(() => {
-    const checkTokenValidity = async () => {
+    const token = localStorage.getItem(JWT_TOKEN_STORAGE);
+    if (!token) {
+      setIsAuthenticated(false);
+      setIsLoading(false);
+      return;
+    }
+    const checkTokenWithBackend = async () => {
       const token = localStorage.getItem(JWT_TOKEN_STORAGE);
       if (!token) {
         setIsAuthenticated(false);
@@ -37,26 +55,26 @@ const ProtectedRoute = () => {
             "Content-Type": "application/json",
           },
         });
-        if (!res.ok) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-        if (data === true) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        setIsAuthenticated(res.ok && (await res.json()));
       } catch (error) {
         console.error("Error authenticating with backend:", error);
         setIsAuthenticated(false);
       }
       setIsLoading(false);
     };
-    checkTokenValidity();
+
+    checkTokenWithBackend();
+
+    const intervalId = setInterval(() => {
+      if (!checkTokenExpiration(token)) {
+        setIsAuthenticated(false);
+        clearInterval(intervalId);
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(intervalId); // Clean up on component unmount
   }, []);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
