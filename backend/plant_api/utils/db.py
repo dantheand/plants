@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr, Key
 from fastapi import HTTPException
 
 from plant_api.constants import AWS_REGION, TABLE_NAME
@@ -49,19 +49,17 @@ def make_image_query_key(plant_id: UUID, image_id: UUID) -> dict:
     return {"PK": f"PLANT#{plant_id}", "SK": f"IMAGE#{image_id}"}
 
 
-def get_items_with_pk_starting_with(table, pk_prefix):
-
-    # Scan with filter expression
-    response = table.scan(
-        FilterExpression="begins_with(PK, :pk_prefix)", ExpressionAttributeValues={":pk_prefix": pk_prefix}
-    )
+def get_items_with_pk_and_sk_starting_with(table, prefix):
+    # Scan with filter expression for both PK and SK
+    response = table.scan(FilterExpression=Attr("PK").begins_with(prefix) & Attr("SK").begins_with(prefix))
 
     return response["Items"]
 
 
 def get_all_users() -> List[UserItem]:
-    """Queries DB for all PK that begin with USER"""
-    response = get_items_with_pk_starting_with(get_db_table(), ItemKeys.USER)
+    """Queries DB for all entries where both PK and SK begin with USER#"""
+    table = get_db_table()  # Assuming get_db_table() returns the DynamoDB table object
+    response = get_items_with_pk_and_sk_starting_with(table, ItemKeys.USER)
     users = [UserItem(**item) for item in response]
     return users
 
@@ -70,7 +68,11 @@ def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
     """Returns the user with the given google_id"""
     if not google_id:
         return None
-    response = get_db_table().query(KeyConditionExpression=Key("PK").eq(f"{ItemKeys.USER}#{google_id}"))
+    pk_sk_val = f"{ItemKeys.USER}#{google_id}"
+    response = get_db_table().query(KeyConditionExpression=Key("PK").eq(pk_sk_val) & Key("SK").eq(pk_sk_val))
     if not response["Items"]:
         return None
+    if len(response["Items"]) > 1:
+        # make a more specific exception
+        raise ValueError(f"More than one user found with google_id {google_id}")
     return UserItem(**response["Items"][0])

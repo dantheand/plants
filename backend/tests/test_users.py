@@ -1,6 +1,6 @@
 from tests.lib import DEFAULT_TEST_USER
 from plant_api.schema import UserItem
-from plant_api.utils.db import get_all_users, get_db_table
+from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id
 
 import pytest
 
@@ -40,5 +40,13 @@ class TestAddUser:
 
 
 class TestReadUser:
-    def test_read_user(self):
-        pass
+    def test_read_user(self, default_enabled_user_in_db):
+        user = get_user_by_google_id(DEFAULT_TEST_USER.google_id)
+        assert user.google_id == DEFAULT_TEST_USER.google_id
+
+    def test_read_users_works_with_plant(self, default_enabled_user_in_db, default_user_plant):
+        """This was a problem because plants and users have the same PK
+        ... I really need to migrate to postgres
+        """
+        user = get_user_by_google_id(DEFAULT_TEST_USER.google_id)
+        assert user.google_id == DEFAULT_TEST_USER.google_id
