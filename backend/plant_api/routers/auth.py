@@ -1,7 +1,7 @@
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Tuple
 
 from boto3.dynamodb.conditions import Key
 
@@ -182,7 +182,7 @@ def find_user_by_google_id(google_id) -> Optional[User]:
     return User(**users[0]) if users else None
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> (str, datetime):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> Tuple[str, datetime]:
     """Creates a signed JWT token with the given data and expiration time"""
     to_encode = data.copy()
     if expires_delta is None:
@@ -199,15 +199,17 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt, expire
 
 
-def create_refresh_token_for_user(payload: GoogleOauthPayload) -> (str, datetime):
+def create_refresh_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
     return create_access_token(
         data={"sub": payload.sub, "email": payload.email}, expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     )
 
 
-def create_access_token_for_user(payload: GoogleOauthPayload) -> (str, datetime):
+def create_access_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
     return create_access_token(data={"sub": payload.sub, "email": payload.email})
 
 
-def create_token_for_user(payload: GoogleOauthPayload, expires_delta: Optional[timedelta] = None) -> (str, datetime):
+def create_token_for_user(
+    payload: GoogleOauthPayload, expires_delta: Optional[timedelta] = None
+) -> Tuple[str, datetime]:
     return create_access_token(data={"sub": payload.sub, "email": payload.email}, expires_delta=expires_delta)

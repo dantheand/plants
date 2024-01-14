@@ -37,11 +37,9 @@ IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
 SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
 REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN}#"
 
-T = TypeVar("T", bound=BaseModel)
 
-
-class DynamoDBMixin(Generic[T]):
-    def dynamodb_dump(self: T) -> dict:
+class DynamoDBMixin(BaseModel):
+    def dynamodb_dump(self) -> dict:
         """Returns a dict compatible with DynamoDB"""
         data = self.model_dump()
         for key, value in data.items():
@@ -50,14 +48,14 @@ class DynamoDBMixin(Generic[T]):
         return data
 
 
-class UserItem(BaseModel, DynamoDBMixin):
+class UserItem(DynamoDBMixin):
     PK: str = Field(..., pattern=USER_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
     entity_type: str = Field(EntityType.USER)
     disabled: bool
 
 
-class PlantBase(BaseModel, DynamoDBMixin):
+class PlantBase(DynamoDBMixin):
     human_name: str
     species: Optional[str] = None
     location: Optional[str] = None
@@ -119,13 +117,13 @@ class ImageCreate(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
-class ImageBase(BaseModel):
+class ImageBase(DynamoDBMixin):
     full_photo_s3_url: str
     thumbnail_photo_s3_url: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
-class ImageItem(ImageBase, DynamoDBMixin):
+class ImageItem(ImageBase):
     PK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     SK: str = Field(..., pattern=IMAGE_KEY_PATTERN)
     signed_full_photo_url: Optional[str] = None
@@ -147,7 +145,7 @@ class ImageItem(ImageBase, DynamoDBMixin):
         return values
 
 
-class TokenItem(BaseModel, DynamoDBMixin):
+class TokenItem(DynamoDBMixin):
     """Refresh token schema"""
 
     PK: str = Field(..., pattern=REFRESH_TOKEN_KEY_PATTERN)
@@ -171,7 +169,7 @@ class TokenItem(BaseModel, DynamoDBMixin):
 
 
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem
-class PlantSourceItem(BaseModel, DynamoDBMixin):
+class PlantSourceItem(DynamoDBMixin):
     PK: str = Field(
         ...,
         pattern=PLANT_KEY_PATTERN,
