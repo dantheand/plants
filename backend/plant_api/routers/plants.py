@@ -54,7 +54,7 @@ async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(ge
         PK=f"USER#{user.google_id}", SK=f"PLANT#{plant_id}", entity_type="Plant", **plant_data.model_dump()
     )
 
-    table.put_item(Item=plant_item.model_dump())
+    table.put_item(Item=plant_item.dynamodb_dump())
     return plant_item
 
 
@@ -72,7 +72,7 @@ async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_c
     update_data = new_data.model_dump(exclude_unset=True)
     updated_item = stored_item.model_copy(update=update_data)
 
-    table.put_item(Item=updated_item.model_dump())
+    table.put_item(Item=updated_item.dynamodb_dump())
     return updated_item
 
 

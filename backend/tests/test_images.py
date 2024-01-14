@@ -78,7 +78,7 @@ class TestImageUpload:
         image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(
             Key=make_image_query_key(plant_id=plant.plant_id, image_id=uuid.UUID(parsed_response.image_id))
         )["Item"]
-        assert image_in_db == parsed_response.model_dump()
+        assert image_in_db == parsed_response.dynamodb_dump()
 
     def test_cant_upload_image_for_other_users_plant(self, mock_db, client, default_user_plant):
         plant = default_user_plant
@@ -134,7 +134,7 @@ class TestImageUpload:
         )
         assert response.status_code == 200
         parsed_response = ImageItem(**response.json())
-        assert parsed_response.timestamp == timestamp
+        assert parsed_response.dynamodb_dump()["timestamp"] == timestamp
 
 
 class TestImageDelete:
@@ -144,7 +144,7 @@ class TestImageDelete:
         # Check that the image was saved
         db_query = {"PK": image.PK, "SK": image.SK}
         image_in_db = mock_db.dynamodb.Table(mock_db.table_name).get_item(Key=db_query).get("Item")
-        assert image_in_db == image.model_dump()
+        assert image_in_db == image.dynamodb_dump()
 
         response = client(DEFAULT_TEST_USER).delete(f"/images/{image.image_id}")
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -185,10 +185,10 @@ class TestImageUpdate:
         updated_image = ImageItem(**image.model_dump())
         updated_image.timestamp = "2005-06-18T00:59:59.408150"
 
-        response = client(DEFAULT_TEST_USER).patch(f"/images/{image.image_id}", json=updated_image.model_dump())
+        response = client(DEFAULT_TEST_USER).patch(f"/images/{image.image_id}", json=updated_image.dynamodb_dump())
         parsed_response = ImageItem(**response.json())
         assert response.status_code == status.HTTP_200_OK
-        assert parsed_response.timestamp == updated_image.timestamp
+        assert parsed_response.dynamodb_dump()["timestamp"] == updated_image.timestamp
 
     def test_update_image_fails_if_not_plant_owner(self, mock_db, client, plant_with_image_record):
         plant, image = plant_with_image_record
@@ -196,7 +196,7 @@ class TestImageUpdate:
         updated_image = ImageItem(**image.model_dump())
         updated_image.timestamp = "2005-06-18T00:59:59.408150"
 
-        response = client(OTHER_TEST_USER).patch(f"/images/{image.image_id}", json=updated_image.model_dump())
+        response = client(OTHER_TEST_USER).patch(f"/images/{image.image_id}", json=updated_image.dynamodb_dump())
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 

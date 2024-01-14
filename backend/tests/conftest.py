@@ -105,7 +105,7 @@ class MockDB:
         )
 
     def insert_mock_data(self, db_item: DbModelType):
-        self.dynamodb.Table(self.table_name).put_item(Item=db_item.model_dump())
+        self.dynamodb.Table(self.table_name).put_item(Item=db_item.dynamodb_dump())
 
     def delete_table(self):
         table = self.dynamodb.Table(self.table_name)
