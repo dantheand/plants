@@ -4,7 +4,6 @@ import pytest
 
 from jose import jwt
 
-from google.oauth2 import id_token
 
 from plant_api import dependencies
 from plant_api.routers import auth
@@ -13,15 +12,6 @@ from plant_api.routers.auth import REFRESH_TOKEN, get_token_item_by_token
 from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import ALGORITHM, GoogleOauthPayload, JWT_KEY_IN_SECRETS_MANAGER, get_jwt_secret
 from plant_api.utils.secrets import get_aws_secret
-
-
-@pytest.fixture
-def mock_google_oauth(monkeypatch):
-    def mock_verify_oauth2_token(token, request, audience):
-        # Return a mock response that imitates Google's response
-        return {"sub": DEFAULT_TEST_USER.google_id, "email": DEFAULT_TEST_USER.email, "nonce": "mock_nonce"}
-
-    monkeypatch.setattr(id_token, "verify_oauth2_token", mock_verify_oauth2_token)
 
 
 @pytest.fixture
@@ -83,11 +73,11 @@ class TestAWSAccess:
 
 
 class TestTokenFlow:
-    def test_get_tokens_on_login(self, client, mock_google_oauth, mock_find_user, mock_db):
+    def test_get_tokens_on_login(self, client_logged_in, mock_google_oauth, mock_find_user, mock_db):
         mock_oauth2_token = "mock_oauth2_token"
         mock_nonce = "mock_nonce"
 
-        response = client().post(
+        response = client_logged_in().post(
             "/token",
             json={"token": mock_oauth2_token, "nonce": mock_nonce},
         )
@@ -99,12 +89,12 @@ class TestTokenFlow:
         assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
         assert decoded_refresh_token["google_id"] == DEFAULT_TEST_USER.google_id
 
-    def test_get_new_tokens_from_refresh_token(self, client, mock_find_user, mock_db):
+    def test_get_new_tokens_from_refresh_token(self, client_logged_in, mock_find_user, mock_db):
         # Create refresh token in DB
         current_refresh_token = create_current_refresh_token(mock_db)
         print(current_refresh_token)
 
-        response = client().post("/refresh_token", cookies={REFRESH_TOKEN: current_refresh_token.token_str})
+        response = client_logged_in().post("/refresh_token", cookies={REFRESH_TOKEN: current_refresh_token.token_str})
         assert response.status_code == 200
         # Assert that the old one is revoked
         old_token_in_db = get_token_item_by_token(current_refresh_token.token_str)
@@ -119,9 +109,9 @@ class TestTokenFlow:
         assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
         assert decoded_refresh_token["google_id"] == DEFAULT_TEST_USER.google_id
 
-    def test_get_access_token_from_expired_refresh_token(self, client, mock_find_user, mock_db):
+    def test_get_access_token_from_expired_refresh_token(self, client_logged_in, mock_find_user, mock_db):
         expired_refresh_token = create_expired_refresh_token(mock_db)
-        response = client().post("/refresh_token", cookies={REFRESH_TOKEN: expired_refresh_token.token_str})
+        response = client_logged_in().post("/refresh_token", cookies={REFRESH_TOKEN: expired_refresh_token.token_str})
 
         assert response.status_code == 401
 

@@ -2,6 +2,7 @@ import os
 
 import boto3
 import pytest
+from google.oauth2 import id_token
 from moto import mock_dynamodb, mock_s3, mock_secretsmanager
 from starlette.testclient import TestClient
 
@@ -132,7 +133,7 @@ def mock_db():
 
 
 @pytest.fixture
-def client():
+def client_logged_in():
     app = get_app()
 
     def _get_client(current_user: User = DEFAULT_TEST_USER):
@@ -157,3 +158,12 @@ def client_no_jwt():
         return test_client
 
     yield _get_client
+
+
+@pytest.fixture
+def mock_google_oauth(monkeypatch):
+    def mock_verify_oauth2_token(token, request, audience):
+        # Return a mock response that imitates Google's response
+        return {"sub": DEFAULT_TEST_USER.google_id, "email": DEFAULT_TEST_USER.email, "nonce": "mock_nonce"}
+
+    monkeypatch.setattr(id_token, "verify_oauth2_token", mock_verify_oauth2_token)

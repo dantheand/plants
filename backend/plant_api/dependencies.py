@@ -55,5 +55,6 @@ def valid_email_from_db(email):
 
 # Make this a real DB that gets entries when a user tries to login for the first time
 DB_PLACEHOLDER = [
-    User(email="dan.the.anderson@gmail.com", google_id="106821357176702886816", disabled=False).model_dump()
+    User(email="dan.the.anderson@gmail.com", google_id="106821357176702886816", disabled=False).model_dump(),
+    User(email="zac.swider@gmail.com", google_id="108371166449203372992", disabled=False).model_dump(),
 ]
