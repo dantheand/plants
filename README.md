@@ -69,10 +69,10 @@ https://github.com/dantheand/plants/assets/16441200/4888f693-cb10-490a-9b87-25aa
 
 ## Upcoming Feature ideas
 In rough order of decreasing priority:
-- Multiple users
-  - default view of your own plants
-  - ability to see any other user's plants (for inital set of users)
+- View other User's plants
+  - list of all Users (for now), ability to navigate to their plants
 - Improving plant view
+  - grid view
   - Filter by "current" or not (e.g. has the plant died or been given away)
 - lineage visualization and traversing
   - [Tangled tree](https://observablehq.com/@nitaku/tangled-tree-visualization-ii) vizualization of plant lineages
