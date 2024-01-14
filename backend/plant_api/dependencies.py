@@ -43,10 +43,3 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
         logging.error("Credentialed email not an authorized user in database.")
         raise CREDENTIALS_EXCEPTION
     return User(email=user_item.email, google_id=user_item.google_id, disabled=user_item.disabled)
-
-
-# Make this a real DB that gets entries when a user tries to login for the first time
-DB_PLACEHOLDER = [
-    User(email="dan.the.anderson@gmail.com", google_id="106821357176702886816", disabled=False).model_dump(),
-    User(email="zac.swider@gmail.com", google_id="108371166449203372992", disabled=False).model_dump(),
-]
