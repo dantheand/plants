@@ -60,6 +60,13 @@ class UserItem(DynamoDBMixin):
     email: str
     entity_type: str = Field(EntityType.USER)
     disabled: Optional[bool] = True
+    google_id: Optional[str] = None
+
+    @model_validator(mode="before")
+    def extract_google_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Break out the google_id UUID as a separate field"""
+        values["google_id"] = values["PK"].split("#")[1]
+        return values
 
 
 class PlantBase(DynamoDBMixin):
