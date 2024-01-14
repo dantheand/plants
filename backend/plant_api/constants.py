@@ -1,3 +1,6 @@
+from datetime import datetime
+from uuid import UUID
+
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from starlette import status
@@ -31,3 +34,10 @@ def get_jwt_secret() -> str:
 class GoogleOauthPayload(BaseModel):
     email: str
     sub: str = Field(..., description="Google's unique identifier for the user.")
+
+
+class JwtPayload(BaseModel):
+    email: str
+    google_id: str = Field(..., description="Google's unique identifier for the user.")
+    exp: datetime = Field(..., description="Expiration time for the token.")
+    jti: str = Field(..., description="Unique identifier for the token.")

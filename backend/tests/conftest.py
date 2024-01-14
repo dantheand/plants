@@ -146,3 +146,14 @@ def client():
     yield _get_client
     # Clear overrides after the test
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def client_no_jwt():
+    app = get_app()
+
+    def _get_client():
+        test_client = TestClient(app)
+        return test_client
+
+    yield _get_client

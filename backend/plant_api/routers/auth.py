@@ -12,20 +12,23 @@ from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
+from plant_api.dependencies import DB_PLACEHOLDER
 from plant_api.constants import (
     ALGORITHM,
     AWS_DEPLOYMENT_ENV,
     CREDENTIALS_EXCEPTION,
     GOOGLE_CLIENT_ID,
     GoogleOauthPayload,
+    JwtPayload,
     TOKEN_URL,
     get_jwt_secret,
 )
-from plant_api.dependencies import DB_PLACEHOLDER, get_current_user
+from plant_api.dependencies import get_current_user
 from plant_api.routers.common import BaseRouter
-from plant_api.schema import EntityType, ItemKeys, TokenItem, User
+from plant_api.schema import EntityType, ItemKeys, TokenItem
 from plant_api.utils.deployment import get_deployment_env
 from plant_api.utils.db import get_db_table
+from plant_api.schema import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
@@ -192,7 +195,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     to_encode.update({"jti": str(uuid.uuid4())})
     try:
-        encoded_jwt = jwt.encode(to_encode, get_jwt_secret(), algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(JwtPayload(**to_encode).model_dump(), get_jwt_secret(), algorithm=ALGORITHM)
     except jose.JWTError as e:
         logging.error(e)
         raise e
@@ -201,15 +204,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 def create_refresh_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
     return create_access_token(
-        data={"sub": payload.sub, "email": payload.email}, expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+        data={"google_id": payload.sub, "email": payload.email},
+        expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
     )
 
 
 def create_access_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
-    return create_access_token(data={"sub": payload.sub, "email": payload.email})
+    return create_access_token(data={"google_id": payload.sub, "email": payload.email})
 
 
 def create_token_for_user(
     payload: GoogleOauthPayload, expires_delta: Optional[timedelta] = None
 ) -> Tuple[str, datetime]:
-    return create_access_token(data={"sub": payload.sub, "email": payload.email}, expires_delta=expires_delta)
+    return create_access_token(data={"google_id": payload.sub, "email": payload.email}, expires_delta=expires_delta)

@@ -6,6 +6,7 @@ from jose import jwt
 
 from google.oauth2 import id_token
 
+from plant_api import dependencies
 from plant_api.routers import auth
 from plant_api.schema import EntityType, ItemKeys, TokenItem
 from plant_api.routers.auth import REFRESH_TOKEN, get_token_item_by_token
@@ -29,6 +30,20 @@ def mock_find_user(monkeypatch):
         return DEFAULT_TEST_USER
 
     monkeypatch.setattr(auth, "find_user_by_google_id", mock_find_user_by_google_id)
+
+
+@pytest.fixture
+def mock_allowed_user_db(monkeypatch):
+    def mock_allowed_user_db(email):
+        return True
+
+    monkeypatch.setattr(dependencies, "valid_email_from_db", mock_allowed_user_db)
+
+
+def create_current_access_token() -> str:
+    payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
+    current_access_token, _ = auth.create_access_token_for_user(payload)
+    return current_access_token
 
 
 def create_current_refresh_token(mock_db) -> TokenItem:
@@ -81,8 +96,8 @@ class TestTokenFlow:
         decoded_access_token = jwt.decode(access_token, get_jwt_secret(), algorithms=[ALGORITHM])
         decoded_refresh_token = jwt.decode(response.cookies["refresh_token"], get_jwt_secret(), algorithms=[ALGORITHM])
 
-        assert decoded_access_token["sub"] == DEFAULT_TEST_USER.google_id
-        assert decoded_refresh_token["sub"] == DEFAULT_TEST_USER.google_id
+        assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
+        assert decoded_refresh_token["google_id"] == DEFAULT_TEST_USER.google_id
 
     def test_get_new_tokens_from_refresh_token(self, client, mock_find_user, mock_db):
         # Create refresh token in DB
@@ -101,14 +116,23 @@ class TestTokenFlow:
         decoded_access_token = jwt.decode(access_token, get_jwt_secret(), algorithms=[ALGORITHM])
         decoded_refresh_token = jwt.decode(response.cookies[REFRESH_TOKEN], get_jwt_secret(), algorithms=[ALGORITHM])
 
-        assert decoded_access_token["sub"] == DEFAULT_TEST_USER.google_id
-        assert decoded_refresh_token["sub"] == DEFAULT_TEST_USER.google_id
+        assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
+        assert decoded_refresh_token["google_id"] == DEFAULT_TEST_USER.google_id
 
     def test_get_access_token_from_expired_refresh_token(self, client, mock_find_user, mock_db):
         expired_refresh_token = create_expired_refresh_token(mock_db)
         response = client().post("/refresh_token", cookies={REFRESH_TOKEN: expired_refresh_token.token_str})
 
         assert response.status_code == 401
+
+    def test_check_token(self, client_no_jwt, mock_db):
+        response = client_no_jwt().get("/check_token")
+        assert response.status_code == 401
+
+    def test_check_token_with_valid_token(self, client_no_jwt, mock_allowed_user_db):
+        jwt_access_token = create_current_access_token()
+        response = client_no_jwt().get("/check_token", headers={"Authorization": f"Bearer {jwt_access_token}"})
+        assert response.status_code == 200
 
     # TODO: implement this to prevent refresh token replay attacks
     def test_refresh_token_reuse_invalidates_all_users_tokens(self):
