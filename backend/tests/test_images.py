@@ -1,5 +1,6 @@
 import tempfile
 import uuid
+from datetime import datetime
 
 from PIL import Image as img
 from pydantic import TypeAdapter
@@ -183,20 +184,20 @@ class TestImageUpdate:
         plant, image = plant_with_image_record
 
         updated_image = ImageItem(**image.model_dump())
-        updated_image.timestamp = "2005-06-18T00:59:59.408150"
+        updated_image.timestamp = datetime(2020, 1, 1, 12, 0, 0)
 
         response = client_logged_in(DEFAULT_TEST_USER).patch(
             f"/images/{image.image_id}", json=updated_image.dynamodb_dump()
         )
         parsed_response = ImageItem(**response.json())
         assert response.status_code == status.HTTP_200_OK
-        assert parsed_response.dynamodb_dump()["timestamp"] == updated_image.timestamp
+        assert parsed_response.timestamp == updated_image.timestamp
 
     def test_update_image_fails_if_not_plant_owner(self, mock_db, client_logged_in, plant_with_image_record):
         plant, image = plant_with_image_record
 
         updated_image = ImageItem(**image.model_dump())
-        updated_image.timestamp = "2005-06-18T00:59:59.408150"
+        updated_image.timestamp = datetime(2020, 1, 1, 12, 0, 0)
 
         response = client_logged_in(OTHER_TEST_USER).patch(
             f"/images/{image.image_id}", json=updated_image.dynamodb_dump()
