@@ -1,6 +1,6 @@
 from tests.lib import DEFAULT_TEST_USER
 from plant_api.schema import UserItem
-from plant_api.utils.db import get_db_table
+from plant_api.utils.db import get_all_users, get_db_table
 
 import pytest
 
@@ -25,9 +25,18 @@ class TestAddUser:
         # Assert that the user is entered as "disabled" in the DB
         assert parsed_user.disabled is True
 
-    def test_dont_add_user_on_login_if_already_exists(self):
+    def test_dont_add_user_on_login_if_already_exists(
+        self, default_enabled_user_in_db, client_no_jwt, mock_db, mock_google_oauth
+    ):
+        # Note: mock_google_oauth returns DEFAULT_TEST_USER info
+        response = client_no_jwt().post(
+            "/token",
+            json={"token": "mock_oauth2_token", "nonce": "mock_nonce"},
+        )
+        assert response.status_code == 200
 
-        pass
+        users = get_all_users()
+        assert len(users) == 1
 
 
 class TestReadUser:

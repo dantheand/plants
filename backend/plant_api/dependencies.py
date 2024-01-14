@@ -15,6 +15,7 @@ from plant_api.constants import (
     get_jwt_secret,
 )
 from plant_api.schema import User
+from plant_api.utils.db import get_user_by_google_id
 
 # TODO: figure out what magic this is doing may be able to replace with OpenIdConnect()
 oauth2_google = OAuth2PasswordBearer(
@@ -34,23 +35,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
         logging.error("Encountered error decoding credentials.")
         raise CREDENTIALS_EXCEPTION
 
-    user = User(
-        email=payload.email,
-        google_id=payload.google_id,
-    )
-    if not valid_email_from_db(user.email):
+    user_item = get_user_by_google_id(payload.google_id)
+    if user_item.disabled:
         logging.error("Credentialed email not an authorized user in database.")
         raise CREDENTIALS_EXCEPTION
 
-    return user
-
-
-def valid_email_from_db(email):
-    users = [user for user in DB_PLACEHOLDER if user["email"] == email]
-
-    user = User(**users[0]) if users else None
-
-    return not user.disabled
+    return User(email=user_item.email, google_id=user_item.google_id, disabled=user_item.disabled)
 
 
 # Make this a real DB that gets entries when a user tries to login for the first time
