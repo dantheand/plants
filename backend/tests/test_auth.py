@@ -61,11 +61,11 @@ class TestTokenFlow:
             "/token",
             json={"token": mock_oauth2_token, "nonce": mock_nonce},
         )
+        assert response.status_code == 200
         access_token = response.json()
         decoded_access_token = jwt.decode(access_token, get_jwt_secret(), algorithms=[ALGORITHM])
         decoded_refresh_token = jwt.decode(response.cookies["refresh_token"], get_jwt_secret(), algorithms=[ALGORITHM])
 
-        assert response.status_code == 200
         assert decoded_access_token["sub"] == DEFAULT_TEST_USER.google_id
         assert decoded_refresh_token["sub"] == DEFAULT_TEST_USER.google_id
 

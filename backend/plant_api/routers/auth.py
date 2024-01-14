@@ -170,7 +170,7 @@ def revoke_refresh_token(token: TokenItem):
 
 def add_refresh_token_to_db(token: TokenItem):
     """Adds a refresh token to the DB"""
-    _ = get_db_table().put_item(Item=token.model_dump())
+    _ = get_db_table().put_item(Item=token.dynamodb_dump())
 
 
 # TODO: swap this out for a real DB call
