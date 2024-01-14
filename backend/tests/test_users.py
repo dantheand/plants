@@ -6,7 +6,6 @@ import pytest
 
 
 class TestAddUser:
-    @pytest.mark.skip(reason="This feature is not yet implemented.")
     def test_add_new_user_on_first_login(self, client_no_jwt, mock_db, mock_google_oauth):
         # Note: mock_google_oauth returns DEFAULT_TEST_USER info
         response = client_no_jwt().post(
