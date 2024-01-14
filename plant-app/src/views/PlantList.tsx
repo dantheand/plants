@@ -48,15 +48,6 @@ const renderListItems = ({
   }
 };
 
-const getAndReportToken = async () => {
-  const token = localStorage.getItem(JWT_TOKEN_STORAGE);
-  if (token) {
-    const decodedToken: JwtPayload = jwtDecode(token);
-    const userId = decodedToken.google_id;
-    console.log("User ID:", userId);
-  }
-};
-
 export function PlantList(): JSX.Element {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -65,8 +56,6 @@ export function PlantList(): JSX.Element {
   const navigateToCreatePlant = () => {
     navigate("/plants/create");
   };
-
-  getAndReportToken();
 
   useEffect(() => {
     const token = localStorage.getItem(JWT_TOKEN_STORAGE);

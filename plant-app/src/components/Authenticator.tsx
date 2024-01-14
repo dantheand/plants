@@ -12,6 +12,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
 import logo from "../assets/plant_logo_big.png";
 import { jwtDecode } from "jwt-decode";
+import { LOG_OUT_GOOGLE_ID } from "../featureFlags";
 
 function generateNonce(length = 32) {
   let result = "";
@@ -36,7 +37,7 @@ async function responseGoogle(
 ) {
   try {
     const tokenId = response.credential;
-    if (tokenId) {
+    if (tokenId && LOG_OUT_GOOGLE_ID) {
       try {
         const decodedToken = jwtDecode(tokenId);
         console.log(decodedToken);
