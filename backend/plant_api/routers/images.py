@@ -74,7 +74,7 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
 # TODO: cleanup routes: /images/plant/<plant_id>
 #   /images/image/<image_id>
 @router.get("/{image_id}", response_model=ImageItem)
-async def get_image(image_id: UUID, user=Depends(get_current_user)):
+async def get_image(image_id: UUID):
     table = get_db_table()
     image_response = query_by_image_id(table, image_id)
     return image_response
@@ -183,5 +183,5 @@ async def update_image(image_id: UUID, new_data: ImageItem, user=Depends(get_cur
     update_data = new_data.model_dump(exclude_unset=True)
     updated_item = stored_item.model_copy(update=update_data)
 
-    table.put_item(Item=updated_item.model_dump())
+    table.put_item(Item=updated_item.dynamodb_dump())
     return updated_item

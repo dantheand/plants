@@ -56,7 +56,7 @@ class TestPlantCreate:
     def test_create(self, client, mock_db):
         test_client = client(DEFAULT_TEST_USER)
         new_plant = plant_record_factory(human_name="New Plant")
-        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.dynamodb_dump())
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["human_name"] == "New Plant"
 
@@ -72,7 +72,7 @@ class TestPlantCreate:
         mock_db.insert_mock_data(existing_plant)
 
         new_plant = plant_record_factory(human_id=42)
-        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.dynamodb_dump())
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_create_with_duplicate_plant_id(self, client, mock_db, default_user_plant):
@@ -80,7 +80,7 @@ class TestPlantCreate:
         existing_plant = default_user_plant
 
         new_plant = plant_record_factory(plant_id=existing_plant.plant_id)
-        _ = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
+        _ = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.dynamodb_dump())
 
         # Check that the plants were created with different UUIDs
         db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
@@ -91,7 +91,7 @@ class TestPlantCreate:
         test_client = client(DEFAULT_TEST_USER)
         new_plant = plant_record_factory(human_name="New Plant")
         new_plant.human_id = None
-        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.model_dump())
+        response = test_client.post(f"{PLANT_ROUTE}/create", json=new_plant.dynamodb_dump())
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -103,7 +103,7 @@ class TestPlantUpdate:
         updated_plant = PlantBase(**plant.model_dump())
         updated_plant.human_name = "Updated Name"
 
-        response = test_client.patch(f"{PLANT_ROUTE}/{plant.plant_id}", json=updated_plant.model_dump())
+        response = test_client.patch(f"{PLANT_ROUTE}/{plant.plant_id}", json=updated_plant.dynamodb_dump())
         assert response.status_code == status.HTTP_200_OK
 
         # Check the plant was updated in the DB
@@ -120,7 +120,7 @@ class TestPlantUpdate:
         updated_plant = PlantBase(**plant.model_dump())
         updated_plant.human_name = "Updated Name"
 
-        response = other_user_client.patch(f"{PLANT_ROUTE}/{plant.plant_id}", json=updated_plant.model_dump())
+        response = other_user_client.patch(f"{PLANT_ROUTE}/{plant.plant_id}", json=updated_plant.dynamodb_dump())
 
         # Check that the update is not allowed
         assert response.status_code == status.HTTP_403_FORBIDDEN or response.status_code == status.HTTP_404_NOT_FOUND
@@ -129,13 +129,13 @@ class TestPlantUpdate:
         plant_id = uuid.uuid4()
         updated_plant = PlantBase(**plant_record_factory().model_dump())
         test_client = client()
-        response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant.model_dump())
+        response = test_client.patch(f"{PLANT_ROUTE}/{plant_id}", json=updated_plant.dynamodb_dump())
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_update_cant_change_human_id(self, mock_db, client, default_user_plant):
         plant = default_user_plant
 
-        updated_plant = plant.model_dump()
+        updated_plant = plant.dynamodb_dump()
         original_id = updated_plant["human_id"]
         updated_plant["human_id"] = original_id + 1
 

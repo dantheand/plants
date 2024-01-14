@@ -28,3 +28,9 @@ export interface ApiResponse<T> {
   data: T | null;
   error?: string;
 }
+
+export interface JwtPayload {
+  email: string;
+  google_id: string;
+  exp: number;
+}

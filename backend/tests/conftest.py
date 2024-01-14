@@ -7,7 +7,7 @@ from starlette.testclient import TestClient
 
 from plant_api.constants import S3_BUCKET_NAME, TABLE_NAME
 from plant_api.dependencies import get_current_user
-from tests.lib import DEFAULT_TEST_USER
+from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER, AWS_REGION
 from plant_api.schema import DbModelType, User
 from tests.lib import image_in_s3_factory, image_record_factory, plant_record_factory
@@ -21,7 +21,7 @@ def mock_jwt_secret():
 
     with mock_secretsmanager():
         boto3.client("secretsmanager", region_name=AWS_REGION).create_secret(
-            Name=JWT_KEY_IN_SECRETS_MANAGER, SecretString="test_secret"
+            Name=JWT_KEY_IN_SECRETS_MANAGER, SecretString=TEST_JWT_SECRET
         )
         yield
 
@@ -105,7 +105,7 @@ class MockDB:
         )
 
     def insert_mock_data(self, db_item: DbModelType):
-        self.dynamodb.Table(self.table_name).put_item(Item=db_item.model_dump())
+        self.dynamodb.Table(self.table_name).put_item(Item=db_item.dynamodb_dump())
 
     def delete_table(self):
         table = self.dynamodb.Table(self.table_name)
@@ -146,3 +146,14 @@ def client():
     yield _get_client
     # Clear overrides after the test
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def client_no_jwt():
+    app = get_app()
+
+    def _get_client():
+        test_client = TestClient(app)
+        return test_client
+
+    yield _get_client

@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from plant_api.constants import (
     ALGORITHM,
     CREDENTIALS_EXCEPTION,
-    GoogleOauthPayload,
+    JwtPayload,
     TOKEN_URL,
     get_jwt_secret,
 )
@@ -26,7 +26,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
     """Returns the user from the token if they are a valid user."""
     try:
         logging.info("Attempting to validate credentials...")
-        payload = GoogleOauthPayload(**jwt.decode(token, get_jwt_secret(), algorithms=[ALGORITHM]))
+        payload = JwtPayload(**jwt.decode(token, get_jwt_secret(), algorithms=[ALGORITHM]))
     except ValidationError:
         logging.error("Encountered error validating credential format.")
         raise CREDENTIALS_EXCEPTION
@@ -36,7 +36,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
 
     user = User(
         email=payload.email,
-        google_id=payload.sub,
+        google_id=payload.google_id,
     )
     if not valid_email_from_db(user.email):
         logging.error("Credentialed email not an authorized user in database.")
@@ -46,7 +46,14 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
 
 
 def valid_email_from_db(email):
-    return email in FAKE_DB
+    users = [user for user in DB_PLACEHOLDER if user["email"] == email]
+
+    user = User(**users[0]) if users else None
+
+    return not user.disabled
 
 
-FAKE_DB = ["dan.the.anderson@gmail.com"]
+# Make this a real DB that gets entries when a user tries to login for the first time
+DB_PLACEHOLDER = [
+    User(email="dan.the.anderson@gmail.com", google_id="106821357176702886816", disabled=False).model_dump()
+]

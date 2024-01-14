@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -10,6 +10,7 @@ class ItemKeys(str, Enum):
     PLANT = "PLANT"
     IMAGE = "IMAGE"
     SOURCE = "SOURCE"
+    REFRESH_TOKEN = "TOKEN"
 
 
 class EntityType(str, Enum):
@@ -17,6 +18,7 @@ class EntityType(str, Enum):
     PLANT = "Plant"
     IMAGE = "Image"
     LINEAGE = "Lineage"
+    REFRESH_TOKEN = "Token"
 
 
 class SourceType(str, Enum):
@@ -33,16 +35,34 @@ USER_KEY_PATTERN = f"^{ItemKeys.USER}#"
 PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT}#"
 IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
 SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
+REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN}#"
 
 
-class UserItem(BaseModel):
+class DynamoDBMixin(BaseModel):
+    def dynamodb_dump(self) -> dict:
+        """Returns a dict compatible with DynamoDB"""
+        data = self.model_dump()
+        for key, value in data.items():
+            if isinstance(value, date):
+                data[key] = value.isoformat()
+        return data
+
+
+class User(BaseModel):
+    email: str
+    google_id: str
+    disabled: Optional[bool] = None
+
+
+class UserItem(DynamoDBMixin):
     PK: str = Field(..., pattern=USER_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
+    email: str
     entity_type: str = Field(EntityType.USER)
-    disabled: bool
+    disabled: Optional[bool] = True
 
 
-class PlantBase(BaseModel):
+class PlantBase(DynamoDBMixin):
     human_name: str
     species: Optional[str] = None
     location: Optional[str] = None
@@ -60,14 +80,6 @@ class PlantBase(BaseModel):
     def empty_str_to_none(cls, v: Any) -> Optional[Any]:
         if v == "":
             return None
-        return v
-
-    # This is needed because dynamodb can't handle date objects
-    @field_validator("sink_date", "source_date", mode="after")
-    @classmethod
-    def datetime_to_string(cls, v: Union[str, date]) -> str:
-        if isinstance(v, date):
-            return v.isoformat()
         return v
 
     @field_validator("parent_id", mode="before")
@@ -112,34 +124,17 @@ class ImageCreate(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
-class ImageBase(BaseModel):
+class ImageBase(DynamoDBMixin):
     full_photo_s3_url: str
     thumbnail_photo_s3_url: str
-    signed_full_photo_url: Optional[str] = None
-    signed_thumbnail_photo_url: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-    # This is needed because dynamodb can't handle date objects
-    @field_validator("timestamp", mode="after")
-    @classmethod
-    def datetime_to_string(cls, v: Union[str, datetime]) -> str:
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
 
-    # Method to get a dict compatible with DynamoDB
-    # TODO: move this to a Base Pydantic model that all DynamoDB models inherit from (or a mixin)
-    #   This should be able to replace all the datetime_to_string methods
-    def dynamodb_dump(self):
-        data = self.dict()
-        data["timestamp"] = self.datetime_to_string(data["timestamp"])
-        return data
-
-
-# TODO: remove signed photo URLs from this model since they are not stored in the DB
 class ImageItem(ImageBase):
     PK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     SK: str = Field(..., pattern=IMAGE_KEY_PATTERN)
+    signed_full_photo_url: Optional[str] = None
+    signed_thumbnail_photo_url: Optional[str] = None
     entity_type: str = Field(EntityType.IMAGE)
     image_id: Optional[str] = None
     plant_id: Optional[str] = None
@@ -157,8 +152,31 @@ class ImageItem(ImageBase):
         return values
 
 
+class TokenItem(DynamoDBMixin):
+    """Refresh token schema"""
+
+    PK: str = Field(..., pattern=REFRESH_TOKEN_KEY_PATTERN)
+    SK: str = Field(..., pattern=USER_KEY_PATTERN)
+    entity_type: str = Field(EntityType.REFRESH_TOKEN)
+    issued_at: datetime
+    expires_at: datetime
+    revoked: bool = False
+    token_str: Optional[str] = None
+    user_id: Optional[str] = None
+
+    @model_validator(mode="before")
+    def extract_token_str(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values["token_str"] = values["PK"].split("#")[1]
+        return values
+
+    @model_validator(mode="before")
+    def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values["user_id"] = values["SK"].split("#")[1]
+        return values
+
+
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem
-class PlantSourceItem(BaseModel):
+class PlantSourceItem(DynamoDBMixin):
     PK: str = Field(
         ...,
         pattern=PLANT_KEY_PATTERN,
@@ -170,10 +188,4 @@ class PlantSourceItem(BaseModel):
     source_date: date
 
 
-DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem]
-
-
-class User(BaseModel):
-    email: str
-    google_id: str
-    disabled: Optional[bool] = None
+DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, TokenItem]
