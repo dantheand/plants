@@ -46,10 +46,14 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_google)]) -> Use
 
 
 def valid_email_from_db(email):
-    return email in FAKE_DB
+    users = [user for user in DB_PLACEHOLDER if user["email"] == email]
+
+    user = User(**users[0]) if users else None
+
+    return not user.disabled
 
 
-FAKE_DB = ["dan.the.anderson@gmail.com"]
+# Make this a real DB that gets entries when a user tries to login for the first time
 DB_PLACEHOLDER = [
     User(email="dan.the.anderson@gmail.com", google_id="106821357176702886816", disabled=False).model_dump()
 ]

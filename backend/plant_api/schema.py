@@ -48,11 +48,18 @@ class DynamoDBMixin(BaseModel):
         return data
 
 
+class User(BaseModel):
+    email: str
+    google_id: str
+    disabled: Optional[bool] = None
+
+
 class UserItem(DynamoDBMixin):
     PK: str = Field(..., pattern=USER_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
+    email: str
     entity_type: str = Field(EntityType.USER)
-    disabled: bool
+    disabled: Optional[bool] = True
 
 
 class PlantBase(DynamoDBMixin):
@@ -179,12 +186,6 @@ class PlantSourceItem(DynamoDBMixin):
     entity_type: str = Field(EntityType.LINEAGE)
     source_type: SourceType
     source_date: date
-
-
-class User(BaseModel):
-    email: str
-    google_id: str
-    disabled: Optional[bool] = None
 
 
 DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, TokenItem]

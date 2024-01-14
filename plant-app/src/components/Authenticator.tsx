@@ -11,6 +11,7 @@ import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
 import logo from "../assets/plant_logo_big.png";
+import { jwtDecode } from "jwt-decode";
 
 function generateNonce(length = 32) {
   let result = "";
@@ -35,6 +36,14 @@ async function responseGoogle(
 ) {
   try {
     const tokenId = response.credential;
+    if (tokenId) {
+      try {
+        const decodedToken = jwtDecode(tokenId);
+        console.log(decodedToken);
+      } catch (error) {
+        console.error("Failed to decode token", error);
+      }
+    }
     const backendUrl = BASE_API_URL + "/token";
     const res = await fetch(backendUrl, {
       method: "POST",
