@@ -4,7 +4,7 @@ from plant_api.dependencies import get_current_user
 from fastapi import Depends
 
 from plant_api.schema import UserItem
-from plant_api.utils.db import get_all_users
+from plant_api.utils.db import get_all_active_users
 
 router = BaseRouter(
     prefix="/users",
@@ -15,4 +15,4 @@ router = BaseRouter(
 
 @router.get("/", response_model=list[UserItem])
 async def get_users():
-    return get_all_users()
+    return get_all_active_users()
