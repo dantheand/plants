@@ -33,9 +33,7 @@ export const AppNavbar = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/plants">My Plants</Nav.Link>
-            <Nav.Link href="/users" className="nav-link-disabled">
-              Users
-            </Nav.Link>
+            <Nav.Link href="/users">Users</Nav.Link>
             <Nav.Link href="/lineages" className="nav-link-disabled">
               Lineages
             </Nav.Link>
