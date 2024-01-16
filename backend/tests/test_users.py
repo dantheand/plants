@@ -40,7 +40,7 @@ class TestAddUser:
 
 
 class TestGetUsers:
-    def test_get_all_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_logged_in):
+    def test_get_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_logged_in):
         response = client_logged_in().get("/users")
         parsed_response = TypeAdapter(list[UserItem]).validate_python(response.json())
 
@@ -49,8 +49,8 @@ class TestGetUsers:
         assert any(user.google_id == DEFAULT_TEST_USER.google_id for user in parsed_response)
         assert any(user.google_id == OTHER_TEST_USER.google_id for user in parsed_response)
 
-    def test_get_only_active_users(self, default_disabled_user_in_db, other_enabled_user_in_db, client_logged_in):
-        response = client_logged_in().get("/users?active=true")
+    def test_gets_only_active_users(self, default_disabled_user_in_db, other_enabled_user_in_db, client_logged_in):
+        response = client_logged_in().get("/users")
         parsed_response = TypeAdapter(list[UserItem]).validate_python(response.json())
 
         assert len(parsed_response) == 1

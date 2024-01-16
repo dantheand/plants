@@ -216,3 +216,25 @@ class TestParsing:
             }
         )
         assert plant.parent_id == [20, 22]
+
+    def test_converts_empty_strings_to_null(self):
+        plant = PlantItem.model_validate(
+            {
+                "human_name": "Mid-right kitchen spider plant",
+                "species": "",
+                "location": "kitchen",
+                "parent_id": "",
+                "source": "plant",
+                "source_date": "2023-11-25",
+                "sink": None,
+                "sink_date": None,
+                "notes": None,
+                "human_id": 9,
+                "PK": "USER#106821357176702886816",
+                "SK": "PLANT#0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+                "entity_type": "Plant",
+                "plant_id": "0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+            }
+        )
+        assert plant.species is None
+        assert plant.parent_id is None

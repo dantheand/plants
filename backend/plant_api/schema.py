@@ -75,7 +75,7 @@ class PlantBase(DynamoDBMixin):
     human_name: str
     species: Optional[str] = None
     location: Optional[str] = None
-    # TODO: Migrate these over to the PlantSourceItem system
+    # TODO: Migrate these over to the PlantSourceItem system and convert default factory to empty list
     parent_id: Optional[list[int]] = None
     source: str
     source_date: date
@@ -93,7 +93,9 @@ class PlantBase(DynamoDBMixin):
 
     @field_validator("parent_id", mode="before")
     @classmethod
-    def parent_id_to_list_of_int(cls, v: Union[str, list[int]]) -> list[int]:
+    def parent_id_to_list_of_int(cls, v: Union[str, list[int]]) -> Optional[list[int]]:
+        if v == "":
+            return None
         if isinstance(v, str):
             return [int(x) for x in v.split(",")]
         return v

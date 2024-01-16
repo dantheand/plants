@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import { Alert } from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
 import "../styles/styles.css";
 import { Variant } from "react-bootstrap/types";
 
@@ -31,6 +31,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alert, setAlert] = useState<AlertProps>(defaultAlert);
   const showAlert = (message: string, variant: string) => {
     setAlert({ show: true, message, variant });
+    /* TODO: extend error alert time */
     setTimeout(() => setAlert({ ...alert, show: false }), 10000); // auto-hide after 10 seconds
   };
   return (

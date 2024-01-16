@@ -17,10 +17,12 @@ const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
     body: JSON.stringify(plant),
   });
   if (!response.ok) {
+    const error_response = await response.json();
+    const error_message = JSON.stringify(error_response);
     return {
       success: false,
       data: null,
-      error: `Error: ${response.status}`,
+      error: `Error: ${error_message}`,
     };
   }
   return {
