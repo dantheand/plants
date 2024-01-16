@@ -182,6 +182,18 @@ def default_enabled_user_in_db(mock_db):
 
 
 @pytest.fixture
+def default_disabled_user_in_db(mock_db):
+    user = UserItem(
+        PK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        email=DEFAULT_TEST_USER.email,
+        disabled=True,
+    )
+    mock_db.insert_mock_data(user)
+    return user
+
+
+@pytest.fixture
 def other_enabled_user_in_db(mock_db):
     user = UserItem(
         PK=f"USER#{OTHER_TEST_USER.google_id}",

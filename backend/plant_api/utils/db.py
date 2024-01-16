@@ -64,6 +64,11 @@ def get_all_users() -> List[UserItem]:
     return users
 
 
+def get_all_active_users() -> List[UserItem]:
+    all_users = get_all_users()
+    return [user for user in all_users if not user.disabled]
+
+
 def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
     """Returns the user with the given google_id"""
     if not google_id:
