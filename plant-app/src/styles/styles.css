@@ -1,5 +1,7 @@
 /* styles.css */
-
+body, .card-header, .card-footer {
+  --bs-card-cap-bg: #f8f9fa; /* Set the desired color */
+}
 
 .clickable-item:hover {
     cursor: pointer;
@@ -66,3 +68,9 @@
   width: 90%;  /* Adjust the width as needed */
 }
 
+.sticky-card-header {
+  position: sticky;
+  top: 0;
+  opacity: 1.0;
+  z-index: 1000; /* Ensure the header is above other content */
+}
