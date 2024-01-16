@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PlantDetails } from "./views/PlantDetails";
+import { UserList } from "./views/UserList";
 import {
   BrowserRouter as Router,
   Routes,
@@ -96,6 +97,7 @@ function App() {
             <Route path="/plants" element={<PlantList />} />
             <Route path="/plants/:plantId" element={<PlantDetails />} />
             <Route path="/plants/create" element={<PlantCreate />} />
+            <Route path="/users" element={<UserList />} />
           </Route>
         </Routes>
       </GlobalLayout>
