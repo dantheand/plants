@@ -17,21 +17,25 @@ interface PlantFormProps {
 interface PlantFormHeaderProps {
   isFormEditable: boolean;
   toggleEditable: () => void;
+  isFormNewPlant: boolean;
 }
 
 const HeaderEditSaveButtons = ({
   isFormEditable,
   toggleEditable,
+  isFormNewPlant,
 }: PlantFormHeaderProps) => {
   return (
     <div>
-      <Button
-        variant={isFormEditable ? "danger" : "secondary"}
-        onClick={toggleEditable}
-        className="mx-2"
-      >
-        {isFormEditable ? <FaTimes /> : <FaPencilAlt />}
-      </Button>
+      {!isFormNewPlant && (
+        <Button
+          variant={isFormEditable ? "danger" : "secondary"}
+          onClick={toggleEditable}
+          className="mx-2"
+        >
+          {isFormEditable ? <FaTimes /> : <FaPencilAlt />}
+        </Button>
+      )}
       <Button variant="primary" type="submit" disabled={!isFormEditable}>
         <FaSave />
       </Button>
@@ -69,12 +73,13 @@ export const PlantForm = ({
       <Card className="mb-3">
         <Card.Header
           as="h4"
-          className="d-flex justify-content-between align-items-center"
+          className="d-flex justify-content-between align-items-center sticky-card-header"
         >
           <span>Plant Information</span>
           <HeaderEditSaveButtons
             isFormEditable={isFormEditable}
             toggleEditable={toggleEditable}
+            isFormNewPlant={isFormNewPlant}
           />
         </Card.Header>
         <EditableInput
