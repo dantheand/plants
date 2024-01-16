@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
 
 import { PlantForm } from "../components/plantForm/PlantForm";
+import { Button } from "react-bootstrap";
 
 const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
   const response = await fetch(`${BASE_API_URL}/plants/create`, {
@@ -65,6 +66,7 @@ export function PlantCreate() {
         setIsFormEditable={() => {}} // no-op function since form should always be editable
         isFormNewPlant={true}
       />
+      {/*<Button onClick={handleSubmitNewPlant}>Save New Plant</Button>*/}
     </PlantLayout>
   );
 }
