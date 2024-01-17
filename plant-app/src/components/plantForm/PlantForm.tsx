@@ -83,13 +83,14 @@ export const PlantForm = ({
           />
         </Card.Header>
         <EditableInput
-          label="ID Number"
+          label="Unique ID Number"
           type="text"
           value={plantInForm.human_id}
           OnChange={handleInputChange("human_id")}
           isEditable={isFormEditable}
           editsAllowed={false || isFormNewPlant}
           isRequired={true}
+          placeholder={"e.g. 123"}
         />
         <EditableInput
           label="Plant Name"
@@ -128,6 +129,7 @@ export const PlantForm = ({
           value={plantInForm.parent_id}
           OnChange={handleInputChange("parent_id")}
           isEditable={isFormEditable}
+          placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
         />
         <EditableInput
           label="Source"
@@ -136,6 +138,7 @@ export const PlantForm = ({
           OnChange={handleInputChange("source")}
           isEditable={isFormEditable}
           isRequired={true}
+          placeholder={"e.g. 'Home Depot', 'Mom', 'Plant"}
         />
         <EditableInput
           label={"Source Date"}
@@ -152,6 +155,7 @@ export const PlantForm = ({
           value={plantInForm.sink}
           OnChange={handleInputChange("sink")}
           isEditable={isFormEditable}
+          placeholder={"e.g. 'Trash', 'Gift to Neighbor'"}
         />
         <EditableInput
           label={"Sink Date"}
