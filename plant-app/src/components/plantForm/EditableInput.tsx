@@ -9,6 +9,7 @@ interface EditableInputProps {
   OnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isEditable: boolean;
   isRequired?: boolean;
+  placeholder?: string;
 }
 
 export const EditableInput = ({
@@ -19,6 +20,7 @@ export const EditableInput = ({
   OnChange,
   isEditable,
   isRequired = false,
+  placeholder,
 }: EditableInputProps) => {
   return (
     <Form.Group as={Row} className="m-2">
@@ -32,6 +34,7 @@ export const EditableInput = ({
           value={value}
           onChange={OnChange}
           disabled={!(isEditable && editsAllowed)}
+          placeholder={isEditable ? placeholder : undefined}
         />
       </Col>
     </Form.Group>
