@@ -1,3 +1,5 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +10,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from plant_api.constants import AWS_DEPLOYMENT_ENV, LOCAL_DEPLOYMENT_ENV, get_jwt_secret
 from plant_api.routers import auth, plants, images, users
 from plant_api.utils.deployment import get_deployment_env
+
+logging.basicConfig(level=logging.INFO)
+
 
 app = FastAPI()
 
