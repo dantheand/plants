@@ -1,3 +1,4 @@
+import logging
 import uuid
 from typing import Annotated
 from uuid import UUID
@@ -10,6 +11,8 @@ from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import get_db_table, query_by_plant_id
 from plant_api.schema import ImageItem, PlantCreate, PlantItem, PlantUpdate, User
 from plant_api.routers.images import delete_image_from_s3
+
+LOGGER = logging.getLogger(__name__)
 
 PLANT_ROUTE = "/plants"
 
@@ -39,6 +42,7 @@ def get_plant(plant_id: UUID):
 
 @router.post("/create", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
 async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(get_current_user)]):
+    LOGGER.info(f"Creating plant for user {user.google_id}")
     table = get_db_table()
     # Query to check if a plant with the same human_id already exists for this user
     response = table.query(
