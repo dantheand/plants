@@ -50,7 +50,7 @@ export const AppNavbar = () => {
         </Nav>
         <Nav className="ms-auto">
           <Nav.Link className="hoverable-icon" onClick={handleLogout}>
-            <FaRightFromBracket />
+            <FaRightFromBracket className="logout-btn" />
           </Nav.Link>
         </Nav>
       </Container>
