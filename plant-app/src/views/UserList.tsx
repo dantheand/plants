@@ -18,10 +18,10 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
   return (
     <Col>
       <Card>
+        <Card.Header as="h5">{user.email}</Card.Header>
         <Card.Body>
-          <Card.Title>{user.email}</Card.Title>
-          <Card.Text>Current Number of Plant: {user.n_active_plants}</Card.Text>
-          <Card.Text>Total Plants Tracked: {user.n_total_plants}</Card.Text>
+          <Card.Text>Active Plants: {user.n_active_plants}</Card.Text>
+          <Card.Text>Total Plants: {user.n_total_plants}</Card.Text>
           <Button
             variant="primary"
             onClick={() => {
@@ -40,10 +40,10 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 export const PlaceholderCard: React.FC = () => (
   <Col>
     <Card>
+      <Placeholder as={Card.Header} animation="glow">
+        <Placeholder xs={7} />
+      </Placeholder>
       <Card.Body>
-        <Placeholder as={Card.Title} animation="glow">
-          <Placeholder xs={7} />
-        </Placeholder>
         <Placeholder as={Card.Text} animation="glow">
           <Placeholder xs={4} /> <Placeholder xs={1} />
         </Placeholder>
@@ -75,7 +75,7 @@ export function UserList(): JSX.Element {
       })
       .then((data) => {
         const sortedUsers = data.sort((a: User, b: User) => {
-          return b.n_total_plants - a.n_total_plants;
+          return b.n_active_plants - a.n_active_plants;
         });
 
         setUsers(sortedUsers);
