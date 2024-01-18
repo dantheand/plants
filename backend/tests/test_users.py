@@ -1,6 +1,6 @@
-from datetime import date, datetime
+from datetime import date
 
-from conftest import create_plants_for_user
+from tests.conftest import create_plants_for_user
 from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, plant_record_factory
 from plant_api.schema import User, UserItem
 from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id

@@ -21,34 +21,34 @@ DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=Fal
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 # Define a unique sentinel object for default values
-_NO_VALUE = object()
+UNSPECIFIED = object()
 
 
 def plant_record_factory(
-    human_name: Optional[str] = _NO_VALUE,
-    human_id: Optional[int] = _NO_VALUE,
-    species: Optional[str] = _NO_VALUE,
-    location: Optional[str] = _NO_VALUE,
-    source: Optional[str] = _NO_VALUE,
-    source_date: Optional[date] = _NO_VALUE,
-    sink: Optional[str] = _NO_VALUE,
-    sink_date: Optional[date] = _NO_VALUE,
-    notes: Optional[str] = _NO_VALUE,
-    user_id: Optional[str] = _NO_VALUE,
-    plant_id: Optional[uuid.UUID] = _NO_VALUE,
+    human_name: Union[str, None, object] = UNSPECIFIED,
+    human_id: Union[int, None, object] = UNSPECIFIED,
+    species: Union[str, None, object] = UNSPECIFIED,
+    location: Union[str, None, object] = UNSPECIFIED,
+    source: Union[str, None, object] = UNSPECIFIED,
+    source_date: Union[date, None, object] = UNSPECIFIED,
+    sink: Union[str, None, object] = UNSPECIFIED,
+    sink_date: Union[date, None, object] = UNSPECIFIED,
+    notes: Union[str, None, object] = UNSPECIFIED,
+    user_id: Union[str, None, object] = UNSPECIFIED,
+    plant_id: Union[uuid.UUID, None, object] = UNSPECIFIED,
 ) -> PlantItem:
     return PlantItem(
-        human_name=human_name if human_name is not _NO_VALUE else fake.name(),
-        human_id=human_id if human_id is not _NO_VALUE else fake.random_int(min=1, max=100000),
-        species=species if species is not _NO_VALUE else fake.word(),
-        location=location if location is not _NO_VALUE else fake.word(),
-        source=source if source is not _NO_VALUE else fake.word(),
-        source_date=source_date if source_date is not _NO_VALUE else fake.date(),
-        sink=sink if sink is not _NO_VALUE else fake.word(),
-        sink_date=sink_date if sink_date is not _NO_VALUE else fake.date(),
-        notes=notes if notes is not _NO_VALUE else fake.text(),
-        PK=f"{ItemKeys.USER}#{user_id if user_id is not _NO_VALUE else DEFAULT_TEST_USER.google_id}",
-        SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not _NO_VALUE else fake.uuid4()}",
+        human_name=human_name if human_name is not UNSPECIFIED else fake.name(),
+        human_id=human_id if human_id is not UNSPECIFIED else fake.random_int(min=1, max=100000),
+        species=species if species is not UNSPECIFIED else fake.word(),
+        location=location if location is not UNSPECIFIED else fake.word(),
+        source=source if source is not UNSPECIFIED else fake.word(),
+        source_date=source_date if source_date is not UNSPECIFIED else fake.date(),
+        sink=sink if sink is not UNSPECIFIED else fake.word(),
+        sink_date=sink_date if sink_date is not UNSPECIFIED else fake.date(),
+        notes=notes if notes is not UNSPECIFIED else fake.text(),
+        PK=f"{ItemKeys.USER}#{user_id if user_id is not UNSPECIFIED else DEFAULT_TEST_USER.google_id}",
+        SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not UNSPECIFIED else fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
 
