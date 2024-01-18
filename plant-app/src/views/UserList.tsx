@@ -1,6 +1,13 @@
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { Button, Card, Col, Placeholder, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  ListGroup,
+  Placeholder,
+  Row,
+} from "react-bootstrap";
 
 import "../styles/styles.css";
 import { User } from "../types/interfaces";
@@ -16,44 +23,36 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const navigate = useNavigate();
 
   return (
-    <Col>
-      <Card>
-        <Card.Header as="h5">{user.email}</Card.Header>
-        <Card.Body>
-          <Card.Text>Active Plants: {user.n_active_plants}</Card.Text>
-          <Card.Text>Total Plants: {user.n_total_plants}</Card.Text>
-          <Button
-            variant="primary"
-            onClick={() => {
-              navigate(`/plants/user/${user.google_id}`);
-            }}
-          >
-            {" "}
-            View Plants{" "}
-          </Button>
-        </Card.Body>
-      </Card>
-    </Col>
+    <ListGroup.Item as="li" className="mb-2">
+      <h4>{user.email}</h4>
+      <p></p>
+      <p>Active Plants: {user.n_active_plants}</p>
+      <p>Total Plants: {user.n_total_plants}</p>
+      <Button
+        variant="primary"
+        onClick={() => {
+          navigate(`/plants/user/${user.google_id}`);
+        }}
+      >
+        View Plants
+      </Button>
+    </ListGroup.Item>
   );
 };
 
 export const PlaceholderCard: React.FC = () => (
-  <Col>
-    <Card>
-      <Placeholder as={Card.Header} animation="glow">
-        <Placeholder xs={7} />
-      </Placeholder>
-      <Card.Body>
-        <Placeholder as={Card.Text} animation="glow">
-          <Placeholder xs={4} /> <Placeholder xs={1} />
-        </Placeholder>
-        <Placeholder as={Card.Text} animation="glow">
-          <Placeholder xs={4} /> <Placeholder xs={1} />
-        </Placeholder>
-        <Placeholder.Button variant="primary" xs={4} />
-      </Card.Body>
-    </Card>
-  </Col>
+  <ListGroup.Item as="li" className="mb-2">
+    <Placeholder as="h5" animation="glow">
+      <Placeholder xs={5} />
+    </Placeholder>
+    <Placeholder as="p" animation="glow">
+      <Placeholder xs={2} /> <Placeholder xs={1} />
+    </Placeholder>
+    <Placeholder as="p" animation="glow">
+      <Placeholder xs={2} /> <Placeholder xs={1} />
+    </Placeholder>
+    <Placeholder.Button variant="primary" xs={3} />
+  </ListGroup.Item>
 );
 
 export function UserList(): JSX.Element {
@@ -93,7 +92,7 @@ export function UserList(): JSX.Element {
       <Card className="mb-3">
         <Card.Header as="h4">Users</Card.Header>
         <Card.Body>
-          <Row xs={1} md={2} lg={3} className="g-4">
+          <ListGroup as="ol" variant="flush">
             {isLoading
               ? Array.from({ length: 6 }).map((_, idx) => (
                   <PlaceholderCard key={idx} />
@@ -101,7 +100,7 @@ export function UserList(): JSX.Element {
               : users.map((user) => (
                   <UserCard key={user.google_id} user={user} />
                 ))}
-          </Row>
+          </ListGroup>
         </Card.Body>
       </Card>
     </BaseLayout>
