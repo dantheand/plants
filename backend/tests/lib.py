@@ -22,10 +22,6 @@ OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=Fals
 
 
 # Define a sentinel object for distinguishing unspecified arguments
-class _UnspecifiedType:
-    pass
-
-
 UNSPECIFIED = object()
 
 
@@ -56,10 +52,6 @@ def plant_record_factory(
         SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not UNSPECIFIED else fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
-
-
-# Example usage
-plant_item = plant_record_factory(human_name=None)
 
 
 def image_record_factory(
