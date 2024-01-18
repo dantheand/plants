@@ -7,7 +7,6 @@ import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BaseLayout } from "../components/Layouts";
-import { DeleteButtonWConfirmation } from "../components/CommonComponents";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.css";
 import { PlantImages } from "../components/plantImages/PlantImages";
@@ -197,13 +196,3 @@ export function PlantDetails() {
     </BaseLayout>
   );
 }
-
-// function PlantModalonClick({image, show}: {image: PlantImage, show: boolean}){
-//     <Modal show={show} onHide={handleClose}>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Modal heading</Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
-//       </Modal>
-//
-// }
