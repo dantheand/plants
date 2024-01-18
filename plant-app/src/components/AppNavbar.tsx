@@ -25,7 +25,10 @@ export const AppNavbar = () => {
   return (
     <Navbar className="justify-content-between">
       <Container>
-        <Navbar.Brand onClick={() => handleNavigate("/plants")}>
+        <Navbar.Brand
+          className="cursor-on-hover"
+          onClick={() => handleNavigate("/plants")}
+        >
           <img
             src={plantBrandIcon}
             width="40"

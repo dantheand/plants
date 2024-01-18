@@ -3,6 +3,10 @@ body, .card-header, .card-footer {
   --bs-card-cap-bg: #f8f9fa; /* Set the desired color */
 }
 
+.cursor-on-hover {
+  cursor: pointer;
+}
+
 .clickable-item:hover {
     cursor: pointer;
     background-color: #f0f0f0; /* Light grey background on hover */
