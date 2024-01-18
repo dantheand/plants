@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
 
 import "../styles/styles.css";
+import { FaDoorOpen, FaRightFromBracket } from "react-icons/fa6";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export const AppNavbar = () => {
     navigate("/login");
   };
   return (
-    <Navbar expand="lg" className="custom-navbar">
+    <Navbar className="justify-content-between">
       <Container>
         <Navbar.Brand onClick={() => handleNavigate("/plants")}>
           <img
@@ -31,32 +32,29 @@ export const AppNavbar = () => {
             height="40"
             className="d-inline-block align-top"
             alt="Brand Icon"
-          />{" "}
-          {APP_BRAND_NAME}
+          />
+          <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link onClick={() => handleNavigate("/plants")}>
-              My Plants
-            </Nav.Link>
-            <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
-            <Nav.Link
-              onClick={() => handleNavigate("/lineages")}
-              className="nav-link-disabled"
-            >
-              Lineages
-            </Nav.Link>
-          </Nav>
-          <Nav>
-            <Nav.Link
-              className="btn btn-outline-primary"
-              onClick={handleLogout}
-            >
-              Logout
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
+        <Nav className="me-auto">
+          <Nav.Link onClick={() => handleNavigate("/plants")}>
+            My Plants
+          </Nav.Link>
+          <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
+          <Nav.Link
+            onClick={() => handleNavigate("/lineages")}
+            className="nav-link-disabled"
+          >
+            Lineages
+          </Nav.Link>
+        </Nav>
+        <Nav className="ms-auto">
+          <Nav.Link
+            className="btn btn-outline-secondary ms-auto"
+            onClick={handleLogout}
+          >
+            <FaRightFromBracket />
+          </Nav.Link>
+        </Nav>
       </Container>
     </Navbar>
   );
