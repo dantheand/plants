@@ -1,7 +1,7 @@
 import io
 import uuid
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, Union
 
 from botocore.exceptions import ClientError
 from PIL import Image as img
