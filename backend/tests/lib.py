@@ -1,7 +1,7 @@
 import io
 import uuid
 from datetime import date, datetime
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from botocore.exceptions import ClientError
 from PIL import Image as img
@@ -20,22 +20,27 @@ fake = Faker()
 DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=False)
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
-# Define a unique sentinel object for default values
+
+# Define a sentinel object for distinguishing unspecified arguments
+class _UnspecifiedType:
+    pass
+
+
 UNSPECIFIED = object()
 
 
 def plant_record_factory(
-    human_name: Union[str, None, object] = UNSPECIFIED,
-    human_id: Union[int, None, object] = UNSPECIFIED,
-    species: Union[str, None, object] = UNSPECIFIED,
-    location: Union[str, None, object] = UNSPECIFIED,
-    source: Union[str, None, object] = UNSPECIFIED,
-    source_date: Union[date, None, object] = UNSPECIFIED,
-    sink: Union[str, None, object] = UNSPECIFIED,
-    sink_date: Union[date, None, object] = UNSPECIFIED,
-    notes: Union[str, None, object] = UNSPECIFIED,
-    user_id: Union[str, None, object] = UNSPECIFIED,
-    plant_id: Union[uuid.UUID, None, object] = UNSPECIFIED,
+    human_name: Any = UNSPECIFIED,
+    human_id: Any = UNSPECIFIED,
+    species: Any = UNSPECIFIED,
+    location: Any = UNSPECIFIED,
+    source: Any = UNSPECIFIED,
+    source_date: Any = UNSPECIFIED,
+    sink: Any = UNSPECIFIED,
+    sink_date: Any = UNSPECIFIED,
+    notes: Any = UNSPECIFIED,
+    user_id: Any = UNSPECIFIED,
+    plant_id: Any = UNSPECIFIED,
 ) -> PlantItem:
     return PlantItem(
         human_name=human_name if human_name is not UNSPECIFIED else fake.name(),
@@ -51,6 +56,10 @@ def plant_record_factory(
         SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not UNSPECIFIED else fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
+
+
+# Example usage
+plant_item = plant_record_factory(human_name=None)
 
 
 def image_record_factory(
