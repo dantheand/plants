@@ -5,7 +5,6 @@ import { PlantImage } from "../../types/interfaces";
 import { SHOW_IMAGES } from "../../featureFlags";
 import "../../styles/styles.css";
 import { FaCamera } from "react-icons/fa";
-import { FloatingActionButton } from "../CommonComponents";
 import { useAlert } from "../../context/Alerts";
 import { NoImagesPlaceholder } from "./NoImagesPlaceholder";
 import { ImageDisplayModal } from "./ImageDisplayModal";
@@ -13,6 +12,7 @@ import { ImageDeletionConfirmationModal } from "./ImageDeletionConfirmationModal
 import { PlantImagesTimeline } from "./PlantImagesTimeline";
 import { PlantImagesLoadingPlaceholder } from "./PlantImagesLoadingPlaceholder";
 import { ImageUploadModal } from "./ImageUploadModal";
+import { FloatingActionButton } from "../FloatingActionButton";
 
 const deletePlantImage = async (image: PlantImage) => {
   return fetch(`${BASE_API_URL}/images/${image.image_id}`, {

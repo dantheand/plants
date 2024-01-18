@@ -1,26 +1,40 @@
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { Card, Col, Container, Placeholder, Row } from "react-bootstrap";
+import { Button, Card, Col, Placeholder, Row } from "react-bootstrap";
 
 import "../styles/styles.css";
 import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
+import { useNavigate } from "react-router-dom";
 
 type UserCardProps = {
   user: User;
 };
 
-export const UserCard: React.FC<UserCardProps> = ({ user }) => (
-  <Col>
-    <Card>
-      <Card.Body>
-        <Card.Title>{user.email}</Card.Title>
-        <Card.Text>Number of Plants: {user.n_plants}</Card.Text>
-      </Card.Body>
-    </Card>
-  </Col>
-);
+export const UserCard: React.FC<UserCardProps> = ({ user }) => {
+  const navigate = useNavigate();
+
+  return (
+    <Col>
+      <Card>
+        <Card.Body>
+          <Card.Title>{user.email}</Card.Title>
+          <Card.Text>Number of Plants: {user.n_plants}</Card.Text>
+          <Button
+            variant="primary"
+            onClick={() => {
+              navigate(`/plants/user/${user.google_id}`);
+            }}
+          >
+            {" "}
+            View Plants{" "}
+          </Button>
+        </Card.Body>
+      </Card>
+    </Col>
+  );
+};
 
 export const PlaceholderCard: React.FC = () => (
   <Col>
@@ -32,6 +46,7 @@ export const PlaceholderCard: React.FC = () => (
         <Placeholder as={Card.Text} animation="glow">
           <Placeholder xs={4} /> <Placeholder xs={1} />
         </Placeholder>
+        <Placeholder.Button variant="primary" xs={4} />
       </Card.Body>
     </Card>
   </Col>
