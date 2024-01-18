@@ -1,5 +1,6 @@
+from conftest import create_plants_for_user
 from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER
-from plant_api.schema import UserItem
+from plant_api.schema import User, UserItem
 from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id
 
 from pydantic import TypeAdapter
@@ -42,7 +43,7 @@ class TestAddUser:
 class TestGetUsers:
     def test_get_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_logged_in):
         response = client_logged_in().get("/users")
-        parsed_response = TypeAdapter(list[UserItem]).validate_python(response.json())
+        parsed_response = TypeAdapter(list[User]).validate_python(response.json())
 
         assert len(parsed_response) == 2
         # Assert that both of the users are there
@@ -51,11 +52,19 @@ class TestGetUsers:
 
     def test_gets_only_active_users(self, default_disabled_user_in_db, other_enabled_user_in_db, client_logged_in):
         response = client_logged_in().get("/users")
-        parsed_response = TypeAdapter(list[UserItem]).validate_python(response.json())
+        parsed_response = TypeAdapter(list[User]).validate_python(response.json())
 
         assert len(parsed_response) == 1
         # Assert that only the active user is there
         assert parsed_response[0].google_id == OTHER_TEST_USER.google_id
+
+    def test_get_user_n_plants(self, default_enabled_user_in_db, mock_db, client_logged_in):
+        create_plants_for_user(mock_db, DEFAULT_TEST_USER, 3)
+        response = client_logged_in().get("/users")
+        parsed_user = TypeAdapter(list[User]).validate_python(response.json())
+
+        assert len(parsed_user) == 1
+        assert parsed_user[0].n_plants == 3
 
 
 class TestReadUserDB:

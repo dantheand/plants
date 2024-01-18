@@ -56,15 +56,17 @@ def get_items_with_pk_and_sk_starting_with(table, prefix):
     return response["Items"]
 
 
-def get_all_users() -> List[UserItem]:
+def get_all_users() -> List[User]:
     """Queries DB for all entries where both PK and SK begin with USER#"""
     table = get_db_table()  # Assuming get_db_table() returns the DynamoDB table object
     response = get_items_with_pk_and_sk_starting_with(table, ItemKeys.USER)
-    users = [UserItem(**item) for item in response]
+    user_items = [UserItem(**item) for item in response]
+    users = [User(**user_item.model_dump()) for user_item in user_items]
+
     return users
 
 
-def get_all_active_users() -> List[UserItem]:
+def get_all_active_users() -> List[User]:
     all_users = get_all_users()
     return [user for user in all_users if not user.disabled]
 
@@ -81,3 +83,12 @@ def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
         # make a more specific exception
         raise ValueError(f"More than one user found with google_id {google_id}")
     return UserItem(**response["Items"][0])
+
+
+def get_n_plants_for_user(user: User) -> int:
+    """Returns the number of plants for the given user"""
+    pk_sk_val = f"{ItemKeys.USER}#{user.google_id}"
+    response = get_db_table().query(
+        KeyConditionExpression=Key("PK").eq(pk_sk_val) & Key("SK").begins_with(ItemKeys.PLANT)
+    )
+    return len(response["Items"])

@@ -53,6 +53,7 @@ class User(BaseModel):
     email: str
     google_id: str
     disabled: Optional[bool] = None
+    n_plants: Optional[int] = None
 
 
 # TODO: separate creation and full item schema (creation doesn't require google_id)
