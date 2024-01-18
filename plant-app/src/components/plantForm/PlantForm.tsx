@@ -6,7 +6,7 @@ import { EditableInput } from "./EditableInput";
 import { deletePlant } from "../../views/PlantDetails";
 import { useAlert } from "../../context/Alerts";
 import { useNavigate } from "react-router-dom";
-import { DeleteButtonWConfirmation } from "../CommonComponents";
+import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
 
 interface PlantFormProps {
   plant: NewPlant;
