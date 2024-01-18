@@ -3,6 +3,10 @@ import { Button, Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 import { EditableInput } from "./EditableInput";
+import { deletePlant } from "../../views/PlantDetails";
+import { useAlert } from "../../context/Alerts";
+import { useNavigate } from "react-router-dom";
+import { DeleteButtonWConfirmation } from "../CommonComponents";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -54,11 +58,24 @@ export const PlantForm = ({
 }: PlantFormProps) => {
   const [plantBeforeEdit, setPlantBeforeEdit] = useState<NewPlant>(plant);
 
+  const { showAlert } = useAlert();
+  const navigate = useNavigate();
+
   type PlantField = keyof Plant;
   const handleInputChange =
     (field: PlantField) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setPlantInForm({ ...plantInForm, [field]: event.target.value });
     };
+
+  const handleDelete = async () => {
+    const response = await deletePlant(plant.plant_id);
+    if (response.success) {
+      showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
+      navigate("/plants");
+    } else {
+      showAlert(`Error deleting plant: ${response.error}`, "danger");
+    }
+  };
 
   const toggleEditable = () => {
     if (isFormEditable) {
@@ -172,6 +189,16 @@ export const PlantForm = ({
           OnChange={handleInputChange("notes")}
           isEditable={isFormEditable}
         />
+
+        {!isFormNewPlant && (
+          <Card.Footer>
+            <DeleteButtonWConfirmation
+              entityName="Plant"
+              confirmationText={`delete plant`}
+              deleteFunction={handleDelete}
+            />
+          </Card.Footer>
+        )}
       </Card>
     </Form>
   );

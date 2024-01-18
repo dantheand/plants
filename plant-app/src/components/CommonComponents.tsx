@@ -49,7 +49,7 @@ export const DeleteButtonWConfirmation = ({
   };
 
   return (
-    <div className="mb-3 float-end">
+    <div className="d-flex justify-content-center align-items-center">
       <Button variant="danger" onClick={openModal}>
         Delete {entityName}
       </Button>

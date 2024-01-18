@@ -75,7 +75,7 @@ const usePlantDetails = (plantId: string | undefined) => {
   return { plant, plantIsLoading, error, setPlant };
 };
 
-const deletePlant = async (
+export const deletePlant = async (
   plantId: string | undefined,
 ): Promise<ApiResponse<null>> => {
   if (!plantId) {
@@ -184,11 +184,6 @@ export function PlantDetails() {
 
   return (
     <BaseLayout>
-      <DeleteButtonWConfirmation
-        entityName="Plant"
-        confirmationText={`delete plant`}
-        deleteFunction={handleDelete}
-      />
       <PlantForm
         plant={plant}
         handleSubmit={handleSubmit}
