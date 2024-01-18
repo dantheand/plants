@@ -1,22 +1,6 @@
 import React from "react";
 
 import { Button, Form, Modal } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa6";
-
-export function BackButton() {
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate("/plants"); // Go back to the previous page
-  };
-
-  return (
-    <Button variant="secondary" onClick={handleBackClick} className="mb-3">
-      <FaArrowLeft /> Back
-    </Button>
-  );
-}
 
 interface DeleteButtonProps {
   entityName: string;
@@ -91,25 +75,5 @@ export const DeleteButtonWConfirmation = ({
         </Modal.Footer>
       </Modal>
     </div>
-  );
-};
-
-interface FloatingActionButtonProps {
-  icon: React.ReactNode;
-  handleOnClick: () => void;
-}
-
-export const FloatingActionButton = ({
-  icon,
-  handleOnClick,
-}: FloatingActionButtonProps) => {
-  return (
-    <Button
-      variant="primary"
-      className="floating-action-button"
-      onClick={handleOnClick}
-    >
-      {icon}
-    </Button>
   );
 };

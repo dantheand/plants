@@ -7,7 +7,6 @@ import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BaseLayout } from "../components/Layouts";
-import { DeleteButtonWConfirmation } from "../components/CommonComponents";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.css";
 import { PlantImages } from "../components/plantImages/PlantImages";
@@ -62,7 +61,12 @@ const usePlantDetails = (plantId: string | undefined) => {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         setPlant(data);
         setPlantIsLoading(false);
@@ -116,6 +120,7 @@ export const deletePlant = async (
   }
 };
 
+// TODO: make this not show editable form or image upload if not the user's plant'
 export function PlantDetails() {
   const { plantId } = useParams<{ plantId: string }>();
   const navigate = useNavigate();
@@ -126,10 +131,15 @@ export function PlantDetails() {
   const { showAlert } = useAlert();
 
   useEffect(() => {
+    if (error) {
+      console.log("error", error);
+      showAlert(`Error fetching plant: ${error}`, "danger");
+      navigate("/plants");
+    }
     if (plant) {
       setPlantInForm(plant);
     }
-  }, [plant]);
+  }, [plant, error]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!plantInForm) {
@@ -151,16 +161,6 @@ export function PlantDetails() {
       }
       setIsFormEditable(false);
       showAlert("Failed to update plant", "danger");
-    }
-  };
-
-  const handleDelete = async () => {
-    const response = await deletePlant(plantId);
-    if (response.success) {
-      showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
-      navigate("/plants");
-    } else {
-      showAlert(`Error deleting plant: ${response.error}`, "danger");
     }
   };
 
@@ -196,13 +196,3 @@ export function PlantDetails() {
     </BaseLayout>
   );
 }
-
-// function PlantModalonClick({image, show}: {image: PlantImage, show: boolean}){
-//     <Modal show={show} onHide={handleClose}>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Modal heading</Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
-//       </Modal>
-//
-// }

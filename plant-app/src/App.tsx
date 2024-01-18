@@ -98,6 +98,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/plants" element={<PlantList />} />
+            <Route path="/plants/user/:userId" element={<PlantList />} />
             <Route path="/plants/:plantId" element={<PlantDetails />} />
             <Route path="/plants/create" element={<PlantCreate />} />
             <Route path="/users" element={<UserList />} />

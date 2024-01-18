@@ -58,11 +58,17 @@ body, .card-header, .card-footer {
   justify-content: center;
 }
 
+/*Navbar*/
 .nav-link-disabled {
   color: grey !important;
   pointer-events: none;
   cursor: default;
 }
+
+.logout-btn{
+  font-size: 1.2rem;
+}
+
 
 .no-images-icon {
   font-size: 5rem;
