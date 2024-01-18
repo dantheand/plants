@@ -36,9 +36,7 @@ export const AppNavbar = () => {
           <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
         <Nav className="me-auto">
-          <Nav.Link onClick={() => handleNavigate("/plants")}>
-            My Plants
-          </Nav.Link>
+          <Nav.Link onClick={() => handleNavigate("/plants")}>Plants</Nav.Link>
           <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
           <Nav.Link
             onClick={() => handleNavigate("/lineages")}

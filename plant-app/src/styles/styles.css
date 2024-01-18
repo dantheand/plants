@@ -74,3 +74,7 @@ body, .card-header, .card-footer {
   opacity: 1.0;
   z-index: 1000; /* Ensure the header is above other content */
 }
+
+.custom-table thead th {
+  background-color: #ccedd9; /* Darker color for the header */
+}

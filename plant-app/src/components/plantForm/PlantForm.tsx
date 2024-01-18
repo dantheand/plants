@@ -191,7 +191,7 @@ export const PlantForm = ({
         />
 
         {!isFormNewPlant && (
-          <Card.Footer>
+          <Card.Footer className="mt-2">
             <DeleteButtonWConfirmation
               entityName="Plant"
               confirmationText={`delete plant`}
