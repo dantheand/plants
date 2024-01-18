@@ -1,4 +1,4 @@
-import { Placeholder, Table } from "react-bootstrap";
+import { ListGroup, Placeholder } from "react-bootstrap";
 import React from "react";
 import { Plant } from "../../types/interfaces";
 import { NavigateFunction } from "react-router-dom";
@@ -17,50 +17,24 @@ export const PlantListTable = ({
   navigate,
 }: RenderListItemsProps) => {
   return (
-    <Table bordered hover responsive className="mx-3 my-3 custom-table">
-      <thead>
-        <tr>
-          <th className="column-id">ID</th>
-          <th className="column-name">Plant Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {renderTableRows({ isLoading, plants, handlePlantClick, navigate })}
-      </tbody>
-    </Table>
-  );
-};
-const renderTableRows = ({
-  isLoading,
-  plants,
-  handlePlantClick,
-  navigate,
-}: RenderListItemsProps) => {
-  if (isLoading || !plants) {
-    return [...Array(10)].map(
-      (
-        _,
-        idx, // Change this number to increase placeholder rows
-      ) => (
-        <tr key={idx}>
-          <td colSpan={2}>
-            <Placeholder as="div" animation="glow">
+    <ListGroup className="mx-3 my-3">
+      {isLoading || !plants
+        ? [...Array(10)].map((_, idx) => (
+            <Placeholder as={ListGroup.Item} animation="glow" key={idx}>
               <Placeholder xs={12} size="lg" />
             </Placeholder>
-          </td>
-        </tr>
-      ),
-    );
-  } else {
-    return plants.map((plant) => (
-      <tr
-        key={plant.plant_id}
-        onClick={() => handlePlantClick(plant.plant_id, navigate)}
-        className="clickable-item"
-      >
-        <td className="column-id">{plant.human_id}</td>
-        <td className="column-name">{plant.human_name}</td>
-      </tr>
-    ));
-  }
+          ))
+        : plants.map((plant) => (
+            <ListGroup.Item
+              key={plant.plant_id}
+              action
+              onClick={() => handlePlantClick(plant.plant_id, navigate)}
+              className="d-flex justify-content-start"
+            >
+              <div className="me-auto">{plant.human_id}</div>
+              <div className={"me-auto mx-3"}>{plant.human_name}</div>
+            </ListGroup.Item>
+          ))}
+    </ListGroup>
+  );
 };

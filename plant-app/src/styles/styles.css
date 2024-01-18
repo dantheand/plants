@@ -1,6 +1,13 @@
-/* styles.css */
 body, .card-header, .card-footer {
-  --bs-card-cap-bg: #f8f9fa; /* Set the desired color */
+  /*Overriding Bootstrap CSS for sticky headers*/
+  --bs-card-cap-bg: #f8f9fa;
+}
+
+.sticky-card-header {
+  position: sticky;
+  top: 0;
+  opacity: 1.0;
+  z-index: 1000;
 }
 
 .cursor-on-hover {
@@ -9,9 +16,21 @@ body, .card-header, .card-footer {
 
 .clickable-item:hover {
     cursor: pointer;
-    background-color: #f0f0f0; /* Light grey background on hover */
-    color: #0366d6; /* Change text color */
+    background-color: #f0f0f0;
+    color: #0366d6;
 }
+
+.hoverable-icon {
+  color: #787878;
+  text-decoration: none;
+  transition: color 0.3s; /* Smooth transition for color change */
+
+}
+
+.hoverable-icon:hover {
+  color: #000000;
+}
+
 
 .alert-popup {
   position: fixed;
@@ -22,7 +41,7 @@ body, .card-header, .card-footer {
 }
 
 .required-asterisk {
-  color: #ff4d4d; /* Red color */
+  color: #ff4d4d;
   margin-left: 3px;
 }
 
@@ -40,48 +59,27 @@ body, .card-header, .card-footer {
 }
 
 .nav-link-disabled {
-  color: grey !important; /* Make the text grey */
-  pointer-events: none;   /* Disable click events */
-  cursor: default;        /* Set cursor to default instead of pointer */
+  color: grey !important;
+  pointer-events: none;
+  cursor: default;
 }
 
 .no-images-icon {
-  font-size: 5rem; /* Adjusts the size of the icon */
-  color: #6c757d; /* A subtle, neutral color; you can adjust this based on your theme */
-  margin-bottom: 1rem; /* Adds space between the icon and the text */
+  font-size: 5rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
 }
 
 .no-images-text {
-  color: #495057; /* Slightly darker color for text for readability */
-  margin-bottom: 0.5rem; /* Adds a little space below each text line */
+  color: #495057;
+  margin-bottom: 0.5rem;
 }
 
 .no-images-message {
-  padding: 2rem 0; /* Adds padding around the whole message for better spacing */
-  text-align: center; /* Centers the message and icon */
+  padding: 2rem 0;
+  text-align: center;
 }
 
-
-/* Plant list table */
-
-.column-id {
-  width: 10%;  /* Adjust the width as needed */
-}
-
-.column-name {
-  width: 90%;  /* Adjust the width as needed */
-}
-
-.sticky-card-header {
-  position: sticky;
-  top: 0;
-  opacity: 1.0;
-  z-index: 1000; /* Ensure the header is above other content */
-}
-
-.custom-table thead th {
-  background-color: #ccedd9; /* Darker color for the header */
-}
 
 /* Footer */
 .footer {
@@ -89,15 +87,4 @@ body, .card-header, .card-footer {
   text-align: center;
   bottom: 0;
   width: 100%;
-}
-
-.footer a {
-  color: #787878; /* Icon color */
-  text-decoration: none;
-  transition: color 0.3s; /* Smooth transition for color change */
-
-}
-
-.footer a:hover {
-  color: #000000; /* Icon color on hover */
 }
