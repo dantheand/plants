@@ -5,6 +5,7 @@ import { Card, Col, Container, Placeholder, Row } from "react-bootstrap";
 import "../styles/styles.css";
 import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
+import { BaseLayout } from "../components/Layouts";
 
 type UserCardProps = {
   user: User;
@@ -69,15 +70,21 @@ export function UserList(): JSX.Element {
   }, []);
 
   return (
-    <Container className="p-5 mb-4 bg-light rounded-3">
-      <h2>Users</h2>
-      <Row xs={1} md={2} lg={3} className="g-4">
-        {isLoading
-          ? Array.from({ length: 6 }).map((_, idx) => (
-              <PlaceholderCard key={idx} />
-            ))
-          : users.map((user) => <UserCard key={user.google_id} user={user} />)}
-      </Row>
-    </Container>
+    <BaseLayout>
+      <Card className="mb-3">
+        <Card.Header as="h4">Users</Card.Header>
+        <Card.Body>
+          <Row xs={1} md={2} lg={3} className="g-4">
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, idx) => (
+                  <PlaceholderCard key={idx} />
+                ))
+              : users.map((user) => (
+                  <UserCard key={user.google_id} user={user} />
+                ))}
+          </Row>
+        </Card.Body>
+      </Card>
+    </BaseLayout>
   );
 }

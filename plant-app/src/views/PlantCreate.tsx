@@ -1,4 +1,4 @@
-import { PlantLayout } from "../components/Layouts";
+import { BaseLayout } from "../components/Layouts";
 import { useState } from "react";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
@@ -56,7 +56,7 @@ export function PlantCreate() {
     }
   };
   return (
-    <PlantLayout>
+    <BaseLayout>
       <PlantForm
         plant={newPlant}
         handleSubmit={handleSubmitNewPlant}
@@ -67,6 +67,6 @@ export function PlantCreate() {
         isFormNewPlant={true}
       />
       {/*<Button onClick={handleSubmitNewPlant}>Save New Plant</Button>*/}
-    </PlantLayout>
+    </BaseLayout>
   );
 }

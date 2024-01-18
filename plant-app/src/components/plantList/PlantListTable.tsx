@@ -16,7 +16,7 @@ export const PlantListTable = ({
   navigate,
 }: RenderListItemsProps) => {
   return (
-    <Table bordered hover className="rounded-table">
+    <Table bordered hover className="mx-3 my-3">
       <thead>
         <tr>
           <th className="column-id">ID</th>

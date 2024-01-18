@@ -1,7 +1,7 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { Container } from "react-bootstrap";
+import { Card, Container, Placeholder } from "react-bootstrap";
 
 import { JwtPayload, Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
@@ -10,6 +10,7 @@ import "../styles/styles.css";
 import { FloatingActionButton } from "../components/CommonComponents";
 import { jwtDecode } from "jwt-decode";
 import { PlantListTable } from "../components/plantList/PlantListTable";
+import { BaseLayout } from "../components/Layouts";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
@@ -54,18 +55,22 @@ export function PlantList(): JSX.Element {
   }, []);
 
   return (
-    <Container className="p-5 mb-4 bg-light rounded-3">
-      <h2>All Plants</h2>
+    <BaseLayout>
+      <Card className="mb-3">
+        <Card.Header as="h4">Your Plants</Card.Header>
+        <Card.Body>
+          <PlantListTable
+            plants={plants}
+            isLoading={isLoading}
+            handlePlantClick={handlePlantClick}
+            navigate={navigate}
+          />
+        </Card.Body>
+      </Card>
       <FloatingActionButton
         icon={<FaPlus />}
         handleOnClick={navigateToCreatePlant}
       />
-      <PlantListTable
-        plants={plants}
-        isLoading={isLoading}
-        handlePlantClick={handlePlantClick}
-        navigate={navigate}
-      />
-    </Container>
+    </BaseLayout>
   );
 }

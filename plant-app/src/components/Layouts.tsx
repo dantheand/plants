@@ -25,7 +25,7 @@ export const GlobalLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const PlantLayout = ({ children }: { children: ReactNode }) => {
+export const BaseLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Container className="my-4">
       <BackButton /> {children}
