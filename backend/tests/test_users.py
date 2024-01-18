@@ -1,5 +1,7 @@
+from datetime import date, datetime
+
 from conftest import create_plants_for_user
-from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER
+from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, plant_record_factory
 from plant_api.schema import User, UserItem
 from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id
 
@@ -63,13 +65,27 @@ class TestGetUsers:
         response = client_logged_in().get("/users")
         parsed_user = TypeAdapter(list[User]).validate_python(response.json())
 
-        assert parsed_user[0].n_plants == 3
+        assert parsed_user[0].n_total_plants == 3
 
     def test_get_user_without_plants(self, default_enabled_user_in_db, client_logged_in):
         response = client_logged_in().get("/users")
         parsed_user = TypeAdapter(list[User]).validate_python(response.json())
 
-        assert parsed_user[0].n_plants == 0
+        assert parsed_user[0].n_total_plants == 0
+
+    def test_get_user_w_sunk_plants(self, mock_db, default_enabled_user_in_db, client_logged_in):
+        plants = [
+            plant_record_factory(human_id=1, sink=None, sink_date=None),
+            plant_record_factory(human_id=2, sink="mock_sink", sink_date=date.today()),
+        ]
+        for plant in plants:
+            mock_db.insert_mock_data(plant)
+
+        response = client_logged_in().get("/users")
+        parsed_user = TypeAdapter(list[User]).validate_python(response.json())[0]
+
+        assert parsed_user.n_total_plants == 2
+        assert parsed_user.n_active_plants == 1
 
 
 class TestReadUserDB:

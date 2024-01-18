@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from uuid import UUID
 
 import boto3
@@ -8,6 +8,8 @@ from fastapi import HTTPException
 from plant_api.constants import AWS_REGION, TABLE_NAME
 from plant_api.schema import ImageItem, PlantItem, TokenItem, User, UserItem
 from plant_api.schema import ItemKeys, UserItem
+
+from pydantic import TypeAdapter
 
 
 def get_db_connection():
@@ -85,10 +87,13 @@ def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
     return UserItem(**response["Items"][0])
 
 
-def get_n_plants_for_user(user: User) -> int:
+def get_n_plants_for_user(user: User) -> Tuple[int, int]:
     """Returns the number of plants for the given user"""
     pk_sk_val = f"{ItemKeys.USER}#{user.google_id}"
     response = get_db_table().query(
         KeyConditionExpression=Key("PK").eq(pk_sk_val) & Key("SK").begins_with(ItemKeys.PLANT)
     )
-    return len(response["Items"])
+    parsed_plants = TypeAdapter(list[PlantItem]).validate_python(response["Items"])
+    total_plants = len(parsed_plants)
+    unsunk_plants = len([plant for plant in parsed_plants if not plant.sink])
+    return total_plants, unsunk_plants

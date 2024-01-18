@@ -20,30 +20,35 @@ fake = Faker()
 DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=False)
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
+# Define a unique sentinel object for default values
+_NO_VALUE = object()
+
 
 def plant_record_factory(
-    human_name: Optional[str] = None,
-    human_id: Optional[int] = None,
-    species: Optional[str] = None,
-    location: Optional[str] = None,
-    sink: Optional[str] = None,
-    sink_date: Optional[date] = None,
-    notes: Optional[str] = None,
-    user_id: Optional[str] = None,
-    plant_id: Optional[uuid.UUID] = None,
+    human_name: Optional[str] = _NO_VALUE,
+    human_id: Optional[int] = _NO_VALUE,
+    species: Optional[str] = _NO_VALUE,
+    location: Optional[str] = _NO_VALUE,
+    source: Optional[str] = _NO_VALUE,
+    source_date: Optional[date] = _NO_VALUE,
+    sink: Optional[str] = _NO_VALUE,
+    sink_date: Optional[date] = _NO_VALUE,
+    notes: Optional[str] = _NO_VALUE,
+    user_id: Optional[str] = _NO_VALUE,
+    plant_id: Optional[uuid.UUID] = _NO_VALUE,
 ) -> PlantItem:
     return PlantItem(
-        human_name=human_name or fake.name(),
-        human_id=human_id or fake.random_int(min=1, max=10000),
-        species=species or fake.word(),
-        location=location or fake.word(),
-        source=fake.word(),
-        source_date=fake.date(),
-        sink=sink or fake.word(),
-        sink_date=sink_date or fake.date(),
-        notes=notes or fake.text(),
-        PK=f"{ItemKeys.USER}#{user_id or DEFAULT_TEST_USER.google_id}",
-        SK=f"{ItemKeys.PLANT}#{plant_id or fake.uuid4()}",
+        human_name=human_name if human_name is not _NO_VALUE else fake.name(),
+        human_id=human_id if human_id is not _NO_VALUE else fake.random_int(min=1, max=100000),
+        species=species if species is not _NO_VALUE else fake.word(),
+        location=location if location is not _NO_VALUE else fake.word(),
+        source=source if source is not _NO_VALUE else fake.word(),
+        source_date=source_date if source_date is not _NO_VALUE else fake.date(),
+        sink=sink if sink is not _NO_VALUE else fake.word(),
+        sink_date=sink_date if sink_date is not _NO_VALUE else fake.date(),
+        notes=notes if notes is not _NO_VALUE else fake.text(),
+        PK=f"{ItemKeys.USER}#{user_id if user_id is not _NO_VALUE else DEFAULT_TEST_USER.google_id}",
+        SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not _NO_VALUE else fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
 
