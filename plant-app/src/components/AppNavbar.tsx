@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
 
 import "../styles/styles.css";
-import { FaDoorOpen, FaRightFromBracket } from "react-icons/fa6";
+import { FaRightFromBracket } from "react-icons/fa6";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();
@@ -49,10 +49,7 @@ export const AppNavbar = () => {
           </Nav.Link>
         </Nav>
         <Nav className="ms-auto">
-          <Nav.Link
-            className="btn btn-outline-secondary ms-auto"
-            onClick={handleLogout}
-          >
+          <Nav.Link className="hoverable-icon" onClick={handleLogout}>
             <FaRightFromBracket />
           </Nav.Link>
         </Nav>

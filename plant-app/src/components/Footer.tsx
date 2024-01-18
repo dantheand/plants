@@ -7,6 +7,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="container">
         <a
+          className="hoverable-icon"
           href="https://github.com/dantheand/plants/"
           target="_blank"
           rel="noopener noreferrer"
