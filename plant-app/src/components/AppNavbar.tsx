@@ -10,6 +10,11 @@ import "../styles/styles.css";
 export const AppNavbar = () => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem(JWT_TOKEN_STORAGE);
     console.log("Logged out successfully.");
@@ -19,7 +24,7 @@ export const AppNavbar = () => {
   return (
     <Navbar expand="lg" className="custom-navbar">
       <Container>
-        <Navbar.Brand href="/plants/">
+        <Navbar.Brand onClick={() => handleNavigate("/plants")}>
           <img
             src={plantBrandIcon}
             width="40"
@@ -32,9 +37,14 @@ export const AppNavbar = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/plants">My Plants</Nav.Link>
-            <Nav.Link href="/users">Users</Nav.Link>
-            <Nav.Link href="/lineages" className="nav-link-disabled">
+            <Nav.Link onClick={() => handleNavigate("/plants")}>
+              My Plants
+            </Nav.Link>
+            <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
+            <Nav.Link
+              onClick={() => handleNavigate("/lineages")}
+              className="nav-link-disabled"
+            >
               Lineages
             </Nav.Link>
           </Nav>
