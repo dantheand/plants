@@ -3,8 +3,8 @@ from plant_api.routers.common import BaseRouter
 from plant_api.dependencies import get_current_user
 from fastapi import Depends
 
-from plant_api.schema import UserItem
-from plant_api.utils.db import get_all_active_users
+from plant_api.schema import User, UserItem
+from plant_api.utils.db import get_all_active_users, get_n_plants_for_user
 
 router = BaseRouter(
     prefix="/users",
@@ -13,6 +13,9 @@ router = BaseRouter(
 )
 
 
-@router.get("/", response_model=list[UserItem])
+@router.get("/", response_model=list[User])
 async def get_users():
-    return get_all_active_users()
+    users = get_all_active_users()
+    for user in users:
+        user.n_plants = get_n_plants_for_user(user)
+    return users

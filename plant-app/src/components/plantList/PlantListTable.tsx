@@ -2,6 +2,7 @@ import { Placeholder, Table } from "react-bootstrap";
 import React from "react";
 import { Plant } from "../../types/interfaces";
 import { NavigateFunction } from "react-router-dom";
+
 interface RenderListItemsProps {
   isLoading: boolean;
   plants?: Plant[];
@@ -16,7 +17,7 @@ export const PlantListTable = ({
   navigate,
 }: RenderListItemsProps) => {
   return (
-    <Table bordered hover className="rounded-table">
+    <Table bordered hover responsive className="mx-3 my-3 custom-table">
       <thead>
         <tr>
           <th className="column-id">ID</th>

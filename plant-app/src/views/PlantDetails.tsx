@@ -6,7 +6,7 @@ import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
-import { PlantLayout } from "../components/Layouts";
+import { BaseLayout } from "../components/Layouts";
 import { DeleteButtonWConfirmation } from "../components/CommonComponents";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.css";
@@ -75,7 +75,7 @@ const usePlantDetails = (plantId: string | undefined) => {
   return { plant, plantIsLoading, error, setPlant };
 };
 
-const deletePlant = async (
+export const deletePlant = async (
   plantId: string | undefined,
 ): Promise<ApiResponse<null>> => {
   if (!plantId) {
@@ -166,7 +166,7 @@ export function PlantDetails() {
 
   if (plantIsLoading || !plantInForm) {
     return (
-      <PlantLayout>
+      <BaseLayout>
         <PlantFormPlaceholder />
         <Card className="mb-3">
           <Card.Header as="h4">Images</Card.Header>
@@ -174,7 +174,7 @@ export function PlantDetails() {
             <PlantImagesLoadingPlaceholder />
           </Card.Body>
         </Card>
-      </PlantLayout>
+      </BaseLayout>
     );
   }
 
@@ -183,12 +183,7 @@ export function PlantDetails() {
   }
 
   return (
-    <PlantLayout>
-      <DeleteButtonWConfirmation
-        entityName="Plant"
-        confirmationText={`delete plant`}
-        deleteFunction={handleDelete}
-      />
+    <BaseLayout>
       <PlantForm
         plant={plant}
         handleSubmit={handleSubmit}
@@ -198,7 +193,7 @@ export function PlantDetails() {
         setIsFormEditable={setIsFormEditable}
       />
       <PlantImages plant_id={plantId} />
-    </PlantLayout>
+    </BaseLayout>
   );
 }
 

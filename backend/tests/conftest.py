@@ -45,6 +45,13 @@ def default_user_plant(mock_db):
     return plant
 
 
+def create_plants_for_user(mock_db, user: User, n_plants: int):
+    plants = [plant_record_factory(user_id=user.google_id) for _ in range(n_plants)]
+    for plant in plants:
+        mock_db.insert_mock_data(plant)
+    return plants
+
+
 def create_and_insert_image_record(mock_db, plant_id=None):
     image = image_record_factory(plant_id=plant_id)
     mock_db.insert_mock_data(image)
