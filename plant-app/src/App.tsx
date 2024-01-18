@@ -8,7 +8,10 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { AuthFromFrontEnd, Logout } from "./components/Authenticator";
+import {
+  AuthFromFrontEnd,
+  Logout,
+} from "./components/authentication/Authenticator";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { PlantList } from "./views/PlantList";
 import { PlantCreate } from "./views/PlantCreate";

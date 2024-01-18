@@ -1,19 +1,18 @@
 import "@aws-amplify/ui-react/styles.css";
-import { Alert, Button, Card, Form } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import {
   APP_BRAND_NAME,
   BASE_API_URL,
   GOOGLE_CLIENT_ID,
   JWT_TOKEN_STORAGE,
-} from "../constants";
+} from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
-import logo from "../assets/plant_logo_big.png";
-import { jwtDecode } from "jwt-decode";
-import { LOG_OUT_GOOGLE_ID } from "../featureFlags";
+import logo from "../../assets/plant_logo_big.png";
 import cryptoRandomString from "crypto-random-string";
+import { LoadingOverlay } from "./LoadingOverlay";
 
 function generateNonce(length = 32) {
   return cryptoRandomString({ length: length, type: "hex" });
@@ -23,17 +22,11 @@ async function responseGoogle(
   response: CredentialResponse,
   nonce: string,
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsAuthenticating: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   try {
+    setIsAuthenticating(true);
     const tokenId = response.credential;
-    if (tokenId && LOG_OUT_GOOGLE_ID) {
-      try {
-        const decodedToken = jwtDecode(tokenId);
-        console.log(decodedToken);
-      } catch (error) {
-        console.error("Failed to decode token", error);
-      }
-    }
     const backendUrl = BASE_API_URL + "/token";
     const res = await fetch(backendUrl, {
       method: "POST",
@@ -49,18 +42,17 @@ async function responseGoogle(
     setIsLoggedIn(true);
   } catch (error) {
     console.error("Error authenticating with backend:", error);
+  } finally {
+    setIsAuthenticating(false);
   }
 }
 export function AuthFromFrontEnd() {
   const nonce = generateNonce();
+  const [isAuthenticating, setIsAuthenticating] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const handleLogout = () => {
-    localStorage.removeItem(JWT_TOKEN_STORAGE);
-    console.log("Logged out successfully.");
-  };
 
   const handleGoogleSuccess = (response: CredentialResponse) => {
-    responseGoogle(response, nonce, setIsLoggedIn);
+    responseGoogle(response, nonce, setIsLoggedIn, setIsAuthenticating);
   };
 
   // If we're logged in, redirect to the plants page
@@ -72,34 +64,38 @@ export function AuthFromFrontEnd() {
     }
   }, [isLoggedIn, navigate]);
   return (
-    <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
-      <div style={{ textAlign: "center" }}>
-        <img
-          src={logo}
-          alt={`${APP_BRAND_NAME} Logo`}
-          style={{ width: "200px", margin: "10px auto" }}
-        />
-        <h2>{APP_BRAND_NAME}</h2>
-      </div>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "10px",
-            marginTop: "10px",
-          }}
-        >
-          <GoogleLogin
-            nonce={nonce}
-            onSuccess={handleGoogleSuccess}
-            onError={() => {
-              console.log("Login Failed");
-            }}
+    <>
+      {isAuthenticating && <LoadingOverlay />}{" "}
+      {/* Show overlay when logging in */}
+      <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
+        <div style={{ textAlign: "center" }}>
+          <img
+            src={logo}
+            alt={`${APP_BRAND_NAME} Logo`}
+            style={{ width: "200px", margin: "10px auto" }}
           />
+          <h2>{APP_BRAND_NAME}</h2>
         </div>
-      </GoogleOAuthProvider>
-    </Card>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "10px",
+              marginTop: "10px",
+            }}
+          >
+            <GoogleLogin
+              nonce={nonce}
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </div>
+        </GoogleOAuthProvider>
+      </Card>
+    </>
   );
 }
 
