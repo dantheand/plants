@@ -90,7 +90,7 @@ export const PlantForm = ({
           isEditable={isFormEditable}
           editsAllowed={false || isFormNewPlant}
           isRequired={true}
-          placeholder={"e.g. 123"}
+          placeholder={"e.g. 1"}
         />
         <EditableInput
           label="Plant Name"

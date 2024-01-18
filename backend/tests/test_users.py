@@ -63,8 +63,13 @@ class TestGetUsers:
         response = client_logged_in().get("/users")
         parsed_user = TypeAdapter(list[User]).validate_python(response.json())
 
-        assert len(parsed_user) == 1
         assert parsed_user[0].n_plants == 3
+
+    def test_get_user_without_plants(self, default_enabled_user_in_db, client_logged_in):
+        response = client_logged_in().get("/users")
+        parsed_user = TypeAdapter(list[User]).validate_python(response.json())
+
+        assert parsed_user[0].n_plants == 0
 
 
 class TestReadUserDB:

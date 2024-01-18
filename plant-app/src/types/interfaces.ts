@@ -23,6 +23,13 @@ export interface Plant {
 
 export type NewPlant = Partial<Plant>;
 
+export interface User {
+  email: string;
+  google_id: string;
+  disabled: boolean;
+  n_plants: number;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T | null;
