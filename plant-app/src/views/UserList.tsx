@@ -43,7 +43,7 @@ export function UserList(): JSX.Element {
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/users`, {
+    fetch(`${BASE_API_URL}/users/`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },

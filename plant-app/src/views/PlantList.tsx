@@ -1,7 +1,7 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { Card, Container, Placeholder } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 import { JwtPayload, Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
