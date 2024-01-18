@@ -5,6 +5,7 @@ import { AlertComponent, AlertProvider } from "../context/Alerts";
 import "../styles/styles.css";
 import { useLocation } from "react-router-dom";
 import { AppNavbar } from "./AppNavbar";
+import Footer from "./Footer";
 
 export const GlobalLayout = ({ children }: { children: ReactNode }) => {
   // Exclude the navbar from the login page
@@ -19,6 +20,7 @@ export const GlobalLayout = ({ children }: { children: ReactNode }) => {
       {!isLoginPage && <AppNavbar />}
       <AlertComponent />
       {children}
+      <Footer />
     </AlertProvider>
   );
 };

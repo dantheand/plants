@@ -82,3 +82,22 @@ body, .card-header, .card-footer {
 .custom-table thead th {
   background-color: #ccedd9; /* Darker color for the header */
 }
+
+/* Footer */
+.footer {
+  padding: 20px 0;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer a {
+  color: #787878; /* Icon color */
+  text-decoration: none;
+  transition: color 0.3s; /* Smooth transition for color change */
+
+}
+
+.footer a:hover {
+  color: #000000; /* Icon color on hover */
+}
