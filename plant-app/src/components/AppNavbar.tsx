@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import plantBrandIcon from "../assets/plantopticon_small.png";
+import plantBrandIcon from "../assets/plantopticon_small_no_shadow.png";
 import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "../constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
