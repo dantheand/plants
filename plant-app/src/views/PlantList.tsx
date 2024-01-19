@@ -41,6 +41,7 @@ export function PlantList(): JSX.Element {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setIsLoading(true);
     let google_id: string | null = null;
 
     if (!otherUserId) {
@@ -84,7 +85,7 @@ export function PlantList(): JSX.Element {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [otherUserId]);
 
   return (
     <BaseLayout>
