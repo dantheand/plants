@@ -67,12 +67,12 @@ export function AuthFromFrontEnd() {
     <>
       {isAuthenticating && <LoadingOverlay />}{" "}
       {/* Show overlay when logging in */}
-      <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
+      <Card style={{ width: "25rem", padding: "20px", margin: "20px auto" }}>
         <div style={{ textAlign: "center" }}>
           <img
             src={logo}
             alt={`${APP_BRAND_NAME} Logo`}
-            style={{ width: "200px", margin: "10px auto" }}
+            style={{ width: "300px", margin: "10px auto" }}
           />
           <h2>{APP_BRAND_NAME}</h2>
         </div>

@@ -25,6 +25,7 @@ elif get_deployment_env() == AWS_DEPLOYMENT_ENV:
         "https://master.d1g3nlvs6mpirt.amplifyapp.com",
         "https://www.plantapp.name",
         "https://www.plantopticon.com",
+        "https://www.plantopti.com",
     ]
 else:
     raise ValueError(f"Unknown deployment environment: {get_deployment_env()}")
