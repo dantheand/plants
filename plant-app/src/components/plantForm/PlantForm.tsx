@@ -16,6 +16,7 @@ interface PlantFormProps {
   isFormEditable: boolean;
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
   isFormNewPlant?: boolean;
+  nextId?: number;
 }
 
 interface PlantFormHeaderProps {
