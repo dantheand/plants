@@ -1,7 +1,7 @@
 import io
 import uuid
 from datetime import date, datetime
-from typing import Optional
+from typing import Any, Optional, Union
 
 from botocore.exceptions import ClientError
 from PIL import Image as img
@@ -21,29 +21,35 @@ DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=Fal
 OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
 
 
+# Define a sentinel object for distinguishing unspecified arguments
+UNSPECIFIED = object()
+
+
 def plant_record_factory(
-    human_name: Optional[str] = None,
-    human_id: Optional[int] = None,
-    species: Optional[str] = None,
-    location: Optional[str] = None,
-    sink: Optional[str] = None,
-    sink_date: Optional[date] = None,
-    notes: Optional[str] = None,
-    user_id: Optional[str] = None,
-    plant_id: Optional[uuid.UUID] = None,
+    human_name: Any = UNSPECIFIED,
+    human_id: Any = UNSPECIFIED,
+    species: Any = UNSPECIFIED,
+    location: Any = UNSPECIFIED,
+    source: Any = UNSPECIFIED,
+    source_date: Any = UNSPECIFIED,
+    sink: Any = UNSPECIFIED,
+    sink_date: Any = UNSPECIFIED,
+    notes: Any = UNSPECIFIED,
+    user_id: Any = UNSPECIFIED,
+    plant_id: Any = UNSPECIFIED,
 ) -> PlantItem:
     return PlantItem(
-        human_name=human_name or fake.name(),
-        human_id=human_id or fake.random_int(min=1, max=10000),
-        species=species or fake.word(),
-        location=location or fake.word(),
-        source=fake.word(),
-        source_date=fake.date(),
-        sink=sink or fake.word(),
-        sink_date=sink_date or fake.date(),
-        notes=notes or fake.text(),
-        PK=f"{ItemKeys.USER}#{user_id or DEFAULT_TEST_USER.google_id}",
-        SK=f"{ItemKeys.PLANT}#{plant_id or fake.uuid4()}",
+        human_name=human_name if human_name is not UNSPECIFIED else fake.name(),
+        human_id=human_id if human_id is not UNSPECIFIED else fake.random_int(min=1, max=100000),
+        species=species if species is not UNSPECIFIED else fake.word(),
+        location=location if location is not UNSPECIFIED else fake.word(),
+        source=source if source is not UNSPECIFIED else fake.word(),
+        source_date=source_date if source_date is not UNSPECIFIED else fake.date(),
+        sink=sink if sink is not UNSPECIFIED else fake.word(),
+        sink_date=sink_date if sink_date is not UNSPECIFIED else fake.date(),
+        notes=notes if notes is not UNSPECIFIED else fake.text(),
+        PK=f"{ItemKeys.USER}#{user_id if user_id is not UNSPECIFIED else DEFAULT_TEST_USER.google_id}",
+        SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not UNSPECIFIED else fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
 

@@ -27,7 +27,8 @@ export interface User {
   email: string;
   google_id: string;
   disabled: boolean;
-  n_plants: number;
+  n_total_plants: number;
+  n_active_plants: number;
 }
 
 export interface ApiResponse<T> {

@@ -17,5 +17,7 @@ router = BaseRouter(
 async def get_users():
     users = get_all_active_users()
     for user in users:
-        user.n_plants = get_n_plants_for_user(user)
+        total_plants, active_plants = get_n_plants_for_user(user)
+        user.n_total_plants = total_plants
+        user.n_active_plants = active_plants
     return users
