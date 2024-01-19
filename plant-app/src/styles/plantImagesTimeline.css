@@ -3,21 +3,19 @@
 }
 
 .verticalTimelineElement .vertical-timeline-element-icon {
-  background: #8CBF88 !important; /* Pastel green for the icon background */
-  color: #333 !important; /* Text color */
-  border: 2px solid #D3D3D3 !important; /* Grey border */
+  background: #ede7d5 !important; /* Pastel green for the icon background */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Shadow for depth */
 }
 
 .verticalTimelineElement .vertical-timeline-element-content {
-  background: #A8D5BA !important; /* Pastel green for content background */
+  background: #ede7d5 !important; /* Pastel green for content background */
   color: #333 !important; /* Text color */
   border-radius: 10px !important; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Shadow for depth */
 }
 
 .verticalTimelineElement .vertical-timeline-element-content-arrow {
-  border-right: 7px solid #A8D5BA !important; /* Arrow color */
+  border-right: 7px solid #ede7d5 !important; /* Arrow color */
 }
 
 .timelineImage {

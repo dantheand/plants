@@ -16,6 +16,7 @@ interface PlantFormProps {
   isFormEditable: boolean;
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
   isFormNewPlant?: boolean;
+  nextId?: number;
 }
 
 interface PlantFormHeaderProps {
@@ -193,8 +194,8 @@ export const PlantForm = ({
         {!isFormNewPlant && (
           <Card.Footer className="mt-2">
             <DeleteButtonWConfirmation
-              entityName="Plant"
-              confirmationText={`delete plant`}
+              buttonText="Remove Plant"
+              confirmationText={`remove plant`}
               deleteFunction={handleDelete}
             />
           </Card.Footer>

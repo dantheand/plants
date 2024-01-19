@@ -28,7 +28,6 @@ export function PlantImagesTimeline({
           contentStyle={{ background: "none", boxShadow: "none" }} // Override default styles
           contentArrowStyle={{ borderRight: "none" }} // Override default styles
           iconStyle={{ background: "none", boxShadow: "none" }} // Override default styles
-          icon={<i className="fas fa-seedling timelineElementIcon"></i>}
         >
           <div className="timelineElementContent">
             <img

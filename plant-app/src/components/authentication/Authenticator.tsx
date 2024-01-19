@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
-import logo from "../../assets/plant_logo_big.png";
+import logo from "../../assets/plantopticon_large.png";
 import cryptoRandomString from "crypto-random-string";
 import { LoadingOverlay } from "./LoadingOverlay";
 

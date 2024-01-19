@@ -13,6 +13,19 @@ import { BaseLayout } from "../components/Layouts";
 import { FloatingActionButton } from "../components/FloatingActionButton";
 import { useAlert } from "../context/Alerts";
 
+function incrementLargestId(plants: Plant[]): number {
+  if (plants.length === 0) {
+    return 0;
+  }
+
+  return plants.reduce((maxHumanId, plant) => {
+    if (plant.human_id > maxHumanId) {
+      return plant.human_id;
+    }
+    return maxHumanId + 1;
+  }, plants[0].human_id); // Initialize with the human_id of the first plant
+}
+
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
 };
@@ -24,6 +37,7 @@ export function PlantList(): JSX.Element {
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [nextId, setNextId] = useState<number>(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,6 +73,7 @@ export function PlantList(): JSX.Element {
         const sortedPlants = data.sort((a: Plant, b: Plant) => {
           return a.human_id - b.human_id;
         });
+        setNextId(incrementLargestId(sortedPlants));
         setPlants(sortedPlants);
         setIsLoading(false);
       })
@@ -90,7 +105,7 @@ export function PlantList(): JSX.Element {
         <FloatingActionButton
           icon={<FaPlus />}
           handleOnClick={() => {
-            navigate("/plants/create");
+            navigate(`/plants/create/${nextId}`);
           }}
         />
       )}

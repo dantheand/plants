@@ -18,7 +18,7 @@ export function ImageUploadModal({
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Upload Image</Modal.Title>
+        <Modal.Title>Upload Observation</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <ImageUpload

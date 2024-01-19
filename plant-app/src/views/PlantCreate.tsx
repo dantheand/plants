@@ -2,7 +2,7 @@ import { BaseLayout } from "../components/Layouts";
 import { useState } from "react";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
 
 import { PlantForm } from "../components/plantForm/PlantForm";
@@ -35,7 +35,11 @@ const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
 export const initialNewPlantState: NewPlant = {};
 
 export function PlantCreate() {
-  const newPlant = initialNewPlantState;
+  const { nextId } = useParams<{ nextId: string }>();
+  let newPlant = initialNewPlantState;
+  if (nextId) {
+    newPlant = { ...newPlant, human_id: parseInt(nextId) };
+  }
   const [plantInForm, setPlantInForm] = useState<NewPlant>(newPlant);
   const navigate = useNavigate();
   const { showAlert } = useAlert();

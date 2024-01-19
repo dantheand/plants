@@ -26,7 +26,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
     <ListGroup.Item as="li" className="mb-2">
       <h5>{user.email}</h5>
       <p></p>
-      <p>Active Plants: {user.n_active_plants}</p>
+      <p>Current Plants: {user.n_active_plants}</p>
       <p>Total Plants: {user.n_total_plants}</p>
       <Button
         variant="primary"
@@ -34,7 +34,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
-        View Plants
+        Observe Plants
       </Button>
     </ListGroup.Item>
   );
@@ -92,7 +92,7 @@ export function UserList(): JSX.Element {
   return (
     <BaseLayout>
       <Card className="mb-3">
-        <Card.Header as="h4">Users</Card.Header>
+        <Card.Header as="h4">All Observers</Card.Header>
         <Card.Body>
           <ListGroup as="ol" variant="flush">
             {isLoading

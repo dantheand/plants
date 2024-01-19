@@ -3,14 +3,14 @@ import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 
 interface DeleteButtonProps {
-  entityName: string;
+  buttonText: string;
   confirmationText: string;
   deleteFunction: () => void;
 }
 
 // TODO: reuse this component for image deletion
 export const DeleteButtonWConfirmation = ({
-  entityName,
+  buttonText,
   confirmationText,
   deleteFunction,
 }: DeleteButtonProps) => {
@@ -35,16 +35,16 @@ export const DeleteButtonWConfirmation = ({
   return (
     <div className="d-flex justify-content-center align-items-center">
       <Button variant="danger" onClick={openModal}>
-        Delete {entityName}
+        {buttonText}
       </Button>
       <Modal show={showConfirmation} onHide={closeModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Deletion</Modal.Title>
+          <Modal.Title>Confirm Removal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to go through with this {entityName} deletion?
-            This action cannot be undone.
+            Are you sure you want to go through with this deletion? This action
+            cannot be undone.
           </p>
           <p>
             If the plant has died, been gifted, or turned into another plant,
@@ -70,7 +70,7 @@ export const DeleteButtonWConfirmation = ({
             Cancel
           </Button>
           <Button variant="danger" onClick={handleDelete}>
-            Confirm Delete
+            Finalize Removal
           </Button>
         </Modal.Footer>
       </Modal>
