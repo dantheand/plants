@@ -34,7 +34,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
-        View Plants
+        Observe Plants
       </Button>
     </ListGroup.Item>
   );

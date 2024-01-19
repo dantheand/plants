@@ -193,8 +193,8 @@ export const PlantForm = ({
         {!isFormNewPlant && (
           <Card.Footer className="mt-2">
             <DeleteButtonWConfirmation
-              entityName="Plant"
-              confirmationText={`delete plant`}
+              buttonText="Remove Plant"
+              confirmationText={`remove plant`}
               deleteFunction={handleDelete}
             />
           </Card.Footer>
