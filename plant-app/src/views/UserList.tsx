@@ -24,7 +24,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 
   return (
     <ListGroup.Item as="li" className="mb-2">
-      <h4>{user.email}</h4>
+      <h5>{user.email}</h5>
       <p></p>
       <p>Active Plants: {user.n_active_plants}</p>
       <p>Total Plants: {user.n_total_plants}</p>
@@ -43,15 +43,17 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 export const PlaceholderCard: React.FC = () => (
   <ListGroup.Item as="li" className="mb-2">
     <Placeholder as="h5" animation="glow">
-      <Placeholder xs={5} />
+      <Placeholder style={{ width: 300 }} />
     </Placeholder>
     <Placeholder as="p" animation="glow">
-      <Placeholder xs={2} /> <Placeholder xs={1} />
+      <Placeholder style={{ width: 100 }} />{" "}
+      <Placeholder style={{ width: 40 }} />
     </Placeholder>
     <Placeholder as="p" animation="glow">
-      <Placeholder xs={2} /> <Placeholder xs={1} />
+      <Placeholder style={{ width: 100 }} />{" "}
+      <Placeholder style={{ width: 40 }} />
     </Placeholder>
-    <Placeholder.Button variant="primary" xs={3} />
+    <Placeholder.Button variant="primary" style={{ width: 110 }} />
   </ListGroup.Item>
 );
 
