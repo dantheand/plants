@@ -16,11 +16,11 @@ export function ImageUploadModal({
   onUploadSuccess,
 }: ImageUploadModalProps) {
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} fullscreen>
       <Modal.Header closeButton>
         <Modal.Title>Upload Observation</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={"justify-content-center"}>
         <ImageUpload
           plant_id={plant_id}
           closeModal={onHide}
