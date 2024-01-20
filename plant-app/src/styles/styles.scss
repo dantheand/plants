@@ -146,3 +146,21 @@ html {
   // Keeps the form from shifting when switching between editing and not editing parent IDs
   height: 30px;
 }
+
+/* Image Modal */
+.no-padding-modal {
+  --bs-modal-padding: 0rem !important; /* Overrides the default Bootstrap modal padding */
+}
+.flex-modal-body {
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center children vertically */
+    align-items: center; /* Center children horizontally */
+    height: 100%; /* Take full height of the modal */
+}
+
+.flexible-image {
+    max-height: 100%; /* Maximum height is the container's height */
+    width: auto; /* Maintain the aspect ratio */
+    object-fit: contain; /* Ensure the image is fully visible */
+}
