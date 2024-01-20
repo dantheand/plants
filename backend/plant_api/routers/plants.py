@@ -12,6 +12,8 @@ from plant_api.utils.db import get_db_table, query_by_plant_id
 from plant_api.schema import ImageItem, PlantCreate, PlantItem, PlantUpdate, User
 from plant_api.routers.images import delete_image_from_s3
 
+from pydantic import TypeAdapter
+
 LOGGER = logging.getLogger(__name__)
 
 PLANT_ROUTE = "/plants"
@@ -23,14 +25,18 @@ router = BaseRouter(
 )
 
 
-@router.get("/user/{user_id}", response_model=list[PlantItem])
-async def read_all_plants_for_user(user_id=str):
+def read_all_plants_for_user(user_id: str) -> list[PlantItem]:
     pk_value = f"USER#{user_id}"
     sk_value = f"PLANT#"
     table = get_db_table()
 
     response = table.query(KeyConditionExpression=Key("PK").eq(pk_value) & Key("SK").begins_with(sk_value))
-    return response.get("Items", [])
+    return TypeAdapter(list[PlantItem]).validate_python(response["Items"])
+
+
+@router.get("/user/{user_id}", response_model=list[PlantItem])
+async def all_plants(user_id: str):
+    return read_all_plants_for_user(user_id)
 
 
 @router.get("/{plant_id}", response_model=PlantItem)
@@ -38,6 +44,14 @@ def get_plant(plant_id: UUID):
     table = get_db_table()
     response = query_by_plant_id(table, plant_id)
     return response
+
+
+@router.get("/user/{user_id}/{plant_id}", response_model=PlantItem)
+def get_plant_by_human_id(user_id: UUID, human_id: UUID):
+    all_user_plants = read_all_plants_for_user(user_id)
+    for plant in all_user_plants:
+        if plant.human_id == human_id:
+            return plant
 
 
 @router.post("/create", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
