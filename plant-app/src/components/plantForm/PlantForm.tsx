@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
-import { EditableInput, NonEditableInputWButtons } from "./EditableInput";
+import { EditableInput } from "./EditableInput";
 import { deletePlant } from "../../views/PlantDetails";
 import { useAlert } from "../../context/Alerts";
 import { useNavigate } from "react-router-dom";
 import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
 import { PlantFormHeader } from "./PlantFormHeader";
+import { ParentIdInput } from "./ParentIdInput";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -108,20 +109,12 @@ export const PlantForm = ({
             placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
           />
         ) : (
-          <NonEditableInputWButtons
+          <ParentIdInput
             label="Plant Parent ID(s)"
             value={plant.parent_id}
+            plant={plant}
           />
         )}
-        {/* TODO make it so you can navigate to parent plants by clicking*/}
-        {/*<div*/}
-        {/*  onClick={() =>*/}
-        {/*    plant.ParentID && handlePlantClick(plant.ParentID, navigate)*/}
-        {/*  }*/}
-        {/*  className={plant.ParentID ? "clickable-item" : ""}*/}
-        {/*>*/}
-        {/*  {" "}*/}
-        {/*</div>*/}
         <EditableInput
           label="Source"
           type="text"
