@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import plantBrandIcon from "../assets/plantopticon_small_no_shadow.png";
+import plantBrandIcon from "../assets/plantopticon2_small.png";
 import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "../constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ export const AppNavbar = () => {
           onClick={() => handleNavigate("/plants/user/me")}
         >
           <img
-            className="mb-1"
+            className="mb-3"
             src={plantBrandIcon}
             width="45"
             height="45"
