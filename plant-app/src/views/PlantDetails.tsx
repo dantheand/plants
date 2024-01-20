@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BaseLayout } from "../components/Layouts";
 import { useAlert } from "../context/Alerts";
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { PlantImages } from "../components/plantImages/PlantImages";
 import { initialNewPlantState } from "./PlantCreate";
 import { Card } from "react-bootstrap";

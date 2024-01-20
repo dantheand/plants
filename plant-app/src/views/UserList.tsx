@@ -1,15 +1,8 @@
 import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
-import {
-  Button,
-  Card,
-  Col,
-  ListGroup,
-  Placeholder,
-  Row,
-} from "react-bootstrap";
+import { Button, Card, ListGroup, Placeholder } from "react-bootstrap";
 
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";

@@ -17,7 +17,7 @@ import { PlantList } from "./views/PlantList";
 import { PlantCreate } from "./views/PlantCreate";
 import { GlobalLayout } from "./components/Layouts";
 
-import "./styles/styles.css";
+import "./styles/styles.scss";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "./types/interfaces";
 

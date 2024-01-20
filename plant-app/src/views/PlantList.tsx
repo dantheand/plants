@@ -6,7 +6,7 @@ import { Card } from "react-bootstrap";
 import { JwtPayload, Plant } from "../types/interfaces";
 import { FaPlus } from "react-icons/fa";
 
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { jwtDecode } from "jwt-decode";
 import { PlantListTable } from "../components/plantList/PlantListTable";
 import { BaseLayout } from "../components/Layouts";

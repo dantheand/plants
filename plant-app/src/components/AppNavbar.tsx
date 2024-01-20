@@ -5,7 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
 
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 
 export const AppNavbar = () => {

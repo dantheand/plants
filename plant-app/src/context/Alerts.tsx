@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import { Alert, Button } from "react-bootstrap";
-import "../styles/styles.css";
+import { Alert } from "react-bootstrap";
+import "../styles/styles.scss";
 import { Variant } from "react-bootstrap/types";
 
 interface AlertProps {

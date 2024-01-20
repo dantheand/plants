@@ -3,7 +3,7 @@ import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
 import { Card } from "react-bootstrap";
 import { PlantImage } from "../../types/interfaces";
 import { SHOW_IMAGES } from "../../featureFlags";
-import "../../styles/styles.css";
+import "../../styles/styles.scss";
 import { FaCamera } from "react-icons/fa";
 import { useAlert } from "../../context/Alerts";
 import { NoImagesPlaceholder } from "./NoImagesPlaceholder";
