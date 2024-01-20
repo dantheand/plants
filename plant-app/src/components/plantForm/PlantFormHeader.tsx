@@ -18,7 +18,7 @@ export const PlantFormHeader = ({
   return (
     <Card.Header
       as="h4"
-      className="d-flex justify-content-between align-items-center sticky-card-header"
+      className="d-flex justify-content-between align-items-center"
     >
       <span>Plant Information</span>
       <HeaderEditSaveButtons

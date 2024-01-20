@@ -4,17 +4,6 @@ html {
   overflow-y: scroll;
 }
 
-body, .card-header  {
-  /*Overriding Bootstrap CSS for sticky headers*/
-  --bs-card-cap-bg: #f8f5f0;
-}
-
-.sticky-card-header {
-  position: sticky;
-  top: 0;
-  opacity: 1.0;
-  z-index: 1000;
-}
 
 .cursor-on-hover {
   cursor: pointer;
@@ -128,4 +117,23 @@ body, .card-header  {
 /* Top level cards */
 .top-level-card{
   margin-bottom: 3rem;
+}
+
+.top-level-card .card-header {
+    /*Overriding Bootstrap CSS for sticky headers*/
+  --bs-card-cap-bg: #f8f5f0;
+  height: 55px;
+  // Flexbox for vertical centering
+  display: flex;
+  align-items: center;
+
+
+  //Sticky card header
+  position: sticky;
+  top: 0;
+  opacity: 1.0;
+  z-index: 1000;
+
+  margin-bottom: 10px;
+
 }

@@ -84,7 +84,7 @@ export function UserList(): JSX.Element {
 
   return (
     <BaseLayout>
-      <Card className="mb-3">
+      <Card className="top-level-card">
         <Card.Header as="h4">All Users</Card.Header>
         <Card.Body>
           <ListGroup as="ol" variant="flush">

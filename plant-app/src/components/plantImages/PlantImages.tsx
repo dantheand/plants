@@ -108,10 +108,8 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   }, [plant_id, reloadTrigger]);
 
   return (
-    <Card className="mb-3">
-      <Card.Header as="h4" className="sticky-card-header">
-        Images
-      </Card.Header>
+    <Card className="top-level-card">
+      <Card.Header as="h4">Images</Card.Header>
       <Card.Body>
         {imagesIsLoading ? (
           <PlantImagesLoadingPlaceholder />

@@ -4,7 +4,7 @@ import { PlantFormHeader } from "./PlantFormHeader";
 
 export const PlantFormPlaceholder = () => {
   return (
-    <Card className="mb-3">
+    <Card className="top-level-card">
       <PlantFormHeader
         isFormEditable={false}
         toggleEditable={() => {}}

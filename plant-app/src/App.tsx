@@ -86,10 +86,10 @@ const ProtectedRoute = () => {
   if (isLoading) {
     return (
       <BaseLayout>
-        <Card className="mb-3">
+        <Card className="top-level-card">
           <Card.Header>
             <Placeholder as="h4" animation="glow">
-              <Placeholder xs={6} />
+              <Placeholder />
             </Placeholder>
           </Card.Header>
           <Card.Body>
