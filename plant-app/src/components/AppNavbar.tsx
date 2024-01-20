@@ -8,7 +8,7 @@ import { useAlert } from "../context/Alerts"; // Assuming you are using react-ro
 import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 
-import { getGoogleIdFromToken } from "../context/UserProvider";
+import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();

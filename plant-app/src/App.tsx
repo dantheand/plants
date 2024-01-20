@@ -21,7 +21,6 @@ import "./styles/styles.scss";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "./types/interfaces";
 import { Card, Placeholder } from "react-bootstrap";
-import { UserProvider } from "./context/UserProvider";
 
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -116,21 +115,19 @@ const ProtectedRoute = () => {
 function App() {
   return (
     <Router basename="/">
-      <UserProvider>
-        <GlobalLayout>
-          <Routes>
-            <Route path="/" element={<AuthFromFrontEnd />} />
-            <Route path="/login" element={<AuthFromFrontEnd />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/plants/user/:userId" element={<PlantList />} />
-              <Route path="/plants/:plantId" element={<PlantDetails />} />
-              <Route path="/plants/create/:nextId" element={<PlantCreate />} />
-              <Route path="/users" element={<UserList />} />
-            </Route>
-          </Routes>
-        </GlobalLayout>
-      </UserProvider>
+      <GlobalLayout>
+        <Routes>
+          <Route path="/" element={<AuthFromFrontEnd />} />
+          <Route path="/login" element={<AuthFromFrontEnd />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/plants/user/:userId" element={<PlantList />} />
+            <Route path="/plants/:plantId" element={<PlantDetails />} />
+            <Route path="/plants/create/:nextId" element={<PlantCreate />} />
+            <Route path="/users" element={<UserList />} />
+          </Route>
+        </Routes>
+      </GlobalLayout>
     </Router>
   );
 }

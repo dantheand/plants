@@ -11,7 +11,7 @@ import { PlantListTable } from "../components/plantList/PlantListTable";
 import { BaseLayout } from "../components/Layouts";
 import { FloatingActionButton } from "../components/FloatingActionButton";
 import { useAlert } from "../context/Alerts";
-import { getGoogleIdFromToken, UserContext } from "../context/UserProvider";
+import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 
 function incrementLargestId(plants: Plant[]): number {
   if (plants.length === 0) {
@@ -44,7 +44,7 @@ export function PlantList(): JSX.Element {
   const [nextPlantId, setNextPlantId] = useState<number>(0);
   const navigate = useNavigate();
 
-  const { currentUserId } = useContext(UserContext);
+  const currentUserId = getGoogleIdFromToken();
 
   useEffect(() => {
     // This is to prevent the user from seeing the wrong list of plants

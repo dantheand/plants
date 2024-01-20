@@ -13,6 +13,7 @@ import React, { useEffect } from "react";
 import logo from "../../assets/plantopticon_large.png";
 import cryptoRandomString from "crypto-random-string";
 import { LoadingOverlay } from "./LoadingOverlay";
+import { getGoogleIdFromToken } from "../../utils/GetGoogleIdFromToken";
 
 function generateNonce(length = 32) {
   return cryptoRandomString({ length: length, type: "hex" });
@@ -60,7 +61,8 @@ export function AuthFromFrontEnd() {
   // Redirect if logged in
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/plants/");
+      const currentUserId = getGoogleIdFromToken();
+      navigate(`/plants/user/${currentUserId}`);
     }
   }, [isLoggedIn, navigate]);
   return (
