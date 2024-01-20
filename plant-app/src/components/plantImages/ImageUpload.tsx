@@ -126,17 +126,19 @@ const ImageUpload = ({
               src={imagePreview}
               alt="Image preview"
               fluid
-              style={{ maxWidth: "100%", maxHeight: "450px" }}
+              style={{ maxWidth: "100%", maxHeight: "600px" }}
             />
             <br />
             <br />
-            <Button variant="secondary" onClick={resetFileInput}>
-              Cancel
-            </Button>
-            {"  "}
-            <Button variant="primary" onClick={handleUpload}>
-              Upload Image
-            </Button>
+            <div className={"justify-content-center"}>
+              <Button variant="secondary" onClick={resetFileInput}>
+                Cancel
+              </Button>
+              {"  "}
+              <Button variant="primary" onClick={handleUpload}>
+                Upload Image
+              </Button>
+            </div>
           </div>
         )
       )}
