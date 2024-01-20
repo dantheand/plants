@@ -2,6 +2,7 @@ import { JWT_TOKEN_STORAGE } from "../constants";
 import { JwtPayload } from "../types/interfaces";
 import { jwtDecode } from "jwt-decode";
 
+// TODO: move all uses of this into a global context (hard because you have to handle null values)
 export const getGoogleIdFromToken = (): string | null => {
   let google_id: string | null = null;
 
