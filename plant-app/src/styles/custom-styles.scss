@@ -1,29 +1,26 @@
 // Your custom color palette
 
+@import "~bootswatch/dist/sandstone/variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~bootswatch/dist/sandstone/bootswatch";
+
 // Define your color palette
-$primary:   #6D856A;    // For primary buttons and links
-$secondary: #8B9C83;    // For secondary elements
-$success:   #4CAF50;    // For success states
-$info:      #17a2b8;    // For information messages
-$warning:   #ffc107;    // For warning messages
-$danger:    #ab1a0f;    // For danger alerts
-$light:     #FFF7E6;    // For light backgrounds
-$dark:      #061F18;    // For dark text
-$white:     #FFF7E6;    // For elements that should be white
-$gray-100:  #f8f9fa;    // For the lightest gray backgrounds
-$gray-900:  #343a40;    // For the darkest gray text
+//$primary:   #6D856A;    // For primary buttons and links
+//$secondary: #8B9C83;    // For secondary elements
+//$success:   #4CAF50;    // For success states
+//$info:      #17a2b8;    // For information messages
+//$warning:   #ffc107;    // For warning messages
+//$danger:    #ab1a0f;    // For danger alerts
+//$light:     #FFF7E6;    // For light backgrounds
+//$dark:      #061F18;    // For dark text
+//$white:     #FFF7E6;    // For elements that should be white
+//$gray-100:  #f8f9fa;    // For the lightest gray backgrounds
+//$gray-900:  #343a40;    // For the darkest gray text
+//
+//// Optionally set the body and component colors
+//$body-bg:   $light;      // Set the global background
+//$body-color: $dark;      // Set the global text color
 
-// Optionally set the body and component colors
-$body-bg:   $light;      // Set the global background
-$body-color: $dark;      // Set the global text color
 
-// You can also customize other Bootstrap variables here
 
-// Importing the rest of Bootstrap
-@import "node_modules/bootstrap/scss/bootstrap";
-
-// Custom button styles if needed
-.btn {
-  color: $white; // This sets the text color to white for all buttons
-  // Include other styles for buttons if necessary
-}
+//Overriding Bootstrap CSS for sticky headers

@@ -1,6 +1,6 @@
 body, .card-header, .card-footer {
   /*Overriding Bootstrap CSS for sticky headers*/
-  --bs-card-cap-bg: #f8f9fa;
+  --bs-card-cap-bg: #efefef;
 }
 
 .sticky-card-header {
