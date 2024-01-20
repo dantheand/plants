@@ -134,7 +134,7 @@ export function PlantDetails() {
     if (error) {
       console.log("error", error);
       showAlert(`Error fetching plant: ${error}`, "danger");
-      navigate("/plants");
+      navigate("/plants/user/me");
     }
     if (plant) {
       setPlantInForm(plant);

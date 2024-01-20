@@ -43,6 +43,13 @@ export function PlantList(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [nextPlantId, setNextPlantId] = useState<number>(0);
   const navigate = useNavigate();
+  let userIdToQuery: string | null = null;
+
+  if (pathSpecifiedId === "me" || pathSpecifiedId === undefined) {
+    userIdToQuery = getGoogleIdFromToken();
+  } else {
+    userIdToQuery = pathSpecifiedId;
+  }
 
   const currentUserId = getGoogleIdFromToken();
 
@@ -51,17 +58,17 @@ export function PlantList(): JSX.Element {
     setIsLoading(true);
     console.log("currentUserId", currentUserId);
     console.log("pathSpecifiedId", pathSpecifiedId);
-    if (pathSpecifiedId === currentUserId) {
+    if (userIdToQuery === currentUserId) {
       setIsYourPlants(true);
     } else {
       setIsYourPlants(false);
     }
-  }, [pathSpecifiedId]);
+  }, [userIdToQuery]);
 
   useEffect(() => {
     setIsLoading(true);
 
-    fetch(`${BASE_API_URL}/plants/user/${pathSpecifiedId}`, {
+    fetch(`${BASE_API_URL}/plants/user/${userIdToQuery}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
       },

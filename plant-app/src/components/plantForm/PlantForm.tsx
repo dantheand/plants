@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { Button, Card, Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
-import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
 import { EditableInput, NonEditableInputWButtons } from "./EditableInput";
 import { deletePlant } from "../../views/PlantDetails";
 import { useAlert } from "../../context/Alerts";
 import { useNavigate } from "react-router-dom";
 import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
-import { HeaderEditSaveButtons } from "./HeaderEditSaveButtons";
 import { PlantFormHeader } from "./PlantFormHeader";
 
 interface PlantFormProps {
@@ -45,7 +43,7 @@ export const PlantForm = ({
     const response = await deletePlant(plant.plant_id);
     if (response.success) {
       showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
-      navigate("/plants");
+      navigate("/plants/user/me");
     } else {
       showAlert(`Error deleting plant: ${response.error}`, "danger");
     }

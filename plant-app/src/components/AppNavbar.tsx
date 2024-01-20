@@ -8,8 +8,6 @@ import { useAlert } from "../context/Alerts"; // Assuming you are using react-ro
 import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 
-import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
-
 export const AppNavbar = () => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
@@ -17,8 +15,6 @@ export const AppNavbar = () => {
   const handleNavigate = (path: string) => {
     navigate(path);
   };
-
-  const currentUserId = getGoogleIdFromToken();
 
   const handleLogout = () => {
     localStorage.removeItem(JWT_TOKEN_STORAGE);
@@ -31,7 +27,7 @@ export const AppNavbar = () => {
       <Container>
         <Navbar.Brand
           className="cursor-on-hover"
-          onClick={() => handleNavigate("/plants")}
+          onClick={() => handleNavigate("/plants/user/me")}
         >
           <img
             className="mb-2"
@@ -43,9 +39,7 @@ export const AppNavbar = () => {
           <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
         <Nav className="me-auto">
-          <Nav.Link
-            onClick={() => handleNavigate(`plants/user/${currentUserId}`)}
-          >
+          <Nav.Link onClick={() => handleNavigate(`plants/user/me`)}>
             Plants
           </Nav.Link>
           <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>

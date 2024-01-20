@@ -1,13 +1,10 @@
 // Your custom color palette
 
-@import "~bootswatch/dist/sandstone/variables";
-@import "~bootstrap/scss/bootstrap";
-@import "~bootswatch/dist/sandstone/bootswatch";
 
 // Define your color palette
 //$primary:   #6D856A;    // For primary buttons and links
 //$secondary: #8B9C83;    // For secondary elements
-//$success:   #4CAF50;    // For success states
+$success:  #497549;    // For success states
 //$info:      #17a2b8;    // For information messages
 //$warning:   #ffc107;    // For warning messages
 //$danger:    #ab1a0f;    // For danger alerts
@@ -22,3 +19,6 @@
 //$body-color: $dark;      // Set the global text color
 
 
+@import "~bootswatch/dist/sandstone/variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~bootswatch/dist/sandstone/bootswatch";
