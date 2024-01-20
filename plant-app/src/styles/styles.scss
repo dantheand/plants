@@ -1,14 +1,9 @@
-body, .card-header, .card-footer {
-  /*Overriding Bootstrap CSS for sticky headers*/
-  --bs-card-cap-bg: #f8f9fa;
+@import "custom-styles.scss";
+html {
+  //Make the scrollbar always visible to prevent layout shift
+  overflow-y: scroll;
 }
 
-.sticky-card-header {
-  position: sticky;
-  top: 0;
-  opacity: 1.0;
-  z-index: 1000;
-}
 
 .cursor-on-hover {
   cursor: pointer;
@@ -41,7 +36,7 @@ body, .card-header, .card-footer {
 }
 
 .required-asterisk {
-  color: #ff4d4d;
+  color: $danger;
   margin-left: 3px;
 }
 
@@ -117,4 +112,37 @@ body, .card-header, .card-footer {
 .loading-content p {
   margin-top: 15px;
   font-size: 1.2em;
+}
+
+/* Top level cards */
+.top-level-card{
+  margin-bottom: 3rem;
+}
+
+.top-level-card .card-header {
+    /*Overriding Bootstrap CSS for sticky headers*/
+  --bs-card-cap-bg: #f8f5f0;
+  height: 55px;
+  // Flexbox for vertical centering
+  display: flex;
+  align-items: center;
+
+  // Handle text overflow with ellipsis
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+
+  //Sticky card header
+  position: sticky;
+  top: 0;
+  opacity: 1.0;
+  z-index: 1000;
+
+  margin-bottom: 5px;
+}
+
+.plant-form-item {
+  // Keeps the form from shifting when switching between editing and not editing parent IDs
+  height: 30px;
 }

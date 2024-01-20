@@ -5,7 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
 
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 
 export const AppNavbar = () => {
@@ -27,19 +27,21 @@ export const AppNavbar = () => {
       <Container>
         <Navbar.Brand
           className="cursor-on-hover"
-          onClick={() => handleNavigate("/plants")}
+          onClick={() => handleNavigate("/plants/user/me")}
         >
           <img
-            className="mb-2"
+            className="mb-1"
             src={plantBrandIcon}
-            width="40"
-            height="40"
-            alt="Brand Icon"
+            width="45"
+            height="45"
+            alt="Plantopticon Icon"
           />
           <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
         <Nav className="me-auto">
-          <Nav.Link onClick={() => handleNavigate("/plants")}>Plants</Nav.Link>
+          <Nav.Link onClick={() => handleNavigate(`plants/user/me`)}>
+            Plants
+          </Nav.Link>
           <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
           <Nav.Link
             onClick={() => handleNavigate("/lineages")}

@@ -1,0 +1,31 @@
+@import "custom-styles.scss";
+
+.verticalTimeline::before {
+  background: $secondary;
+  width: 3px;
+}
+
+.verticalTimelineElement .vertical-timeline-element-icon {
+  background: $secondary-bg-subtle !important;
+  border-color: $secondary;
+  border-style: solid;
+  box-shadow: none;
+  border-width: 3px;
+}
+
+.verticalTimelineElement .vertical-timeline-element-content {
+  background:  $secondary-bg-subtle !important; /* Pastel green for content background */
+  color: $dark !important; /* Text color */
+  border-radius: 10px !important; /* Rounded corners */
+  box-shadow: none;
+}
+
+.verticalTimelineElement .vertical-timeline-element-content-arrow {
+  border-right: 10px solid  $secondary-bg-subtle !important; /* Arrow color */
+}
+
+.timelineImage {
+  border-radius: 5px; /* Rounded corners for images */
+  width: 100%; /* Ensures image is responsive */
+  height: auto; /* Maintains aspect ratio */
+}

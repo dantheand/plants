@@ -1,6 +1,6 @@
 import React from "react";
 import { FaGithub } from "react-icons/fa"; // Importing GitHub icon
-import "../styles/styles.css";
+import "../styles/styles.scss";
 
 const Footer = () => {
   return (

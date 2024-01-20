@@ -13,6 +13,7 @@ import React, { useEffect } from "react";
 import logo from "../../assets/plantopticon_large.png";
 import cryptoRandomString from "crypto-random-string";
 import { LoadingOverlay } from "./LoadingOverlay";
+import { getGoogleIdFromToken } from "../../utils/GetGoogleIdFromToken";
 
 function generateNonce(length = 32) {
   return cryptoRandomString({ length: length, type: "hex" });
@@ -60,19 +61,20 @@ export function AuthFromFrontEnd() {
   // Redirect if logged in
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/plants/");
+      const currentUserId = getGoogleIdFromToken();
+      navigate(`/plants/user/${currentUserId}`);
     }
   }, [isLoggedIn, navigate]);
   return (
     <>
       {isAuthenticating && <LoadingOverlay />}{" "}
       {/* Show overlay when logging in */}
-      <Card style={{ width: "25rem", padding: "20px", margin: "20px auto" }}>
+      <Card style={{ width: "20rem", padding: "10px", margin: "10px auto" }}>
         <div style={{ textAlign: "center" }}>
           <img
             src={logo}
             alt={`${APP_BRAND_NAME} Logo`}
-            style={{ width: "300px", margin: "10px auto" }}
+            style={{ width: "80%", margin: "10px auto" }}
           />
           <h2>{APP_BRAND_NAME}</h2>
         </div>

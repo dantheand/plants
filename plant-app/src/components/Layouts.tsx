@@ -2,7 +2,7 @@ import { Container } from "react-bootstrap";
 import React, { ReactNode } from "react";
 import { AlertComponent, AlertProvider } from "../context/Alerts";
 
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { useLocation } from "react-router-dom";
 import { AppNavbar } from "./AppNavbar";
 import Footer from "./Footer";

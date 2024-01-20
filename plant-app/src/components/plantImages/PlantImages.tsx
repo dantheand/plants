@@ -3,7 +3,7 @@ import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
 import { Card } from "react-bootstrap";
 import { PlantImage } from "../../types/interfaces";
 import { SHOW_IMAGES } from "../../featureFlags";
-import "../../styles/styles.css";
+import "../../styles/styles.scss";
 import { FaCamera } from "react-icons/fa";
 import { useAlert } from "../../context/Alerts";
 import { NoImagesPlaceholder } from "./NoImagesPlaceholder";
@@ -108,10 +108,8 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   }, [plant_id, reloadTrigger]);
 
   return (
-    <Card className="mb-3">
-      <Card.Header as="h4" className="sticky-card-header">
-        Images
-      </Card.Header>
+    <Card className="top-level-card">
+      <Card.Header as="h4">Images</Card.Header>
       <Card.Body>
         {imagesIsLoading ? (
           <PlantImagesLoadingPlaceholder />

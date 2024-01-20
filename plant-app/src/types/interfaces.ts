@@ -19,6 +19,7 @@ export interface Plant {
   sink: string | undefined;
   sink_date: string | undefined;
   notes: string | undefined;
+  user_id: string;
 }
 
 export type NewPlant = Partial<Plant>;

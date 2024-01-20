@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Button, Card, Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
-import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
-import { EditableInput } from "./EditableInput";
+import { EditableInput, NonEditableInputWButtons } from "./EditableInput";
 import { deletePlant } from "../../views/PlantDetails";
 import { useAlert } from "../../context/Alerts";
 import { useNavigate } from "react-router-dom";
 import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
+import { PlantFormHeader } from "./PlantFormHeader";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -18,35 +18,6 @@ interface PlantFormProps {
   isFormNewPlant?: boolean;
   nextId?: number;
 }
-
-interface PlantFormHeaderProps {
-  isFormEditable: boolean;
-  toggleEditable: () => void;
-  isFormNewPlant: boolean;
-}
-
-const HeaderEditSaveButtons = ({
-  isFormEditable,
-  toggleEditable,
-  isFormNewPlant,
-}: PlantFormHeaderProps) => {
-  return (
-    <div>
-      {!isFormNewPlant && (
-        <Button
-          variant={isFormEditable ? "danger" : "secondary"}
-          onClick={toggleEditable}
-          className="mx-2"
-        >
-          {isFormEditable ? <FaTimes /> : <FaPencilAlt />}
-        </Button>
-      )}
-      <Button variant="primary" type="submit" disabled={!isFormEditable}>
-        <FaSave />
-      </Button>
-    </div>
-  );
-};
 
 export const PlantForm = ({
   plant,
@@ -72,7 +43,7 @@ export const PlantForm = ({
     const response = await deletePlant(plant.plant_id);
     if (response.success) {
       showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
-      navigate("/plants");
+      navigate("/plants/user/me");
     } else {
       showAlert(`Error deleting plant: ${response.error}`, "danger");
     }
@@ -88,18 +59,13 @@ export const PlantForm = ({
   };
   return (
     <Form onSubmit={handleSubmit}>
-      <Card className="mb-3">
-        <Card.Header
-          as="h4"
-          className="d-flex justify-content-between align-items-center sticky-card-header"
-        >
-          <span>Plant Information</span>
-          <HeaderEditSaveButtons
-            isFormEditable={isFormEditable}
-            toggleEditable={toggleEditable}
-            isFormNewPlant={isFormNewPlant}
-          />
-        </Card.Header>
+      <Card className="top-level-card">
+        <PlantFormHeader
+          isFormEditable={isFormEditable}
+          toggleEditable={toggleEditable}
+          isFormNewPlant={isFormNewPlant}
+          buttonsDisabled={false}
+        />
         <EditableInput
           label="Unique ID Number"
           type="text"
@@ -132,6 +98,21 @@ export const PlantForm = ({
           OnChange={handleInputChange("location")}
           isEditable={isFormEditable}
         />
+        {isFormEditable ? (
+          <EditableInput
+            label="Plant Parent ID(s)"
+            type="text"
+            value={plantInForm.parent_id}
+            OnChange={handleInputChange("parent_id")}
+            isEditable={isFormEditable}
+            placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
+          />
+        ) : (
+          <NonEditableInputWButtons
+            label="Plant Parent ID(s)"
+            value={plant.parent_id}
+          />
+        )}
         {/* TODO make it so you can navigate to parent plants by clicking*/}
         {/*<div*/}
         {/*  onClick={() =>*/}
@@ -141,14 +122,6 @@ export const PlantForm = ({
         {/*>*/}
         {/*  {" "}*/}
         {/*</div>*/}
-        <EditableInput
-          label="Plant Parent ID(s)"
-          type="text"
-          value={plantInForm.parent_id}
-          OnChange={handleInputChange("parent_id")}
-          isEditable={isFormEditable}
-          placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
-        />
         <EditableInput
           label="Source"
           type="text"

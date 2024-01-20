@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
-import "../styles/plantImagesTimeline.css";
+import "../styles/plantImagesTimeline.scss";
 
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
 import { BaseLayout } from "../components/Layouts";
 import { useAlert } from "../context/Alerts";
-import "../styles/styles.css";
+import "../styles/styles.scss";
 import { PlantImages } from "../components/plantImages/PlantImages";
 import { initialNewPlantState } from "./PlantCreate";
 import { Card } from "react-bootstrap";
@@ -134,7 +134,7 @@ export function PlantDetails() {
     if (error) {
       console.log("error", error);
       showAlert(`Error fetching plant: ${error}`, "danger");
-      navigate("/plants");
+      navigate("/plants/user/me");
     }
     if (plant) {
       setPlantInForm(plant);
@@ -168,7 +168,7 @@ export function PlantDetails() {
     return (
       <BaseLayout>
         <PlantFormPlaceholder />
-        <Card className="mb-3">
+        <Card className="top-level-card">
           <Card.Header as="h4">Images</Card.Header>
           <Card.Body>
             <PlantImagesLoadingPlaceholder />
