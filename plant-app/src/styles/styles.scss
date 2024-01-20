@@ -127,6 +127,11 @@ html {
   display: flex;
   align-items: center;
 
+  // Handle text overflow with ellipsis
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
 
   //Sticky card header
   position: sticky;
@@ -134,6 +139,6 @@ html {
   opacity: 1.0;
   z-index: 1000;
 
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 
 }
