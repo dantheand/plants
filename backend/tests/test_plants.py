@@ -51,6 +51,14 @@ class TestPlantRead:
         response = client_logged_in().get(f"{PLANT_ROUTE}/{plant_user_id}/{plant_id}")
         assert response.status_code == 404
 
+    def test_read_plant_by_human_id(self, client_logged_in, default_user_plant):
+        plant = default_user_plant
+
+        test_client = client_logged_in(DEFAULT_TEST_USER)
+        response = test_client.get(f"{PLANT_ROUTE}/user/{plant.user_id}/{plant.human_id}")
+        assert PlantItem(**response.json()).SK == f"PLANT#{plant.plant_id}"
+        assert response.status_code == 200
+
 
 class TestPlantCreate:
     def test_create(self, client_logged_in, mock_db):

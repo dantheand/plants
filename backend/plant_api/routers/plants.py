@@ -34,6 +34,14 @@ def read_all_plants_for_user(user_id: str) -> list[PlantItem]:
     return TypeAdapter(list[PlantItem]).validate_python(response["Items"])
 
 
+@router.get("/user/{user_id}/{human_id}", response_model=PlantItem)
+def get_plant_by_human_id(user_id: str, human_id: int):
+    all_user_plants = read_all_plants_for_user(user_id)
+    for plant in all_user_plants:
+        if plant.human_id == human_id:
+            return plant
+
+
 @router.get("/user/{user_id}", response_model=list[PlantItem])
 async def all_plants(user_id: str):
     return read_all_plants_for_user(user_id)
@@ -44,14 +52,6 @@ def get_plant(plant_id: UUID):
     table = get_db_table()
     response = query_by_plant_id(table, plant_id)
     return response
-
-
-@router.get("/user/{user_id}/{plant_id}", response_model=PlantItem)
-def get_plant_by_human_id(user_id: UUID, human_id: UUID):
-    all_user_plants = read_all_plants_for_user(user_id)
-    for plant in all_user_plants:
-        if plant.human_id == human_id:
-            return plant
 
 
 @router.post("/create", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
