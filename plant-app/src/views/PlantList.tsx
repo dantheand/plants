@@ -56,8 +56,6 @@ export function PlantList(): JSX.Element {
   useEffect(() => {
     // This is to prevent the user from seeing the wrong list of plants
     setIsLoading(true);
-    console.log("currentUserId", currentUserId);
-    console.log("pathSpecifiedId", pathSpecifiedId);
     if (userIdToQuery === currentUserId) {
       setIsYourPlants(true);
     } else {

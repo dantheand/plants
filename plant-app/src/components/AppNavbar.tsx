@@ -30,11 +30,11 @@ export const AppNavbar = () => {
           onClick={() => handleNavigate("/plants/user/me")}
         >
           <img
-            className="mb-2"
+            className="mb-1"
             src={plantBrandIcon}
-            width="40"
-            height="40"
-            alt="Brand Icon"
+            width="45"
+            height="45"
+            alt="Plantopticon Icon"
           />
           <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
