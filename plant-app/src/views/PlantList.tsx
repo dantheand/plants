@@ -33,7 +33,7 @@ const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
 export function PlantList(): JSX.Element {
   const params = useParams<string>();
   const pathSpecifiedId = params.userId;
-  const [isYourPlants, setIsYourPlants] = useState<boolean>(false);
+  const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
   const { showAlert } = useAlert();
   const [isGridView, setIsGridView] = useState<boolean>(false);
   const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
