@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
-import "../styles/plantImagesTimeline.css";
+import "../styles/plantImagesTimeline.scss";
 
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 
