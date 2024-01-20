@@ -15,11 +15,15 @@ import {
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "./constants";
 import { PlantList } from "./views/PlantList";
 import { PlantCreate } from "./views/PlantCreate";
-import { GlobalLayout } from "./components/Layouts";
+import { BaseLayout, GlobalLayout } from "./components/Layouts";
 
 import "./styles/styles.scss";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "./types/interfaces";
+import { Card, Placeholder } from "react-bootstrap";
+import { PlantListTable } from "./components/plantList/PlantListTable";
+import { FloatingActionButton } from "./components/FloatingActionButton";
+import { FaPlus } from "react-icons/fa";
 
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -80,7 +84,30 @@ const ProtectedRoute = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <BaseLayout>
+        <Card className="mb-3">
+          <Card.Header>
+            <Placeholder as="h4" animation="glow">
+              <Placeholder xs={6} />
+            </Placeholder>
+          </Card.Header>
+          <Card.Body>
+            {/* Placeholder for a title or large text */}
+            <Placeholder as={Card.Title} animation="glow">
+              <Placeholder xs={8} />
+            </Placeholder>
+
+            {/* Multiple lines of placeholder text */}
+            <Placeholder as={Card.Text} animation="glow">
+              <Placeholder xs={7} /> <Placeholder xs={4} />{" "}
+              <Placeholder xs={4} />
+              <Placeholder xs={6} /> <Placeholder xs={8} />
+            </Placeholder>
+          </Card.Body>
+        </Card>
+      </BaseLayout>
+    );
   }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace={true} />;

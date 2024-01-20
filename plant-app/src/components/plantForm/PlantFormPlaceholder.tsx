@@ -1,10 +1,16 @@
 import { Card, Placeholder } from "react-bootstrap";
 import React from "react";
+import { PlantFormHeader } from "./PlantFormHeader";
 
 export const PlantFormPlaceholder = () => {
   return (
     <Card className="mb-3">
-      <Card.Header as="h4">Plant Information</Card.Header>
+      <PlantFormHeader
+        isFormEditable={false}
+        toggleEditable={() => {}}
+        isFormNewPlant={false}
+        buttonsDisabled={true}
+      />
       <Card.Body>
         {[...Array(8)].map((_, idx) => (
           <Placeholder key={idx} as="p" animation="glow">

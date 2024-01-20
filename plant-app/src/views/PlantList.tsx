@@ -92,7 +92,7 @@ export function PlantList(): JSX.Element {
 
   return (
     <BaseLayout>
-      <Card className="mb-3">
+      <Card className="top-level-card">
         <Card.Header as="h4">
           {otherUserId ? "Your Friend's Plants" : "Your Plants"}
         </Card.Header>

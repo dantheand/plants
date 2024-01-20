@@ -1,4 +1,8 @@
 @import "custom-styles.scss";
+html {
+  //Make the scrollbar always visible to prevent layout shift
+  overflow-y: scroll;
+}
 
 body, .card-header  {
   /*Overriding Bootstrap CSS for sticky headers*/
@@ -119,4 +123,9 @@ body, .card-header  {
 .loading-content p {
   margin-top: 15px;
   font-size: 1.2em;
+}
+
+/* Top level cards */
+.top-level-card{
+  margin-bottom: 3rem;
 }

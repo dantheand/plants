@@ -7,6 +7,8 @@ import { deletePlant } from "../../views/PlantDetails";
 import { useAlert } from "../../context/Alerts";
 import { useNavigate } from "react-router-dom";
 import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
+import { HeaderEditSaveButtons } from "./HeaderEditSaveButtons";
+import { PlantFormHeader } from "./PlantFormHeader";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -18,35 +20,6 @@ interface PlantFormProps {
   isFormNewPlant?: boolean;
   nextId?: number;
 }
-
-interface PlantFormHeaderProps {
-  isFormEditable: boolean;
-  toggleEditable: () => void;
-  isFormNewPlant: boolean;
-}
-
-const HeaderEditSaveButtons = ({
-  isFormEditable,
-  toggleEditable,
-  isFormNewPlant,
-}: PlantFormHeaderProps) => {
-  return (
-    <div>
-      {!isFormNewPlant && (
-        <Button
-          variant={isFormEditable ? "danger" : "secondary"}
-          onClick={toggleEditable}
-          className="mx-2"
-        >
-          {isFormEditable ? <FaTimes /> : <FaPencilAlt />}
-        </Button>
-      )}
-      <Button variant="primary" type="submit" disabled={!isFormEditable}>
-        <FaSave />
-      </Button>
-    </div>
-  );
-};
 
 export const PlantForm = ({
   plant,
@@ -88,18 +61,13 @@ export const PlantForm = ({
   };
   return (
     <Form onSubmit={handleSubmit}>
-      <Card className="mb-3">
-        <Card.Header
-          as="h4"
-          className="d-flex justify-content-between align-items-center sticky-card-header"
-        >
-          <span>Plant Information</span>
-          <HeaderEditSaveButtons
-            isFormEditable={isFormEditable}
-            toggleEditable={toggleEditable}
-            isFormNewPlant={isFormNewPlant}
-          />
-        </Card.Header>
+      <Card className="top-level-card">
+        <PlantFormHeader
+          isFormEditable={isFormEditable}
+          toggleEditable={toggleEditable}
+          isFormNewPlant={isFormNewPlant}
+          buttonsDisabled={false}
+        />
         <EditableInput
           label="Unique ID Number"
           type="text"

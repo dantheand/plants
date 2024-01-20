@@ -168,7 +168,7 @@ export function PlantDetails() {
     return (
       <BaseLayout>
         <PlantFormPlaceholder />
-        <Card className="mb-3">
+        <Card className="top-level-card">
           <Card.Header as="h4">Images</Card.Header>
           <Card.Body>
             <PlantImagesLoadingPlaceholder />
