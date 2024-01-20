@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@types/pica": "^9.0.4",
-    "@types/react-vertical-timeline-component": "^3.3.6"
+    "@types/react-vertical-timeline-component": "^3.3.6",
+    "sass": "^1.70.0"
   }
 }

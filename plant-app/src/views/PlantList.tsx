@@ -34,6 +34,9 @@ export function PlantList(): JSX.Element {
   const params = useParams<string>();
   const otherUserId = params.userId;
   const { showAlert } = useAlert();
+  const [isGridView, setIsGridView] = useState<boolean>(false);
+  const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
+    useState<boolean>(true);
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
