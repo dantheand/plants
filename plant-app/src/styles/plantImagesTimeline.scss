@@ -1,22 +1,27 @@
 @import "custom-styles.scss";
 
 .verticalTimeline::before {
-  background: $secondary-bg-subtle;
+  background: $secondary;
+  width: 3px;
 }
 
 .verticalTimelineElement .vertical-timeline-element-icon {
-  background: $secondary-bg-subtle !important; /* Pastel green for the icon background */
-
+  background: $secondary-bg-subtle !important;
+  border-color: $secondary;
+  border-style: solid;
+  box-shadow: none;
+  border-width: 3px;
 }
 
 .verticalTimelineElement .vertical-timeline-element-content {
-  background: $secondary-bg-subtle !important; /* Pastel green for content background */
+  background:  $secondary-bg-subtle !important; /* Pastel green for content background */
   color: $dark !important; /* Text color */
   border-radius: 10px !important; /* Rounded corners */
+  box-shadow: none;
 }
 
 .verticalTimelineElement .vertical-timeline-element-content-arrow {
-  border-right: 7px solid $secondary-bg-subtle !important; /* Arrow color */
+  border-right: 10px solid  $secondary-bg-subtle !important; /* Arrow color */
 }
 
 .timelineImage {

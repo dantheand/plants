@@ -25,9 +25,6 @@ export function PlantImagesTimeline({
           key={plant_image.timestamp}
           date={convertTimestampToDateString(plant_image.timestamp)}
           className="verticalTimelineElement"
-          contentStyle={{ background: "none", boxShadow: "none" }} // Override default styles
-          contentArrowStyle={{ borderRight: "none" }} // Override default styles
-          iconStyle={{ background: "none", boxShadow: "none" }} // Override default styles
         >
           <div className="timelineElementContent">
             <img
