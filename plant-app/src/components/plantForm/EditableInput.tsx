@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Col, Form, Row } from "react-bootstrap";
 
 interface EditableInputProps {
   label: string;
@@ -37,37 +36,6 @@ export const EditableInput = ({
           disabled={!(isEditable && editsAllowed)}
           placeholder={isEditable ? placeholder : undefined}
         />
-      </Col>
-    </Form.Group>
-  );
-};
-
-interface NonEditableInputProps {
-  label: string;
-  value: string[] | undefined;
-}
-
-export const NonEditableInputWButtons = ({
-  label,
-  value,
-}: NonEditableInputProps) => {
-  const navigate = useNavigate();
-
-  return (
-    <Form.Group as={Row} className="m-2">
-      <Form.Label column md={3}>
-        {label}
-      </Form.Label>
-      <Col md={9} className="plant-form-item">
-        {value ? (
-          value.map((val, idx) => (
-            <Button key={idx} variant="outline-primary" className="m-1">
-              {val}
-            </Button>
-          ))
-        ) : (
-          <Form.Control readOnly={true} disabled={true} />
-        )}
       </Col>
     </Form.Group>
   );
