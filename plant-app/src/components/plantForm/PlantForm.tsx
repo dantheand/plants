@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
 import { FaPencilAlt, FaSave, FaTimes } from "react-icons/fa";
-import { EditableInput } from "./EditableInput";
+import { EditableInput, NonEditableInputWButtons } from "./EditableInput";
 import { deletePlant } from "../../views/PlantDetails";
 import { useAlert } from "../../context/Alerts";
 import { useNavigate } from "react-router-dom";
@@ -100,6 +100,21 @@ export const PlantForm = ({
           OnChange={handleInputChange("location")}
           isEditable={isFormEditable}
         />
+        {isFormEditable ? (
+          <EditableInput
+            label="Plant Parent ID(s)"
+            type="text"
+            value={plantInForm.parent_id}
+            OnChange={handleInputChange("parent_id")}
+            isEditable={isFormEditable}
+            placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
+          />
+        ) : (
+          <NonEditableInputWButtons
+            label="Plant Parent ID(s)"
+            value={plant.parent_id}
+          />
+        )}
         {/* TODO make it so you can navigate to parent plants by clicking*/}
         {/*<div*/}
         {/*  onClick={() =>*/}
@@ -109,14 +124,6 @@ export const PlantForm = ({
         {/*>*/}
         {/*  {" "}*/}
         {/*</div>*/}
-        <EditableInput
-          label="Plant Parent ID(s)"
-          type="text"
-          value={plantInForm.parent_id}
-          OnChange={handleInputChange("parent_id")}
-          isEditable={isFormEditable}
-          placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
-        />
         <EditableInput
           label="Source"
           type="text"

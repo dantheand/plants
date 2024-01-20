@@ -140,5 +140,9 @@ html {
   z-index: 1000;
 
   margin-bottom: 5px;
+}
 
+.plant-form-item {
+  // Keeps the form from shifting when switching between editing and not editing parent IDs
+  height: 30px;
 }
