@@ -7,7 +7,7 @@ from moto import mock_dynamodb, mock_s3, mock_secretsmanager
 from starlette.testclient import TestClient
 
 from plant_api.constants import S3_BUCKET_NAME, TABLE_NAME
-from plant_api.dependencies import get_current_user
+from plant_api.dependencies import get_current_user_session
 from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import JWT_KEY_IN_SECRETS_MANAGER, AWS_REGION
 from plant_api.schema import DbModelType, User, UserItem
@@ -147,25 +147,13 @@ def client_logged_in():
         def mock_get_current_user():
             return current_user
 
-        app.dependency_overrides[get_current_user] = mock_get_current_user
+        app.dependency_overrides[get_current_user_session] = mock_get_current_user
         test_client = TestClient(app)
         return test_client
 
     yield _get_client
     # Clear overrides after the test
     app.dependency_overrides.clear()
-
-
-# remove this in favor of client_no_session
-@pytest.fixture
-def client_no_jwt():
-    app = get_app()
-
-    def _get_client():
-        test_client = TestClient(app)
-        return test_client
-
-    yield _get_client
 
 
 @pytest.fixture

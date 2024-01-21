@@ -1,18 +1,18 @@
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Annotated, Optional, Tuple
+from typing import Annotated, Optional, Tuple, Union
 
 from boto3.dynamodb.conditions import Key
 
 import jose
-from fastapi import Depends, Response
+from fastapi import Cookie, Depends, Response
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
-from constants import SESSION_TOKEN_KEY
+from plant_api.constants import SESSION_TOKEN_KEY
 from plant_api.constants import (
     ALGORITHM,
     AWS_DEPLOYMENT_ENV,
@@ -23,15 +23,15 @@ from plant_api.constants import (
     TOKEN_URL,
     get_jwt_secret,
 )
-from plant_api.dependencies import get_current_user
+from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
-from plant_api.schema import EntityType, ItemKeys, TokenItem, UserItem
+from plant_api.schema import EntityType, ItemKeys, SessionTokenItem, TokenItem, UserItem
 from plant_api.utils.deployment import get_deployment_env
 from plant_api.utils.db import get_db_table, get_user_by_google_id
 from plant_api.schema import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
+SESSION_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
 
 router = BaseRouter()
 
@@ -39,16 +39,19 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get("/check_token")
-async def check_valid_user_token(user: Annotated[User, Depends(get_current_user)]) -> bool:
+async def check_valid_user_token(
+    user: Annotated[User, Depends(get_current_user_session)],
+    # session_token: Optional[str] = Cookie(default=None, alias="session_token"),
+) -> bool:
     if user:
         return True
     return False
 
 
-def set_refresh_token_cookie(response: Response, token: str):
+def set_session_token_cookie(response: Response, token_id: str):
     response.set_cookie(
         key=SESSION_TOKEN_KEY,
-        value=token,
+        value=token_id,
         httponly=True,
         path="/",
         secure=True if get_deployment_env() == AWS_DEPLOYMENT_ENV else False,
@@ -56,18 +59,17 @@ def set_refresh_token_cookie(response: Response, token: str):
     )
 
 
-def generate_and_save_refresh_token(user: UserItem) -> str:
-    """Generates a refresh token for the user and saves it to the DB"""
-    token, expiration = create_refresh_token_for_user(GoogleOauthPayload(email=user.email, sub=user.google_id))
-    token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{uuid.uuid4()}",
+def generate_and_save_session_token(user: UserItem) -> str:
+    """Generates a session token for the user and saves it to the DB"""
+    token_item = SessionTokenItem(
+        PK=f"{ItemKeys.SESSION_TOKEN}#{uuid.uuid4()}",
         SK=f"{ItemKeys.USER}#{user.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
-        expires_at=expiration,
+        expires_at=datetime.utcnow() + timedelta(minutes=SESSION_TOKEN_EXPIRE_MINUTES),
     )
-    add_refresh_token_to_db(token_item)
-    return token
+    add_session_token_to_db(token_item)
+    return token_item.token_id
 
 
 @router.post(f"/{TOKEN_URL}")
@@ -99,8 +101,8 @@ async def auth(request: Request, response: Response):
             LOGGER.info("User is disabled: %s", payload.email)
             raise CREDENTIALS_EXCEPTION
 
-        new_refresh_token = generate_and_save_refresh_token(user)
-        set_refresh_token_cookie(response, new_refresh_token)
+        new_refresh_token = generate_and_save_session_token(user)
+        set_session_token_cookie(response, new_refresh_token)
         token, _ = create_access_token_for_user(payload)
         return token
 
@@ -144,8 +146,8 @@ async def refresh_token(request: Request, response: Response):
         issued_at=datetime.utcnow(),
         expires_at=refresh_exp,
     )
-    add_refresh_token_to_db(token_item)
-    set_refresh_token_cookie(response, new_refresh_token)
+    add_session_token_to_db(token_item)
+    set_session_token_cookie(response, new_refresh_token)
     return new_access_token
 
 
@@ -180,7 +182,7 @@ def revoke_refresh_token(token: TokenItem):
     )
 
 
-def add_refresh_token_to_db(token: TokenItem):
+def add_session_token_to_db(token: SessionTokenItem):
     """Adds a refresh token to the DB"""
     _ = get_db_table().put_item(Item=token.dynamodb_dump())
 
@@ -218,7 +220,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 def create_refresh_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
     return create_access_token(
         data={"google_id": payload.sub, "email": payload.email},
-        expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
+        expires_delta=timedelta(minutes=SESSION_TOKEN_EXPIRE_MINUTES),
     )
 
 

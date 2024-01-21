@@ -174,6 +174,7 @@ class SessionTokenItem(DynamoDBMixin):
     PK: str = Field(..., pattern=SESSION_TOKEN_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
     entity_type: str = Field(EntityType.SESSION_TOKEN)
+    issued_at: datetime
     expires_at: datetime
     revoked: bool = False
     token_id: Optional[str] = None
