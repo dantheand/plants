@@ -156,8 +156,20 @@ def client_logged_in():
     app.dependency_overrides.clear()
 
 
+# remove this in favor of client_no_session
 @pytest.fixture
 def client_no_jwt():
+    app = get_app()
+
+    def _get_client():
+        test_client = TestClient(app)
+        return test_client
+
+    yield _get_client
+
+
+@pytest.fixture
+def client_no_session():
     app = get_app()
 
     def _get_client():
