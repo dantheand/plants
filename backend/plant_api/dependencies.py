@@ -1,21 +1,15 @@
 import logging
 from datetime import datetime
-from typing import Annotated, Union
+from typing import Union
 
 from boto3.dynamodb.conditions import Key
 
-import jose
-from fastapi import Depends, Cookie
+from fastapi import Cookie
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from pydantic import ValidationError
 
 from plant_api.constants import (
-    ALGORITHM,
     CREDENTIALS_EXCEPTION,
-    JwtPayload,
     TOKEN_URL,
-    get_jwt_secret,
 )
 from plant_api.schema import User, SessionTokenItem
 from plant_api.utils.db import get_db_table, get_user_by_google_id
@@ -39,7 +33,7 @@ def get_session_token(token_id: str) -> SessionTokenItem:
     return SessionTokenItem(**response["Items"][0])
 
 
-def get_current_user_session(session_token: Union[str, None] = Cookie(default=None, alias="session_token")) -> User:
+def get_current_user_session(session_token: Union[str, None] = Cookie(default=None, alias=SESSION_TOKEN_KEY)) -> User:
     """Returns the user from the session cookie if they're a valid user and the session is not expired."""
     LOGGER.info("Attempting to validate credentials...")
     LOGGER.info(f"Session Cookie: {session_token}")
