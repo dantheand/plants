@@ -63,27 +63,3 @@ def get_current_user_session(session_token: Union[str, None] = Cookie(default=No
         LOGGER.error("Credentialed email not an authorized user in database.")
         raise CREDENTIALS_EXCEPTION
     return User(email=user_item.email, google_id=user_item.google_id, disabled=user_item.disabled)
-
-
-# async def get_current_user_session(token: Annotated[str, Depends(oauth2_google)]) -> User:
-#     """Returns the user from the token if they are a valid user."""
-#     try:
-#         LOGGER.info("Attempting to validate credentials...")
-#         LOGGER.info(f"Token: {token}")
-#         payload = JwtPayload(**jwt.decode(token, get_jwt_secret(), algorithms=[ALGORITHM]))
-#     except ValidationError:
-#         LOGGER.error("Encountered error validating credential format.")
-#         raise CREDENTIALS_EXCEPTION
-#     except jose.JWTError:
-#         LOGGER.error("Encountered error decoding credentials.")
-#         raise CREDENTIALS_EXCEPTION
-#
-#     user_item = get_user_by_google_id(payload.google_id)
-#     LOGGER.info(f"User item: {user_item}")
-#     if not user_item:
-#         LOGGER.error("User in JWT payload not an authorized user in database.")
-#         raise CREDENTIALS_EXCEPTION
-#     if user_item.disabled:
-#         LOGGER.error("Credentialed email not an authorized user in database.")
-#         raise CREDENTIALS_EXCEPTION
-#     return User(email=user_item.email, google_id=user_item.google_id, disabled=user_item.disabled)
