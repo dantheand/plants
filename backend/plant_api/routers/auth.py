@@ -12,6 +12,7 @@ from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
+from constants import SESSION_TOKEN_KEY
 from plant_api.constants import (
     ALGORITHM,
     AWS_DEPLOYMENT_ENV,
@@ -32,8 +33,6 @@ from plant_api.schema import User
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
 
-REFRESH_TOKEN = "refresh_token"
-
 router = BaseRouter()
 
 LOGGER = logging.getLogger(__name__)
@@ -48,7 +47,7 @@ async def check_valid_user_token(user: Annotated[User, Depends(get_current_user)
 
 def set_refresh_token_cookie(response: Response, token: str):
     response.set_cookie(
-        key=REFRESH_TOKEN,
+        key=SESSION_TOKEN_KEY,
         value=token,
         httponly=True,
         path="/",
@@ -120,7 +119,7 @@ async def refresh_token(request: Request, response: Response):
     See https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation
     """
 
-    old_refresh_token = request.cookies.get(REFRESH_TOKEN)
+    old_refresh_token = request.cookies.get(SESSION_TOKEN_KEY)
     if not old_refresh_token:
         raise CREDENTIALS_EXCEPTION
 

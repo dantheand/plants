@@ -41,3 +41,6 @@ class JwtPayload(BaseModel):
     google_id: str = Field(..., description="Google's unique identifier for the user.")
     exp: datetime = Field(..., description="Expiration time for the token.")
     jti: str = Field(..., description="Unique identifier for the token.")
+
+
+SESSION_TOKEN_KEY = "session_token"

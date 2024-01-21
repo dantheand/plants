@@ -10,6 +10,7 @@ class ItemKeys(str, Enum):
     PLANT = "PLANT"
     IMAGE = "IMAGE"
     SOURCE = "SOURCE"
+    SESSION_TOKEN = "SESSION_TOKEN"
     REFRESH_TOKEN = "TOKEN"
 
 
@@ -18,6 +19,7 @@ class EntityType(str, Enum):
     PLANT = "Plant"
     IMAGE = "Image"
     LINEAGE = "Lineage"
+    SESSION_TOKEN = "Session token"
     REFRESH_TOKEN = "Token"
 
 
@@ -35,6 +37,7 @@ USER_KEY_PATTERN = f"^{ItemKeys.USER}#"
 PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT}#"
 IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
 SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
+SESSION_TOKEN_KEY_PATTERN = f"^{ItemKeys.SESSION_TOKEN}#"
 REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN}#"
 
 
@@ -162,6 +165,28 @@ class ImageItem(ImageBase):
     def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Break out the plant_id UUID as a separate field"""
         values["plant_id"] = values["PK"].split("#")[1]
+        return values
+
+
+class SessionTokenItem(DynamoDBMixin):
+    """Session token schema"""
+
+    PK: str = Field(..., pattern=SESSION_TOKEN_KEY_PATTERN)
+    SK: str = Field(..., pattern=USER_KEY_PATTERN)
+    entity_type: str = Field(EntityType.SESSION_TOKEN)
+    expires_at: datetime
+    revoked: bool = False
+    token_id: Optional[str] = None
+    user_id: Optional[str] = None
+
+    @model_validator(mode="before")
+    def extract_token_str(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values["token_id"] = values["PK"].split("#")[1]
+        return values
+
+    @model_validator(mode="before")
+    def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values["user_id"] = values["SK"].split("#")[1]
         return values
 
 
