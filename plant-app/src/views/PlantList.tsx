@@ -109,7 +109,7 @@ export function PlantList(): JSX.Element {
           />
         </Card.Body>
       </Card>
-      {isYourPlants && (
+      {!isLoading && isYourPlants && (
         <FloatingActionButton
           icon={<FaPlus />}
           handleOnClick={() => {
