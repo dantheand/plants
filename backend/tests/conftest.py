@@ -140,7 +140,7 @@ def mock_db():
 
 
 @pytest.fixture
-def client_logged_in():
+def client_mock_session():
     app = get_app()
 
     def _get_client(current_user: User = DEFAULT_TEST_USER):

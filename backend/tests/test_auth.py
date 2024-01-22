@@ -89,15 +89,27 @@ class TestTokenFlow:
         assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
         assert session_token_item.user_id == DEFAULT_TEST_USER.google_id
 
-    # TODO: probably move all the get_current_user_session tests here and run them through check_token
-    def test_check_token_w_valid_token(self):
-        pass
+    def test_check_token_w_valid_token(self, client_no_session, mock_db, default_enabled_user_in_db):
+        current_session_token = create_current_session_token(mock_db, default_enabled_user_in_db.google_id)
 
-    def test_check_token_w_expired_token(self):
-        pass
+        response = client_no_session().get("/check_token", cookies={SESSION_TOKEN_KEY: current_session_token.token_id})
+        assert response.status_code == 200
+        assert response.json()["google_id"] == default_enabled_user_in_db.google_id
 
-    def test_logout_revokes_session_token(self):
-        pass
+    def test_check_token_w_expired_token(self, client_no_session, mock_db, default_enabled_user_in_db):
+        expired_session_token = create_expired_session_token(mock_db, default_enabled_user_in_db.google_id)
+
+        response = client_no_session().get("/check_token", cookies={SESSION_TOKEN_KEY: expired_session_token.token_id})
+        assert response.status_code == 401
+
+    def test_logout_revokes_session_token(self, client_no_session, mock_db, default_enabled_user_in_db):
+        current_session_token = create_current_session_token(mock_db, default_enabled_user_in_db.google_id)
+
+        response = client_no_session().get("/logout", cookies={SESSION_TOKEN_KEY: current_session_token.token_id})
+        assert response.status_code == 200
+
+        session_token_item = get_session_token(current_session_token.token_id)
+        assert session_token_item.revoked
 
 
 class TestAuthDependencies:

@@ -43,8 +43,8 @@ class TestAddUser:
 
 
 class TestGetUsers:
-    def test_get_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_logged_in):
-        response = client_logged_in().get("/users")
+    def test_get_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_mock_session):
+        response = client_mock_session().get("/users")
         parsed_response = TypeAdapter(list[User]).validate_python(response.json())
 
         assert len(parsed_response) == 2
@@ -52,28 +52,28 @@ class TestGetUsers:
         assert any(user.google_id == DEFAULT_TEST_USER.google_id for user in parsed_response)
         assert any(user.google_id == OTHER_TEST_USER.google_id for user in parsed_response)
 
-    def test_gets_only_active_users(self, default_disabled_user_in_db, other_enabled_user_in_db, client_logged_in):
-        response = client_logged_in().get("/users")
+    def test_gets_only_active_users(self, default_disabled_user_in_db, other_enabled_user_in_db, client_mock_session):
+        response = client_mock_session().get("/users")
         parsed_response = TypeAdapter(list[User]).validate_python(response.json())
 
         assert len(parsed_response) == 1
         # Assert that only the active user is there
         assert parsed_response[0].google_id == OTHER_TEST_USER.google_id
 
-    def test_get_user_n_plants(self, default_enabled_user_in_db, mock_db, client_logged_in):
+    def test_get_user_n_plants(self, default_enabled_user_in_db, mock_db, client_mock_session):
         create_plants_for_user(mock_db, DEFAULT_TEST_USER, 3)
-        response = client_logged_in().get("/users")
+        response = client_mock_session().get("/users")
         parsed_user = TypeAdapter(list[User]).validate_python(response.json())
 
         assert parsed_user[0].n_total_plants == 3
 
-    def test_get_user_without_plants(self, default_enabled_user_in_db, client_logged_in):
-        response = client_logged_in().get("/users")
+    def test_get_user_without_plants(self, default_enabled_user_in_db, client_mock_session):
+        response = client_mock_session().get("/users")
         parsed_user = TypeAdapter(list[User]).validate_python(response.json())
 
         assert parsed_user[0].n_total_plants == 0
 
-    def test_get_user_w_sunk_plants(self, mock_db, default_enabled_user_in_db, client_logged_in):
+    def test_get_user_w_sunk_plants(self, mock_db, default_enabled_user_in_db, client_mock_session):
         plants = [
             plant_record_factory(human_id=1, sink=None, sink_date=None),
             plant_record_factory(human_id=2, sink="mock_sink", sink_date=date.today()),
@@ -81,7 +81,7 @@ class TestGetUsers:
         for plant in plants:
             mock_db.insert_mock_data(plant)
 
-        response = client_logged_in().get("/users")
+        response = client_mock_session().get("/users")
         parsed_user = TypeAdapter(list[User]).validate_python(response.json())[0]
 
         assert parsed_user.n_total_plants == 2

@@ -23,7 +23,7 @@ from plant_api.constants import (
     TOKEN_URL,
     get_jwt_secret,
 )
-from plant_api.dependencies import get_current_user_session
+from plant_api.dependencies import get_current_user_session, get_session_token
 from plant_api.routers.common import BaseRouter
 from plant_api.schema import EntityType, ItemKeys, SessionTokenItem, UserItem
 from plant_api.utils.deployment import get_deployment_env
@@ -38,14 +38,9 @@ router = BaseRouter()
 LOGGER = logging.getLogger(__name__)
 
 
-@router.get("/check_token")
-async def check_valid_user_token(
-    user: Annotated[User, Depends(get_current_user_session)],
-    # session_token: Optional[str] = Cookie(default=None, alias="session_token"),
-) -> bool:
-    if user:
-        return True
-    return False
+@router.get("/check_token", response_model=User)
+async def check_valid_user_token(user: Annotated[User, Depends(get_current_user_session)]) -> User:
+    return user
 
 
 def set_session_token_cookie(response: Response, token_id: str):
@@ -111,7 +106,17 @@ async def auth(request: Request, response: Response):
         raise CREDENTIALS_EXCEPTION
 
 
-def revoke_sesison_token(token: SessionTokenItem):
+@router.get("/logout")
+async def logout(response: Response, session_token: Union[str, None] = Cookie(default=None, alias=SESSION_TOKEN_KEY)):
+    """Logs out the user by revoking their refresh token"""
+    if not session_token:
+        return
+    session_token_item = get_session_token(session_token)
+    revoke_session_token(session_token_item)
+    response.delete_cookie(key=SESSION_TOKEN_KEY, path="/")
+
+
+def revoke_session_token(token: SessionTokenItem):
     """Invalidates the refresh token"""
     _ = get_db_table().update_item(
         Key={"PK": token.PK, "SK": token.SK},
