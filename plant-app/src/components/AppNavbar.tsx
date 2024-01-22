@@ -1,6 +1,6 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import plantBrandIcon from "../assets/plantopticon2_small.png";
-import { APP_BRAND_NAME, JWT_TOKEN_STORAGE } from "../constants";
+import { APP_BRAND_NAME, BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../context/Alerts"; // Assuming you are using react-router
@@ -16,12 +16,28 @@ export const AppNavbar = () => {
     navigate(path);
   };
 
-  const handleLogout = () => {
-    // TODO: hit the logout API endpoint to invalidate the user's session token
-    localStorage.removeItem(JWT_TOKEN_STORAGE);
-    console.log("Logged out successfully.");
-    showAlert("Logged out successfully", "success");
-    navigate("/login");
+  const handleLogout = async () => {
+    // TODO: add loading overlay
+    try {
+      // Perform the fetch request to the /logout endpoint
+      const response = await fetch(BASE_API_URL + "/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        localStorage.removeItem(JWT_TOKEN_STORAGE);
+        showAlert("Logged out!", "success");
+        navigate("/login");
+      } else {
+        // Handle server-side errors (e.g., session not found)
+        const errorText = await response.text();
+        showAlert(`Logout failed: ${errorText}`, "error");
+      }
+    } catch (error) {
+      // Handle network errors or other issues
+      showAlert(`Logout error: ${error}`, "error");
+    }
   };
   return (
     <Navbar className="justify-content-between">
