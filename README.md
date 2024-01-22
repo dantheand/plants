@@ -8,8 +8,8 @@ A plant tracking app meant to make it easy to track plant growth and lineages.
 
 ## Development environment setup
 ### Dependencies
-- Python 3.9
-- node 18?
+- Python 3.9+
+- Node v20.10.0
 
 ### AWS stuff
 - aws CLI
