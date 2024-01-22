@@ -24,9 +24,9 @@ const updatePlant = async (
       `${BASE_API_URL}/plants/${plantData.plant_id}`,
       {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
         },
         body: JSON.stringify(plantData),
       },
@@ -57,9 +57,7 @@ const usePlantDetails = (plantId: string | undefined) => {
 
   useEffect(() => {
     fetch(`${BASE_API_URL}/plants/${plantId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
+      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {
@@ -93,9 +91,7 @@ export const deletePlant = async (
     // Perform the DELETE request
     const response = await fetch(`${BASE_API_URL}/plants/${plantId}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
+      credentials: "include",
     });
     if (!response.ok) {
       return {

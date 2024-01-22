@@ -66,9 +66,7 @@ const ImageUpload = ({
         {
           method: "POST",
           body: formData,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-          },
+          credentials: "include",
         },
       );
 

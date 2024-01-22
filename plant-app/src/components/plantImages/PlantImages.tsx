@@ -17,17 +17,13 @@ import { FloatingActionButton } from "../FloatingActionButton";
 const deletePlantImage = async (image: PlantImage) => {
   return fetch(`${BASE_API_URL}/images/${image.image_id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-    },
+    credentials: "include",
   });
 };
 
 const getPlantImages = async (plant_id: string | undefined) => {
   return fetch(`${BASE_API_URL}/images/plants/${plant_id}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-    },
+    credentials: "include",
   });
 };
 

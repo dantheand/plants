@@ -11,9 +11,9 @@ import { Button } from "react-bootstrap";
 const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
   const response = await fetch(`${BASE_API_URL}/plants/create`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
     },
     body: JSON.stringify(plant),
   });

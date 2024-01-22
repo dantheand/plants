@@ -67,9 +67,7 @@ export function PlantList(): JSX.Element {
     setIsLoading(true);
 
     fetch(`${BASE_API_URL}/plants/user/${userIdToQuery}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
+      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {

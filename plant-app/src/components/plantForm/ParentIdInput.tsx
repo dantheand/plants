@@ -22,9 +22,7 @@ export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
     setNavigationIsLoading(true);
     // Query the API endpoint to get the parent plant ID and navigate to that plant's page
     fetch(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
+      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {

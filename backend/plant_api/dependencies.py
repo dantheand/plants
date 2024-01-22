@@ -5,22 +5,15 @@ from typing import Union
 from boto3.dynamodb.conditions import Key
 
 from fastapi import Cookie
-from fastapi.security import OAuth2PasswordBearer
 
 from plant_api.constants import (
     CREDENTIALS_EXCEPTION,
-    TOKEN_URL,
 )
 from plant_api.schema import User, SessionTokenItem
 from plant_api.utils.db import get_db_table, get_user_by_google_id
 from plant_api.constants import SESSION_TOKEN_KEY
 
 LOGGER = logging.getLogger(__name__)
-
-# TODO: figure out what magic this is doing may be able to replace with OpenIdConnect()
-oauth2_google = OAuth2PasswordBearer(
-    tokenUrl=TOKEN_URL,
-)
 
 
 def get_session_token(token_id: str) -> SessionTokenItem:
