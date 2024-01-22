@@ -15,15 +15,14 @@ import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 
 function incrementLargestId(plants: Plant[]): number {
   if (plants.length === 0) {
-    return 0;
+    return 1; // Return 1 if there are no plants, assuming IDs start from 1
   }
 
-  return plants.reduce((maxHumanId, plant) => {
-    if (plant.human_id > maxHumanId) {
-      return plant.human_id;
-    }
-    return maxHumanId + 1;
-  }, plants[0].human_id); // Initialize with the human_id of the first plant
+  const maxHumanId = plants.reduce((maxId, plant) => {
+    return plant.human_id > maxId ? plant.human_id : maxId;
+  }, plants[0].human_id);
+
+  return maxHumanId + 1; // Increment after finding the max
 }
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
