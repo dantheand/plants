@@ -7,6 +7,7 @@ import {
   Route,
   Navigate,
   Outlet,
+  useLocation,
 } from "react-router-dom";
 import {
   AuthFromFrontEnd,
@@ -25,33 +26,10 @@ import { Card, Placeholder } from "react-bootstrap";
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const checkTokenExpiration = (token: string) => {
-    try {
-      const decodedToken: JwtPayload = jwtDecode(token);
-      const currentUnixTimestamp = Date.now() / 1000;
-      return decodedToken.exp > currentUnixTimestamp;
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      setIsAuthenticated(false);
-      return false;
-    }
-  };
+  const location = useLocation(); // Use the useLocation hook to rerun auth on every navigation
 
   useEffect(() => {
-    const token = localStorage.getItem(JWT_TOKEN_STORAGE);
-    if (!token) {
-      setIsAuthenticated(false);
-      setIsLoading(false);
-      return;
-    }
     const checkTokenWithBackend = async () => {
-      const token = localStorage.getItem(JWT_TOKEN_STORAGE);
-      if (!token) {
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        return;
-      }
       try {
         const res = await fetch(`${BASE_API_URL}/check_token`, {
           method: "GET",
@@ -64,21 +42,13 @@ const ProtectedRoute = () => {
       } catch (error) {
         console.error("Error authenticating with backend:", error);
         setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkTokenWithBackend();
-
-    const intervalId = setInterval(() => {
-      if (!checkTokenExpiration(token)) {
-        setIsAuthenticated(false);
-        clearInterval(intervalId);
-      }
-    }, 60000); // Check every minute
-
-    return () => clearInterval(intervalId); // Clean up on component unmount
-  }, []);
+  }, [location]);
 
   if (isLoading) {
     return (
@@ -126,6 +96,8 @@ function App() {
             <Route path="/plants/create/:nextId" element={<PlantCreate />} />
             <Route path="/users" element={<UserList />} />
           </Route>
+          {/* Redirect to login by default */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </GlobalLayout>
     </Router>
