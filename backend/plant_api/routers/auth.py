@@ -111,6 +111,7 @@ async def auth(request: Request, response: Response):
         raise CREDENTIALS_EXCEPTION
 
 
+# TODO: remove this endpoint
 @router.post("/refresh_token")
 async def refresh_token(request: Request, response: Response):
     """Refreshes the access token for the user and returns a new refresh token cookie

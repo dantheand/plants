@@ -191,6 +191,7 @@ class SessionTokenItem(DynamoDBMixin):
         return values
 
 
+# TODO: remove this and probably all functions that reference it. Also delete old tokens from the DB
 class TokenItem(DynamoDBMixin):
     """Refresh token schema"""
 
