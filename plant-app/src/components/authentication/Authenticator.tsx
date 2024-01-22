@@ -56,7 +56,6 @@ export function AuthFromFrontEnd() {
     responseGoogle(response, nonce, setIsLoggedIn, setIsAuthenticating);
   };
 
-  // If we're logged in, redirect to the plants page
   const navigate = useNavigate();
   // Redirect if logged in
   useEffect(() => {

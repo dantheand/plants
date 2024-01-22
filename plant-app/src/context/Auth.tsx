@@ -12,13 +12,11 @@ interface AuthContextType {
   setIsAuthenticated: (value: boolean) => void;
 }
 
-// Provide a default value matching the AuthContextType
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setIsAuthenticated: () => {}, // No-op function as a placeholder
 });
 
-// This URL should point to your backend endpoint that validates the session or token
 const SESSION_VALIDATION_URL = `${BASE_API_URL}/check_token`;
 
 interface AuthProviderProps {
@@ -33,12 +31,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const response = await fetch(SESSION_VALIDATION_URL, {
         method: "GET",
-        credentials: "include", // Important for cookies to be sent and received
+        credentials: "include", // Required for cookies to be sent and received
         headers: {
           "Content-Type": "application/json",
         },
       });
-      // Update state based on the response
       setIsAuthenticated(response.ok && (await response.json()));
     } catch (error) {
       console.error("Error checking authentication status:", error);
@@ -47,7 +44,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    // Perform an immediate check
+    // Perform an immediate check on mount
     checkAuthenticationStatus();
 
     // Set up a timer for periodic rechecks
