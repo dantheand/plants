@@ -25,14 +25,26 @@ const AlertContext: React.Context<AlertContextType> = createContext({
   showAlert: (message: string, variant: string) => {},
 });
 
+const getTimeOutLength = (variant: string) => {
+  if (variant === "danger") {
+    return 10000;
+  } else if (variant === "success") {
+    return 3000;
+  } else {
+    return 5000;
+  }
+};
+
 export const useAlert = () => useContext(AlertContext);
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alert, setAlert] = useState<AlertProps>(defaultAlert);
   const showAlert = (message: string, variant: string) => {
     setAlert({ show: true, message, variant });
-    /* TODO: extend error alert time */
-    setTimeout(() => setAlert({ ...alert, show: false }), 10000); // auto-hide after 10 seconds
+    setTimeout(
+      () => setAlert({ ...alert, show: false }),
+      getTimeOutLength(variant),
+    ); // auto-hide
   };
   return (
     <AlertContext.Provider value={{ alert, showAlert }}>

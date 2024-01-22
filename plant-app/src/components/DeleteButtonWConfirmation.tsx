@@ -23,12 +23,12 @@ export const DeleteButtonWConfirmation = ({
     setConfirmationInput(e.target.value);
 
   const handleDelete = () => {
-    if (confirmationInput === confirmationText) {
+    if (confirmationInput.toLowerCase() === confirmationText) {
       closeModal();
       // API call to delete plant and redirect to plants list
       deleteFunction();
     } else {
-      alert("incorrect confirmation");
+      alert("Incorrect confirmation text");
     }
   };
 

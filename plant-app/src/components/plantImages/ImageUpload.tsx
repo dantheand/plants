@@ -76,10 +76,7 @@ const ImageUpload = ({
         const result = await response.json();
         closeModal();
         onUploadSuccess();
-        showAlert(
-          `Image uploaded successfully. Image ID: ${result.image_id}`,
-          "success",
-        );
+        showAlert(`Image uploaded successfully!`, "success");
         // TODO: figure out why this error handling isn't working (can upload a .png and get a 500 error)
       } else {
         console.error(`Upload failed with status: ${response.status}`);

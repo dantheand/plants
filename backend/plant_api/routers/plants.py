@@ -64,7 +64,7 @@ async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(ge
         FilterExpression=Attr("human_id").eq(plant_data.human_id),
     )
     if response["Items"]:
-        raise HTTPException(status_code=400, detail="Duplicate human IDs for the same user not allowed")
+        raise HTTPException(status_code=400, detail="Duplicate Unique Plant IDs for the same user not allowed")
 
     # Create a new plant item
     plant_id = str(uuid.uuid4())
