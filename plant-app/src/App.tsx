@@ -7,12 +7,8 @@ import {
   Route,
   Navigate,
   Outlet,
-  useLocation,
 } from "react-router-dom";
-import {
-  AuthFromFrontEnd,
-  Logout,
-} from "./components/authentication/Authenticator";
+import { AuthFromFrontEnd } from "./components/authentication/Authenticator";
 import { PlantList } from "./views/PlantList";
 import { PlantCreate } from "./views/PlantCreate";
 import { GlobalLayout } from "./components/Layouts";
@@ -33,7 +29,6 @@ function App() {
           <Routes>
             <Route path="/" element={<AuthFromFrontEnd />} />
             <Route path="/login" element={<AuthFromFrontEnd />} />
-            <Route path="/logout" element={<Logout />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/plants/user/:userId" element={<PlantList />} />
               <Route path="/plants/:plantId" element={<PlantDetails />} />

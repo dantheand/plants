@@ -1,5 +1,5 @@
 import "@aws-amplify/ui-react/styles.css";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import {
   APP_BRAND_NAME,
   BASE_API_URL,
@@ -105,24 +105,5 @@ export function AuthFromFrontEnd() {
         </GoogleOAuthProvider>
       </Card>
     </>
-  );
-}
-
-// TODO: remove this since it's in the navbar now
-export function Logout() {
-  const handleLogout = () => {
-    localStorage.removeItem(JWT_TOKEN_STORAGE);
-    console.log("Logged out successfully.");
-  };
-  return (
-    <Card style={{ width: "18rem", padding: "20px", margin: "20px auto" }}>
-      <Button
-        onClick={() => handleLogout()}
-        variant="secondary"
-        style={{ marginTop: "10px" }}
-      >
-        Logout
-      </Button>
-    </Card>
   );
 }
