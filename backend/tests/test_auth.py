@@ -82,10 +82,14 @@ class TestTokenFlow:
         assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
         assert session_token_item.user_id == DEFAULT_TEST_USER.google_id
 
+    # TODO: probably move all the get_current_user_session tests here and run them through check_token
     def test_check_token_w_valid_token(self):
         pass
 
-    def test_logout_invalidates_all_users_session_tokens(self):
+    def test_check_token_w_expired_token(self):
+        pass
+
+    def test_logout_revokes_session_token(self, client, mock_db):
         pass
 
 

@@ -25,6 +25,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // TODO: figure out how to store google IDs as a global variable (or in the local storage)
 
   // Function to check authentication status
   const checkAuthenticationStatus = async () => {
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         },
       });
       setIsAuthenticated(response.ok && (await response.json()));
+      // TODO: probably change check_token to return user ID so we can store it in the global context
     } catch (error) {
       console.error("Error checking authentication status:", error);
       setIsAuthenticated(false);

@@ -39,7 +39,10 @@ async function responseGoogle(
     });
 
     const data = await res.json();
+    // TODO: figure out if we should set google ID here or somewhere else;
+    //   Probably want to remove JWT token entirely since it expires and session state is stored in the backend instead
     localStorage.setItem(JWT_TOKEN_STORAGE, data);
+
     setIsLoggedIn(true);
   } catch (error) {
     console.error("Error authenticating with backend:", error);
@@ -50,8 +53,11 @@ async function responseGoogle(
 export function AuthFromFrontEnd() {
   const nonce = generateNonce();
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
+  // TODO: switch this to the isAuthenticated global context variable
+  // const { setIsAuthenticated } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
+  // TODO: set the isAuthenticated global context variable instead of isLoggedIn
   const handleGoogleSuccess = (response: CredentialResponse) => {
     responseGoogle(response, nonce, setIsLoggedIn, setIsAuthenticating);
   };
@@ -100,6 +106,7 @@ export function AuthFromFrontEnd() {
   );
 }
 
+// TODO: remove this since it's in the navbar now
 export function Logout() {
   const handleLogout = () => {
     localStorage.removeItem(JWT_TOKEN_STORAGE);

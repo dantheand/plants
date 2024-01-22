@@ -17,6 +17,7 @@ export const AppNavbar = () => {
   };
 
   const handleLogout = () => {
+    // TODO: hit the logout API endpoint to invalidate the user's session token
     localStorage.removeItem(JWT_TOKEN_STORAGE);
     console.log("Logged out successfully.");
     showAlert("Logged out successfully", "success");
