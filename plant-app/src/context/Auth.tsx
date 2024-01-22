@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { BASE_API_URL } from "../constants";
+import { LoadingOverlay } from "../components/authentication/LoadingOverlay";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -25,6 +26,8 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
+
   // TODO: figure out how to store google IDs as a global variable (or in the local storage)
 
   // Function to check authentication status
@@ -42,6 +45,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error("Error checking authentication status:", error);
       setIsAuthenticated(false);
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
@@ -60,6 +65,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
+
+  // TODO: probably combine the login page isauthentcating and this isauthenticating
+  if (isAuthenticating) {
+    return <LoadingOverlay loadingText={"Checking..."} />;
+  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>

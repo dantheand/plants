@@ -54,7 +54,9 @@ export function AuthFromFrontEnd() {
   const nonce = generateNonce();
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
   // TODO: switch this to the isAuthenticated global context variable
+  // And redirect to plants if user is already logged in
   // const { setIsAuthenticated } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
+  // const { setIsAuthenticating } = useAuth(); // Use the useAuth hook to get setIsAuthenticating
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   // TODO: set the isAuthenticated global context variable instead of isLoggedIn
@@ -72,7 +74,7 @@ export function AuthFromFrontEnd() {
   }, [isLoggedIn, navigate]);
   return (
     <>
-      {isAuthenticating && <LoadingOverlay />}{" "}
+      {isAuthenticating && <LoadingOverlay loadingText={"Authenticating..."} />}{" "}
       {/* Show overlay when logging in */}
       <Card style={{ width: "20rem", padding: "10px", margin: "10px auto" }}>
         <div style={{ textAlign: "center" }}>
