@@ -164,3 +164,32 @@ html {
     width: auto; /* Maintain the aspect ratio */
     object-fit: contain; /* Ensure the image is fully visible */
 }
+
+/* Login Page */
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh; /* Full viewport height */
+}
+
+.auth-card {
+  width: 20rem;
+  padding: 10px;
+  margin: 10px auto;
+  border-radius: 8px;
+  background-color: #f8f5f0 !important;
+}
+
+.auth-logo {
+  width: 80%;
+  margin: 10px auto;
+}
+
+.auth-form-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+
+}

@@ -67,36 +67,30 @@ export function AuthFromFrontEnd() {
   }, [isLoggedIn, navigate]);
   return (
     <>
-      {isAuthenticating && <LoadingOverlay />}{" "}
-      {/* Show overlay when logging in */}
-      <Card style={{ width: "20rem", padding: "10px", margin: "10px auto" }}>
-        <div style={{ textAlign: "center" }}>
-          <img
-            src={logo}
-            alt={`${APP_BRAND_NAME} Logo`}
-            style={{ width: "80%", margin: "10px auto" }}
-          />
-          <h2>{APP_BRAND_NAME}</h2>
-        </div>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "10px",
-              marginTop: "10px",
-            }}
-          >
-            <GoogleLogin
-              nonce={nonce}
-              onSuccess={handleGoogleSuccess}
-              onError={() => {
-                console.log("Login Failed");
-              }}
+      {isAuthenticating && <LoadingOverlay />}
+      <div className="centered-container">
+        <Card className="auth-card">
+          <div style={{ textAlign: "center" }}>
+            <img
+              src={logo}
+              alt={`${APP_BRAND_NAME} Logo`}
+              className="auth-logo"
             />
+            <h2>{APP_BRAND_NAME}</h2>
           </div>
-        </GoogleOAuthProvider>
-      </Card>
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
+            <div className="auth-form-group">
+              <GoogleLogin
+                nonce={nonce}
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  console.log("Login Failed");
+                }}
+              />
+            </div>
+          </GoogleOAuthProvider>
+        </Card>
+      </div>
     </>
   );
 }
