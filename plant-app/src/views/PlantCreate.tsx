@@ -1,6 +1,11 @@
 import { BaseLayout } from "../components/Layouts";
 import { useState } from "react";
-import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
+import {
+  ApiResponse,
+  NewPlant,
+  NewPlantStrForNulls,
+  Plant,
+} from "../types/interfaces";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
@@ -40,7 +45,9 @@ export function PlantCreate() {
   if (nextId) {
     newPlant = { ...newPlant, human_id: parseInt(nextId) };
   }
-  const [plantInForm, setPlantInForm] = useState<NewPlant>(newPlant);
+  const [plantInForm, setPlantInForm] = useState<NewPlant>(
+    NewPlantStrForNulls(newPlant),
+  );
   const navigate = useNavigate();
   const { showAlert } = useAlert();
 

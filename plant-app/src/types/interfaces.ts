@@ -24,6 +24,19 @@ export interface Plant {
 
 export type NewPlant = Partial<Plant>;
 
+export const NewPlantStrForNulls = (plant: NewPlant) => {
+  // Needed to make sure that plant form resets properly when editing a plant
+  return {
+    ...plant,
+    species: plant.species || "",
+    location: plant.location || "",
+    parent_id: plant.parent_id || [],
+    sink: plant.sink || "",
+    sink_date: plant.sink_date || "",
+    notes: plant.notes || "",
+  };
+};
+
 export interface User {
   email: string;
   google_id: string;

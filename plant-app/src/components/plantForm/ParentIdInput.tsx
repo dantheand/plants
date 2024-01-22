@@ -49,6 +49,7 @@ export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
         {label}
       </Form.Label>
       <Col md={9} className="plant-form-item">
+        {/*TODO: make this handle cases with empty strings  or empty arrays (this is what it defaults to now)*/}
         {value ? (
           value.map((parent_id, idx) => (
             <ParentIdButton

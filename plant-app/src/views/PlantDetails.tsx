@@ -5,7 +5,12 @@ import "../styles/plantImagesTimeline.scss";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
+import {
+  ApiResponse,
+  NewPlant,
+  NewPlantStrForNulls,
+  Plant,
+} from "../types/interfaces";
 import { BaseLayout } from "../components/Layouts";
 import { useAlert } from "../context/Alerts";
 import "../styles/styles.scss";
@@ -137,7 +142,7 @@ export function PlantDetails() {
       navigate("/plants/user/me");
     }
     if (plant) {
-      setPlantInForm(plant);
+      setPlantInForm(NewPlantStrForNulls(plant));
     }
   }, [plant, error]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
