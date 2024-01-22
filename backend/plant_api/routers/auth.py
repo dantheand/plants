@@ -25,7 +25,7 @@ from plant_api.constants import (
 )
 from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
-from plant_api.schema import EntityType, ItemKeys, SessionTokenItem, TokenItem, UserItem
+from plant_api.schema import EntityType, ItemKeys, SessionTokenItem, UserItem
 from plant_api.utils.deployment import get_deployment_env
 from plant_api.utils.db import get_db_table, get_user_by_google_id
 from plant_api.schema import User
@@ -111,68 +111,7 @@ async def auth(request: Request, response: Response):
         raise CREDENTIALS_EXCEPTION
 
 
-# TODO: remove this endpoint
-@router.post("/refresh_token")
-async def refresh_token(request: Request, response: Response):
-    """Refreshes the access token for the user and returns a new refresh token cookie
-
-    If the refresh token supplied has been used before, we're likely seeing a replay attack,
-    so we revoke all refresh tokens for a user.
-
-    See https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation
-    """
-
-    old_refresh_token = request.cookies.get(SESSION_TOKEN_KEY)
-    if not old_refresh_token:
-        raise CREDENTIALS_EXCEPTION
-
-    # Validate the old refresh token and then revoke it
-    old_token_item = validate_refresh_token(old_refresh_token)
-    revoke_refresh_token(old_token_item)
-    # Create a new refresh token and access token for user
-    user = get_user_by_google_id(old_token_item.user_id)
-    if not user:
-        raise CREDENTIALS_EXCEPTION
-
-    new_access_token, _ = create_access_token_for_user(GoogleOauthPayload(email=user.email, sub=user.google_id))
-    new_refresh_token, refresh_exp = create_refresh_token_for_user(
-        GoogleOauthPayload(email=user.email, sub=user.google_id)
-    )
-
-    # Store the new refresh token in the DB
-    token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{new_refresh_token}",
-        SK=f"{ItemKeys.USER}#{user.google_id}",
-        entity_type=EntityType.REFRESH_TOKEN,
-        issued_at=datetime.utcnow(),
-        expires_at=refresh_exp,
-    )
-    add_session_token_to_db(token_item)
-    set_session_token_cookie(response, new_refresh_token)
-    return new_access_token
-
-
-def get_token_item_by_token(token: str) -> Optional[TokenItem]:
-    """Returns the token item for the given token"""
-    response = get_db_table().query(KeyConditionExpression=Key("PK").eq(f"{ItemKeys.REFRESH_TOKEN}#{token}"))
-    if not response["Items"]:
-        return None
-    return TokenItem(**response["Items"][0])
-
-
-def validate_refresh_token(token: str) -> TokenItem:
-    """Validates the refresh token and returns True if it is valid"""
-    token_in_db = get_token_item_by_token(token)
-    if not token_in_db:
-        raise CREDENTIALS_EXCEPTION
-
-    # TODO cleanup getting datetime from token (use model dumps so we dont have to do this)
-    if not token_in_db.revoked and token_in_db.expires_at > datetime.utcnow():
-        return token_in_db
-    raise CREDENTIALS_EXCEPTION
-
-
-def revoke_refresh_token(token: TokenItem):
+def revoke_sesison_token(token: SessionTokenItem):
     """Invalidates the refresh token"""
     _ = get_db_table().update_item(
         Key={"PK": token.PK, "SK": token.SK},

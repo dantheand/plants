@@ -191,30 +191,6 @@ class SessionTokenItem(DynamoDBMixin):
         return values
 
 
-# TODO: remove this and probably all functions that reference it. Also delete old tokens from the DB
-class TokenItem(DynamoDBMixin):
-    """Refresh token schema"""
-
-    PK: str = Field(..., pattern=REFRESH_TOKEN_KEY_PATTERN)
-    SK: str = Field(..., pattern=USER_KEY_PATTERN)
-    entity_type: str = Field(EntityType.REFRESH_TOKEN)
-    issued_at: datetime
-    expires_at: datetime
-    revoked: bool = False
-    token_str: Optional[str] = None
-    user_id: Optional[str] = None
-
-    @model_validator(mode="before")
-    def extract_token_str(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        values["token_str"] = values["PK"].split("#")[1]
-        return values
-
-    @model_validator(mode="before")
-    def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        values["user_id"] = values["SK"].split("#")[1]
-        return values
-
-
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem
 class PlantSourceItem(DynamoDBMixin):
     PK: str = Field(
@@ -228,4 +204,4 @@ class PlantSourceItem(DynamoDBMixin):
     source_date: date
 
 
-DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, TokenItem]
+DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, SessionTokenItem]
