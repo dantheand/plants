@@ -1,5 +1,5 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
-import React, { JSX, useContext, useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Card } from "react-bootstrap";
 
@@ -34,9 +34,9 @@ export function PlantList(): JSX.Element {
   const pathSpecifiedId = params.userId;
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
   const { showAlert } = useAlert();
-  const [isGridView, setIsGridView] = useState<boolean>(false);
-  const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
-    useState<boolean>(true);
+  // const [isGridView, setIsGridView] = useState<boolean>(false);
+  // const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
+  useState<boolean>(true);
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -60,7 +60,7 @@ export function PlantList(): JSX.Element {
     } else {
       setIsYourPlants(false);
     }
-  }, [userIdToQuery]);
+  }, [userIdToQuery, currentUserId]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -91,7 +91,7 @@ export function PlantList(): JSX.Element {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [pathSpecifiedId, showAlert]);
+  }, [userIdToQuery, pathSpecifiedId, showAlert]);
 
   return (
     <BaseLayout>
