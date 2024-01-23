@@ -48,8 +48,8 @@ def plant_record_factory(
         sink=sink if sink is not UNSPECIFIED else fake.word(),
         sink_date=sink_date if sink_date is not UNSPECIFIED else fake.date(),
         notes=notes if notes is not UNSPECIFIED else fake.text(),
-        PK=f"{ItemKeys.USER}#{user_id if user_id is not UNSPECIFIED else DEFAULT_TEST_USER.google_id}",
-        SK=f"{ItemKeys.PLANT}#{plant_id if plant_id is not UNSPECIFIED else fake.uuid4()}",
+        PK=f"{ItemKeys.USER.value}#{user_id if user_id is not UNSPECIFIED else DEFAULT_TEST_USER.google_id}",
+        SK=f"{ItemKeys.PLANT.value}#{plant_id if plant_id is not UNSPECIFIED else fake.uuid4()}",
         entity_type=EntityType.PLANT,
     )
 
@@ -66,8 +66,8 @@ def image_record_factory(
     if image_id is None:
         image_id = fake.uuid4()
     return ImageItem(
-        PK=f"{ItemKeys.PLANT}#{plant_id}",
-        SK=f"{ItemKeys.IMAGE}#{image_id}",
+        PK=f"{ItemKeys.PLANT.value}#{plant_id}",
+        SK=f"{ItemKeys.IMAGE.value}#{image_id}",
         entity_type=EntityType.IMAGE,
         full_photo_s3_url=full_photo_s3_url or make_s3_path_for_image(image_id, plant_id, ImageSuffixes.ORIGINAL),
         thumbnail_photo_s3_url=(

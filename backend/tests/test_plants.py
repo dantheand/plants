@@ -1,5 +1,6 @@
 import uuid
 
+import pytest
 from pydantic import TypeAdapter
 from fastapi import status
 
@@ -72,7 +73,7 @@ class TestPlantCreate:
         db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
         assert len(db_items) == 1
         assert db_items[0]["human_name"] == "New Plant"
-        assert db_items[0]["PK"] == f"{ItemKeys.USER}#{DEFAULT_TEST_USER.google_id}"
+        assert db_items[0]["PK"] == f"{ItemKeys.USER.value}#{DEFAULT_TEST_USER.google_id}"
 
     def test_create_with_duplicate_human_id_fails(self, client_mock_session, mock_db):
         test_client = client_mock_session(DEFAULT_TEST_USER)
@@ -246,3 +247,43 @@ class TestParsing:
         )
         assert plant.species is None
         assert plant.parent_id is None
+
+    def test_must_specify_both_sink_and_sink_date(self):
+        plant_only_sink = {
+            "human_name": "Mid-right kitchen spider plant",
+            "species": "",
+            "location": "kitchen",
+            "parent_id": "",
+            "source": "plant",
+            "source_date": "2023-11-25",
+            "sink": "sink",
+            "sink_date": None,
+            "notes": None,
+            "human_id": 9,
+            "PK": "USER#106821357176702886816",
+            "SK": "PLANT#0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+            "entity_type": "Plant",
+            "plant_id": "0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+        }
+        plant_sink_and_date = {
+            "human_name": "Mid-right kitchen spider plant",
+            "species": "",
+            "location": "kitchen",
+            "parent_id": "",
+            "source": "plant",
+            "source_date": "2023-11-25",
+            "sink": "sink",
+            "sink_date": "2023-11-26",
+            "notes": None,
+            "human_id": 9,
+            "PK": "USER#106821357176702886816",
+            "SK": "PLANT#0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+            "entity_type": "Plant",
+            "plant_id": "0cdbdb8a-4cfb-471c-a32a-c31ef98617b2",
+        }
+
+        with pytest.raises(ValueError):
+            PlantItem.model_validate(plant_only_sink)
+
+        ok_plant = PlantItem.model_validate(plant_sink_and_date)
+        assert ok_plant.sink == "sink"

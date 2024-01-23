@@ -57,8 +57,8 @@ def set_session_token_cookie(response: Response, token_id: str):
 def generate_and_save_session_token(user: UserItem) -> str:
     """Generates a session token for the user and saves it to the DB"""
     token_item = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER}#{user.google_id}",
+        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
+        SK=f"{ItemKeys.USER.value}#{user.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=datetime.utcnow() + timedelta(minutes=SESSION_TOKEN_EXPIRE_MINUTES),
@@ -135,8 +135,8 @@ def add_session_token_to_db(token: SessionTokenItem):
 def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
     """Adds a new user to the DB"""
     user_item = UserItem(
-        PK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
-        SK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
+        PK=f"{ItemKeys.USER.value}#{google_oauth_payload.sub}",
+        SK=f"{ItemKeys.USER.value}#{google_oauth_payload.sub}",
         email=google_oauth_payload.email,
         google_id=google_oauth_payload.sub,
         entity_type=EntityType.USER,

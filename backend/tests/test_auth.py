@@ -27,8 +27,8 @@ def create_current_access_token() -> str:
 
 def create_current_session_token(mock_db, user_id: str) -> SessionTokenItem:
     session_token = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER}#{user_id}",
+        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
+        SK=f"{ItemKeys.USER.value}#{user_id}",
         entity_type=EntityType.SESSION_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=datetime.utcnow() + timedelta(days=1),
@@ -40,8 +40,8 @@ def create_current_session_token(mock_db, user_id: str) -> SessionTokenItem:
 
 def create_revoked_session_token(mock_db, user_id: str) -> SessionTokenItem:
     session_token = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER}#{user_id}",
+        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
+        SK=f"{ItemKeys.USER.value}#{user_id}",
         entity_type=EntityType.SESSION_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=datetime.utcnow() + timedelta(days=1),
@@ -53,8 +53,8 @@ def create_revoked_session_token(mock_db, user_id: str) -> SessionTokenItem:
 
 def create_expired_session_token(mock_db, user_id: str) -> SessionTokenItem:
     session_token = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER}#{user_id}",
+        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
+        SK=f"{ItemKeys.USER.value}#{user_id}",
         entity_type=EntityType.SESSION_TOKEN,
         issued_at=datetime.utcnow() - timedelta(days=2),
         expires_at=datetime.utcnow() - timedelta(days=1),

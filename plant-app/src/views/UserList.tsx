@@ -78,7 +78,7 @@ export function UserList(): JSX.Element {
         showAlert(`Error fetching users: ${error}`, "danger");
         setIsLoading(false);
       });
-  }, []);
+  }, [showAlert]);
 
   return (
     <BaseLayout>

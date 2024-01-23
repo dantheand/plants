@@ -1,5 +1,5 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
-import React, { JSX, useContext, useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Card } from "react-bootstrap";
 
@@ -15,15 +15,14 @@ import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 
 function incrementLargestId(plants: Plant[]): number {
   if (plants.length === 0) {
-    return 0;
+    return 1; // Return 1 if there are no plants, assuming IDs start from 1
   }
 
-  return plants.reduce((maxHumanId, plant) => {
-    if (plant.human_id > maxHumanId) {
-      return plant.human_id;
-    }
-    return maxHumanId + 1;
-  }, plants[0].human_id); // Initialize with the human_id of the first plant
+  const maxHumanId = plants.reduce((maxId, plant) => {
+    return plant.human_id > maxId ? plant.human_id : maxId;
+  }, plants[0].human_id);
+
+  return maxHumanId + 1; // Increment after finding the max
 }
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
@@ -35,9 +34,9 @@ export function PlantList(): JSX.Element {
   const pathSpecifiedId = params.userId;
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
   const { showAlert } = useAlert();
-  const [isGridView, setIsGridView] = useState<boolean>(false);
-  const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
-    useState<boolean>(true);
+  // const [isGridView, setIsGridView] = useState<boolean>(false);
+  // const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
+  useState<boolean>(true);
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -61,7 +60,7 @@ export function PlantList(): JSX.Element {
     } else {
       setIsYourPlants(false);
     }
-  }, [userIdToQuery]);
+  }, [userIdToQuery, currentUserId]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -90,7 +89,7 @@ export function PlantList(): JSX.Element {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [pathSpecifiedId, showAlert]);
+  }, [userIdToQuery, pathSpecifiedId, showAlert]);
 
   return (
     <BaseLayout>

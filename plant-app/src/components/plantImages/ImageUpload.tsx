@@ -71,7 +71,6 @@ const ImageUpload = ({
       );
 
       if (response.ok) {
-        const result = await response.json();
         closeModal();
         onUploadSuccess();
         showAlert(`Image uploaded successfully!`, "success");

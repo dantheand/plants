@@ -105,6 +105,14 @@ class PlantBase(DynamoDBMixin):
             return [int(x) for x in v.split(",")]
         return v
 
+    @model_validator(mode="after")
+    def validate_sink_and_sink_date(self) -> "PlantBase":
+        if self.sink is None and self.sink_date is not None:
+            raise ValueError("If sink_date is provided, sink must also be provided")
+        if self.sink is not None and self.sink_date is None:
+            raise ValueError("If sink is provided, sink_date must also be provided")
+        return self
+
 
 class PlantCreate(PlantBase):
     human_id: int  # Must be unique for a given user; cannot be changed
