@@ -5,6 +5,14 @@ curl https://2jbzjl9rj2.execute-api.us-west-2.amazonaws.com/test/plants
 ############# CI/Tests ################
 ######################################
 
+# Trying different python versions
+cd ~/projects/plants/backend
+pyenv versions
+pyenv local 3.12.1
+poetry env use $(pyenv which python)
+poetry install
+poetry run pytest
+
 
 ## With poetry
 cd ~/projects/plants/backend/
