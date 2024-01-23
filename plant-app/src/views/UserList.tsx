@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL } from "../constants";
 import { Button, Card, ListGroup, Placeholder } from "react-bootstrap";
 
 import "../styles/styles.scss";

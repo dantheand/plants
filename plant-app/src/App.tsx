@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { PlantDetails } from "./views/PlantDetails";
 import { UserList } from "./views/UserList";
 import {
