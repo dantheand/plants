@@ -1,4 +1,4 @@
-name: Build/Test Backend Multiple Python Versions
+name: Backend Python Build/Test
 
 defaults:
   run:

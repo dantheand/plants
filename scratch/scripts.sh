@@ -44,14 +44,14 @@ aws lambda create-function \
 # Install AWS compatible dependencies into a local directory to be packaged with the FastAPI backend
 # Using poetry requirements (note: doesn't export dev requirements by default) ######
 poetry shell
-poetry use 3.9
+poetry env use 3.12.1
 poetry export -f requirements.txt --output requirements_from_poetry.txt --without-hashes
 rm -rf ../backend_deps
 pip install \
 --platform manylinux2014_x86_64 \
 --target=../backend_deps \
 --implementation cp \
---python-version 3.9 \
+--python-version 3.12 \
 --only-binary=:all: --upgrade \
 --index https://pypi.org/simple/ \
 -r requirements_from_poetry.txt
