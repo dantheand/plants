@@ -33,12 +33,12 @@ class SinkType(str, Enum):
     OTHER = "Other"
 
 
-USER_KEY_PATTERN = f"^{ItemKeys.USER}#"
-PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT}#"
-IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE}#"
-SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE}#"
-SESSION_TOKEN_KEY_PATTERN = f"^{ItemKeys.SESSION_TOKEN}#"
-REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN}#"
+USER_KEY_PATTERN = f"^{ItemKeys.USER.value}#"
+PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT.value}#"
+IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE.value}#"
+SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE.value}#"
+SESSION_TOKEN_KEY_PATTERN = f"^{ItemKeys.SESSION_TOKEN.value}#"
+REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN.value}#"
 
 
 class DynamoDBMixin(BaseModel):
