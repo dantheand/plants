@@ -139,7 +139,7 @@ export function PlantDetails() {
     if (plant) {
       setPlantInForm(plant);
     }
-  }, [plant, error]);
+  }, [plant, error, navigate, showAlert]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!plantInForm) {

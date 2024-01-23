@@ -21,7 +21,7 @@ def create_current_refresh_token(mock_db) -> TokenItem:
     current_refresh_token, exp = create_refresh_token_for_user(payload)
 
     current_refresh_token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{current_refresh_token}",
+        PK=f"{ItemKeys.REFRESH_TOKEN.value}#{current_refresh_token}",
         SK=f"USER#{DEFAULT_TEST_USER.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
@@ -36,7 +36,7 @@ def create_expired_refresh_token(mock_db) -> TokenItem:
     current_refresh_token, exp = create_token_for_user(payload, expires_delta=timedelta(days=-1))
 
     current_refresh_token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{current_refresh_token}",
+        PK=f"{ItemKeys.REFRESH_TOKEN.value}#{current_refresh_token}",
         SK=f"USER#{DEFAULT_TEST_USER.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),

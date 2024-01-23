@@ -21,7 +21,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.12'
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -36,7 +36,7 @@ jobs:
           --platform manylinux2014_x86_64 \
           --target=../backend_deps \
           --implementation cp \
-          --python-version 3.9 \
+          --python-version 3.12 \
           --only-binary=:all: --upgrade \
           --index https://pypi.org/simple/ \
           -r requirements_from_poetry.txt
