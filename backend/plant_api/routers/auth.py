@@ -61,8 +61,8 @@ def generate_and_save_refresh_token(user: UserItem) -> str:
     """Generates a refresh token for the user and saves it to the DB"""
     token, expiration = create_refresh_token_for_user(GoogleOauthPayload(email=user.email, sub=user.google_id))
     token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER}#{user.google_id}",
+        PK=f"{ItemKeys.REFRESH_TOKEN.value}#{uuid.uuid4()}",
+        SK=f"{ItemKeys.USER.value}#{user.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=expiration,
@@ -139,8 +139,8 @@ async def refresh_token(request: Request, response: Response):
 
     # Store the new refresh token in the DB
     token_item = TokenItem(
-        PK=f"{ItemKeys.REFRESH_TOKEN}#{new_refresh_token}",
-        SK=f"{ItemKeys.USER}#{user.google_id}",
+        PK=f"{ItemKeys.REFRESH_TOKEN.value}#{new_refresh_token}",
+        SK=f"{ItemKeys.USER.value}#{user.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=refresh_exp,
@@ -152,7 +152,7 @@ async def refresh_token(request: Request, response: Response):
 
 def get_token_item_by_token(token: str) -> Optional[TokenItem]:
     """Returns the token item for the given token"""
-    response = get_db_table().query(KeyConditionExpression=Key("PK").eq(f"{ItemKeys.REFRESH_TOKEN}#{token}"))
+    response = get_db_table().query(KeyConditionExpression=Key("PK").eq(f"{ItemKeys.REFRESH_TOKEN.value}#{token}"))
     if not response["Items"]:
         return None
     return TokenItem(**response["Items"][0])
@@ -189,8 +189,8 @@ def add_refresh_token_to_db(token: TokenItem):
 def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
     """Adds a new user to the DB"""
     user_item = UserItem(
-        PK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
-        SK=f"{ItemKeys.USER}#{google_oauth_payload.sub}",
+        PK=f"{ItemKeys.USER.value}#{google_oauth_payload.sub}",
+        SK=f"{ItemKeys.USER.value}#{google_oauth_payload.sub}",
         email=google_oauth_payload.email,
         google_id=google_oauth_payload.sub,
         entity_type=EntityType.USER,

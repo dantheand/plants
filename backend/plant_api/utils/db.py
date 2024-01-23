@@ -77,7 +77,7 @@ def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
     """Returns the user with the given google_id"""
     if not google_id:
         return None
-    pk_sk_val = f"{ItemKeys.USER}#{google_id}"
+    pk_sk_val = f"{ItemKeys.USER.value}#{google_id}"
     response = get_db_table().query(KeyConditionExpression=Key("PK").eq(pk_sk_val) & Key("SK").eq(pk_sk_val))
     if not response["Items"]:
         return None
@@ -89,7 +89,7 @@ def get_user_by_google_id(google_id: Optional[str]) -> Optional[UserItem]:
 
 def get_n_plants_for_user(user: User) -> Tuple[int, int]:
     """Returns the number of plants for the given user"""
-    pk_sk_val = f"{ItemKeys.USER}#{user.google_id}"
+    pk_sk_val = f"{ItemKeys.USER.value}#{user.google_id}"
     response = get_db_table().query(
         KeyConditionExpression=Key("PK").eq(pk_sk_val) & Key("SK").begins_with(ItemKeys.PLANT)
     )

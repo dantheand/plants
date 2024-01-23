@@ -73,7 +73,7 @@ class TestPlantCreate:
         db_items = mock_db.dynamodb.Table(mock_db.table_name).scan()["Items"]
         assert len(db_items) == 1
         assert db_items[0]["human_name"] == "New Plant"
-        assert db_items[0]["PK"] == f"{ItemKeys.USER}#{DEFAULT_TEST_USER.google_id}"
+        assert db_items[0]["PK"] == f"{ItemKeys.USER.value}#{DEFAULT_TEST_USER.google_id}"
 
     def test_create_with_duplicate_human_id_fails(self, client_logged_in, mock_db):
         test_client = client_logged_in(DEFAULT_TEST_USER)
