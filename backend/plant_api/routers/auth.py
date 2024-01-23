@@ -56,15 +56,16 @@ def set_session_token_cookie(response: Response, token_id: str):
 
 def generate_and_save_session_token(user: UserItem) -> str:
     """Generates a session token for the user and saves it to the DB"""
+    token_id = str(uuid.uuid4())
     token_item = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
+        PK=f"{ItemKeys.SESSION_TOKEN.value}#{token_id}",
         SK=f"{ItemKeys.USER.value}#{user.google_id}",
         entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
         expires_at=datetime.utcnow() + timedelta(minutes=SESSION_TOKEN_EXPIRE_MINUTES),
     )
     add_session_token_to_db(token_item)
-    return token_item.token_id
+    return token_id
 
 
 @router.post(f"/{TOKEN_URL}")

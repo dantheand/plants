@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Union
+from typing import Optional, Union
 
 from boto3.dynamodb.conditions import Key
 
@@ -16,7 +16,9 @@ from plant_api.constants import SESSION_TOKEN_KEY
 LOGGER = logging.getLogger(__name__)
 
 
-def get_session_token(token_id: str) -> SessionTokenItem:
+def get_session_token(token_id: Optional[str]) -> SessionTokenItem:
+    if not token_id:
+        raise CREDENTIALS_EXCEPTION
     table = get_db_table()
     response = table.query(
         KeyConditionExpression=Key("PK").eq(f"SESSION_TOKEN#{token_id}"),
