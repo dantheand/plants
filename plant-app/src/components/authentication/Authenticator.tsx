@@ -1,4 +1,3 @@
-import "@aws-amplify/ui-react/styles.css";
 import { Button, Card } from "react-bootstrap";
 import {
   APP_BRAND_NAME,
