@@ -5,37 +5,41 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { BASE_API_URL } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { LoadingOverlay } from "../components/authentication/LoadingOverlay";
 import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
+import { useNavigate } from "react-router-dom";
+import { CredentialResponse } from "@react-oauth/google";
+import { useAlert } from "./Alerts";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  userId: string;
+  login: (googleOauthResponse: CredentialResponse, nonce: string) => void; // Define how login is handled
+  logout: () => void; // Define how logout is handled
+  userId: string | null;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  setIsAuthenticated: () => {}, // No-op function as a placeholder
-  userId: "",
-});
-
-const SESSION_VALIDATION_URL = `${BASE_API_URL}/check_token`;
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const { showAlert } = useAlert();
+
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(true);
-  const [userId, setUserId] = useState<string>("");
+  const [userId, setUserId] = useState<string | null>(
+    localStorage.getItem("userId"),
+  );
+  const navigate = useNavigate();
 
   // Check if there is a JWT token and set the user ID from it, otherwise set auth to false
   useEffect(() => {
     try {
       const extractedUserId = getGoogleIdFromToken();
+      console.log("Extracted user ID:", extractedUserId);
       if (extractedUserId) {
         setUserId(extractedUserId);
       } else {
@@ -49,21 +53,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Function to check authentication status
   const checkAuthenticationStatus = async () => {
+    // Implement call to /check_token endpoint
+    // This example assumes fetch is wrapped to handle HTTP-only cookie automatically
     try {
-      const response = await fetch(SESSION_VALIDATION_URL, {
-        method: "GET",
-        credentials: "include", // Required for cookies to be sent and received
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(`${BASE_API_URL}/check_token`, {
+        credentials: "include",
       });
-      setIsAuthenticated(response.ok && (await response.json()));
-      // TODO: probably change check_token to return user ID so we can store it in the global context
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+        localStorage.removeItem("userId");
+        setUserId(null);
+      }
     } catch (error) {
       console.error("Error checking authentication status:", error);
       setIsAuthenticated(false);
-    } finally {
-      setIsAuthenticating(false);
+      localStorage.removeItem("userId");
+      setUserId(null);
     }
   };
 
@@ -72,7 +79,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthenticationStatus();
 
     // Set up a timer for periodic rechecks
-    const intervalId = setInterval(
+    const interval = setInterval(
       () => {
         checkAuthenticationStatus();
       },
@@ -80,22 +87,78 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     ); // Recheck every 5 minutes,
 
     // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    return () => clearInterval(interval);
   }, []);
 
-  // TODO: probably combine the login page isauthentcating and this isauthenticating
-  if (isAuthenticating) {
-    return <LoadingOverlay loadingText={"Checking..."} />;
-  }
+  const login = async (
+    googleOauthResponse: CredentialResponse,
+    nonce: string,
+  ) => {
+    try {
+      setIsAuthenticating(true);
+      const tokenId = googleOauthResponse.credential;
+      const backendUrl = BASE_API_URL + "/token";
+      const res = await fetch(backendUrl, {
+        method: "POST",
+        credentials: "include", // This is important for cookies to be sent and received
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: tokenId, nonce: nonce }),
+      });
+
+      const data = await res.json();
+      // TODO: just store the userID in local storage rather than a token (change API return)
+      localStorage.setItem(JWT_TOKEN_STORAGE, data);
+      setUserId(getGoogleIdFromToken());
+      setIsAuthenticated(true);
+      showAlert("Successfully logged in!", "success");
+      navigate(`/plants/user/me`);
+    } catch (error) {
+      console.error("Error authenticating with backend:", error);
+      setIsAuthenticated(false);
+      showAlert("Error authenticating with backend", "danger");
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const response = await fetch(BASE_API_URL + "/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        localStorage.removeItem(JWT_TOKEN_STORAGE);
+        console.log("logged out");
+        setIsAuthenticated(false);
+        setUserId(null);
+        navigate("/login");
+      } else {
+        // Handle server-side errors (e.g., session not found)
+        const errorText = await response.text();
+        console.log(`Logout failed: ${errorText}`);
+      }
+    } catch (error) {
+      console.log(`Logout error: ${error}`);
+    }
+  };
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, userId }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, userId }}>
+      {isAuthenticating && <LoadingOverlay loadingText={"Authenticating..."} />}
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use the auth context
-export const useAuth = () => useContext(AuthContext);
+// Prevent unset context from being used downstream
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

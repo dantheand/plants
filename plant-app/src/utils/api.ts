@@ -1,3 +1,33 @@
 // TODO: standardize API calls into a function that takes in the endpoint, the method
 // and the body of the request, then catches different types of error (like API errors vs javascript errors) and
 // uses the setAlert() context to display it and log it; also maybe loading displays/hooks?
+
+import { useNavigate } from "react-router-dom";
+
+export const useApi = () => {
+  const navigate = useNavigate();
+
+  const callApi = async (endpoint: string, options: RequestInit = {}) => {
+    const defaultOptions: RequestInit = {
+      credentials: "include",
+    };
+    const fetchOptions: RequestInit = { ...defaultOptions, ...options };
+
+    try {
+      const response = await fetch(endpoint, fetchOptions);
+      if (response.status === 401) {
+        // Redirect to login page
+        navigate("/login");
+        return Promise.reject(new Error("Unauthorized: Redirecting to login"));
+      }
+      if (!response.ok) {
+        return Promise.reject(new Error("Error: " + response.status));
+      }
+      console.log(response);
+      return response;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+  return { callApi };
+};

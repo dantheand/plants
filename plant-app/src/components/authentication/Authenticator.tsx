@@ -1,65 +1,27 @@
 import { Card } from "react-bootstrap";
-import {
-  APP_BRAND_NAME,
-  BASE_API_URL,
-  GOOGLE_CLIENT_ID,
-  JWT_TOKEN_STORAGE,
-} from "../../constants";
+import { APP_BRAND_NAME, GOOGLE_CLIENT_ID } from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import React, { useEffect } from "react";
 import logo from "../../assets/plantopticon2_large_no_shadow.png";
 import cryptoRandomString from "crypto-random-string";
-import { LoadingOverlay } from "./LoadingOverlay";
 import { useAuth } from "../../context/Auth";
 
 function generateNonce(length = 32) {
   return cryptoRandomString({ length: length, type: "hex" });
 }
 
-async function responseGoogle(
-  response: CredentialResponse,
-  nonce: string,
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsAuthenticating: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-  try {
-    setIsAuthenticating(true);
-    const tokenId = response.credential;
-    const backendUrl = BASE_API_URL + "/token";
-    const res = await fetch(backendUrl, {
-      method: "POST",
-      credentials: "include", // This is important for cookies to be sent and received
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: tokenId, nonce: nonce }),
-    });
-
-    const data = await res.json();
-    // TODO: figure out if we should set google ID here or somewhere else;
-    //   Probably want to remove JWT token entirely since it expires and session state is stored in the backend instead
-    localStorage.setItem(JWT_TOKEN_STORAGE, data);
-
-    setIsAuthenticated(true);
-  } catch (error) {
-    console.error("Error authenticating with backend:", error);
-  } finally {
-    setIsAuthenticating(false);
-  }
-}
 export function AuthFromFrontEnd() {
   const nonce = generateNonce();
-  const [isAuthenticating, setIsAuthenticating] = React.useState(false);
   // TODO: switch this to the isAuthenticated global context variable
   // And redirect to plants if user is already logged in
-  const { setIsAuthenticated, isAuthenticated, userId } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
+  const { login, isAuthenticated, userId } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
 
-  // TODO: set the isAuthenticated global context variable instead of isLoggedIn
   const handleGoogleSuccess = (response: CredentialResponse) => {
-    responseGoogle(response, nonce, setIsAuthenticated, setIsAuthenticating);
+    login(response, nonce);
   };
+  console.log("userId:", userId);
 
   const navigate = useNavigate();
   // Redirect if logged in
@@ -70,7 +32,6 @@ export function AuthFromFrontEnd() {
   }, [isAuthenticated, navigate]);
   return (
     <>
-      {isAuthenticating && <LoadingOverlay loadingText={"Authenticating..."} />}{" "}
       <div className="centered-container">
         <Card className="auth-card">
           <div style={{ textAlign: "center" }}>

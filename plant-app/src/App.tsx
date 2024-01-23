@@ -15,6 +15,7 @@ import { GlobalLayout } from "./components/Layouts";
 
 import "./styles/styles.scss";
 import { AuthProvider, useAuth } from "./context/Auth";
+import { AlertProvider } from "./context/Alerts";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useAuth(); // Use the custom hook to access auth state
@@ -23,24 +24,29 @@ const ProtectedRoute = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router basename="/">
-        <GlobalLayout>
-          <Routes>
-            <Route path="/" element={<AuthFromFrontEnd />} />
-            <Route path="/login" element={<AuthFromFrontEnd />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/plants/user/:userId" element={<PlantList />} />
-              <Route path="/plants/:plantId" element={<PlantDetails />} />
-              <Route path="/plants/create/:nextId" element={<PlantCreate />} />
-              <Route path="/users" element={<UserList />} />
-            </Route>
-            {/* Redirect to login by default */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </GlobalLayout>
-      </Router>
-    </AuthProvider>
+    <Router basename="/">
+      <AlertProvider>
+        <AuthProvider>
+          <GlobalLayout>
+            <Routes>
+              <Route path="/" element={<AuthFromFrontEnd />} />
+              <Route path="/login" element={<AuthFromFrontEnd />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/plants/user/:userId" element={<PlantList />} />
+                <Route path="/plants/:plantId" element={<PlantDetails />} />
+                <Route
+                  path="/plants/create/:nextId"
+                  element={<PlantCreate />}
+                />
+                <Route path="/users" element={<UserList />} />
+              </Route>
+              {/* Redirect to login by default */}
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </GlobalLayout>
+        </AuthProvider>
+      </AlertProvider>
+    </Router>
   );
 }
 
