@@ -1,8 +1,16 @@
 name: Node.js CI
 
+defaults:
+  run:
+    shell: bash
+    working-directory: ./plant-app
+
 on:
   push:
     branches: [ "master", "dev" ]
+    paths:
+      - "plant-app/**"
+  workflow_dispatch:
 
 jobs:
   build:
