@@ -1,6 +1,6 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL } from "../constants";
 import { Card } from "react-bootstrap";
 
 import { Plant } from "../types/interfaces";
@@ -12,6 +12,7 @@ import { BaseLayout } from "../components/Layouts";
 import { FloatingActionButton } from "../components/FloatingActionButton";
 import { useAlert } from "../context/Alerts";
 import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
+import { useAuth } from "../context/Auth";
 
 function incrementLargestId(plants: Plant[]): number {
   if (plants.length === 0) {
@@ -42,25 +43,24 @@ export function PlantList(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [nextPlantId, setNextPlantId] = useState<number>(0);
   const navigate = useNavigate();
+  const { userId } = useAuth();
   let userIdToQuery: string | null = null;
 
   if (pathSpecifiedId === "me" || pathSpecifiedId === undefined) {
-    userIdToQuery = getGoogleIdFromToken();
+    userIdToQuery = userId;
   } else {
     userIdToQuery = pathSpecifiedId;
   }
 
-  const currentUserId = getGoogleIdFromToken();
-
   useEffect(() => {
     // This is to prevent the user from seeing the wrong list of plants
     setIsLoading(true);
-    if (userIdToQuery === currentUserId) {
+    if (userIdToQuery === userId) {
       setIsYourPlants(true);
     } else {
       setIsYourPlants(false);
     }
-  }, [userIdToQuery, currentUserId]);
+  }, [userIdToQuery, userId]);
 
   useEffect(() => {
     setIsLoading(true);

@@ -12,7 +12,7 @@ import React, { useEffect } from "react";
 import logo from "../../assets/plantopticon2_large_no_shadow.png";
 import cryptoRandomString from "crypto-random-string";
 import { LoadingOverlay } from "./LoadingOverlay";
-import { getGoogleIdFromToken } from "../../utils/GetGoogleIdFromToken";
+import { useAuth } from "../../context/Auth";
 
 function generateNonce(length = 32) {
   return cryptoRandomString({ length: length, type: "hex" });
@@ -21,7 +21,7 @@ function generateNonce(length = 32) {
 async function responseGoogle(
   response: CredentialResponse,
   nonce: string,
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>,
   setIsAuthenticating: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   try {
@@ -42,7 +42,7 @@ async function responseGoogle(
     //   Probably want to remove JWT token entirely since it expires and session state is stored in the backend instead
     localStorage.setItem(JWT_TOKEN_STORAGE, data);
 
-    setIsLoggedIn(true);
+    setIsAuthenticated(true);
   } catch (error) {
     console.error("Error authenticating with backend:", error);
   } finally {
@@ -54,23 +54,20 @@ export function AuthFromFrontEnd() {
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
   // TODO: switch this to the isAuthenticated global context variable
   // And redirect to plants if user is already logged in
-  // const { setIsAuthenticated } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
-  // const { setIsAuthenticating } = useAuth(); // Use the useAuth hook to get setIsAuthenticating
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const { setIsAuthenticated, isAuthenticated, userId } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
 
   // TODO: set the isAuthenticated global context variable instead of isLoggedIn
   const handleGoogleSuccess = (response: CredentialResponse) => {
-    responseGoogle(response, nonce, setIsLoggedIn, setIsAuthenticating);
+    responseGoogle(response, nonce, setIsAuthenticated, setIsAuthenticating);
   };
 
   const navigate = useNavigate();
   // Redirect if logged in
   useEffect(() => {
-    if (isLoggedIn) {
-      const currentUserId = getGoogleIdFromToken();
-      navigate(`/plants/user/${currentUserId}`);
+    if (isAuthenticated) {
+      navigate(`/plants/user/${userId}`);
     }
-  }, [isLoggedIn, navigate]);
+  }, [isAuthenticated, navigate]);
   return (
     <>
       {isAuthenticating && <LoadingOverlay loadingText={"Authenticating..."} />}{" "}

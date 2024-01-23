@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
+import { BASE_API_URL } from "../../constants";
 import { Card } from "react-bootstrap";
 import { PlantImage } from "../../types/interfaces";
 import { SHOW_IMAGES } from "../../featureFlags";

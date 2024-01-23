@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "react-vertical-timeline-component/style.min.css";
 import "../styles/plantImagesTimeline.scss";
 
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL } from "../constants";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";

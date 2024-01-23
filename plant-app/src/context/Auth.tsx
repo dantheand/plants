@@ -7,15 +7,18 @@ import React, {
 } from "react";
 import { BASE_API_URL } from "../constants";
 import { LoadingOverlay } from "../components/authentication/LoadingOverlay";
+import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  setIsAuthenticated: (value: boolean) => void;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  userId: string;
 }
 
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setIsAuthenticated: () => {}, // No-op function as a placeholder
+  userId: "",
 });
 
 const SESSION_VALIDATION_URL = `${BASE_API_URL}/check_token`;
@@ -27,8 +30,22 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(true);
+  const [userId, setUserId] = useState<string>("");
 
-  // TODO: figure out how to store google IDs as a global variable (or in the local storage)
+  // Check if there is a JWT token and set the user ID from it, otherwise set auth to false
+  useEffect(() => {
+    try {
+      const extractedUserId = getGoogleIdFromToken();
+      if (extractedUserId) {
+        setUserId(extractedUserId);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Error extracting user ID from token:", error);
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   // Function to check authentication status
   const checkAuthenticationStatus = async () => {
@@ -72,7 +89,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, setIsAuthenticated, userId }}
+    >
       {children}
     </AuthContext.Provider>
   );

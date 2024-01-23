@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../../context/Alerts";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
+import { BASE_API_URL } from "../../constants";
 import { Col, Form, Row } from "react-bootstrap";
 import { ParentIdButton } from "./ParentIdButton";
 import { NewPlant } from "../../types/interfaces";

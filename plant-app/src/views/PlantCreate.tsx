@@ -1,7 +1,7 @@
 import { BaseLayout } from "../components/Layouts";
 import { useState } from "react";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL } from "../constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
 
