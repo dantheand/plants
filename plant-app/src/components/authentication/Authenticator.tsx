@@ -14,7 +14,7 @@ function generateNonce(length = 32) {
 
 export function AuthFromFrontEnd() {
   const nonce = generateNonce();
-  // TODO: switch this to the isAuthenticated global context variable
+
   // And redirect to plants if user is already logged in
   const { login, isAuthenticated, userId } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
 

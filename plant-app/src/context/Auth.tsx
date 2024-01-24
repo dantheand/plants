@@ -16,7 +16,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (googleOauthResponse: CredentialResponse, nonce: string) => void; // Define how login is handled
   logout: () => void; // Define how logout is handled
-  userId: string | null;
+  userId: string | undefined;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,9 +30,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState<string | null>(
-    localStorage.getItem("userId"),
-  );
+  const [userId, setUserId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
   // Check if there is a JWT token and set the user ID from it, otherwise set auth to false
@@ -64,13 +62,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } else {
         setIsAuthenticated(false);
         localStorage.removeItem("userId");
-        setUserId(null);
+        setUserId(undefined);
       }
     } catch (error) {
       console.error("Error checking authentication status:", error);
       setIsAuthenticated(false);
       localStorage.removeItem("userId");
-      setUserId(null);
+      setUserId(undefined);
     }
   };
 
@@ -134,7 +132,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.removeItem(JWT_TOKEN_STORAGE);
         console.log("logged out");
         setIsAuthenticated(false);
-        setUserId(null);
+        setUserId(undefined);
         navigate("/login");
       } else {
         // Handle server-side errors (e.g., session not found)

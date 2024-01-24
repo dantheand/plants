@@ -34,6 +34,7 @@ export function PlantList(): JSX.Element {
   const params = useParams<string>();
   const pathSpecifiedId = params.userId;
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
+  const [queryID, setQueryID] = useState<string | undefined>(undefined);
   // const [isGridView, setIsGridView] = useState<boolean>(false);
   // const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
 
@@ -45,30 +46,25 @@ export function PlantList(): JSX.Element {
   const { callApi } = useApi();
   const { userId } = useAuth();
 
-  // TODO: figure out how to use this properly
-  const userIdToQuery = useMemo(() => {
-    return pathSpecifiedId === "me" || pathSpecifiedId === undefined
-      ? userId
-      : pathSpecifiedId;
-  }, [userId, pathSpecifiedId]);
-
+  // Set query ID based on URL path or user ID
   useEffect(() => {
-    // This is to prevent the user from seeing the wrong list of plants
     setIsLoading(true);
-    if (userIdToQuery === userId) {
+    if (pathSpecifiedId === "me" || pathSpecifiedId === undefined) {
       setIsYourPlants(true);
+      setQueryID(userId);
     } else {
       setIsYourPlants(false);
+      setQueryID(pathSpecifiedId);
     }
-  }, [userIdToQuery, userId]);
-
-  console.log("userId:", userId);
-  console.log("pathSpecifiedId:", pathSpecifiedId);
-  console.log("userIdToQuery:", userIdToQuery);
+    setIsLoading(false);
+  }, [pathSpecifiedId, userId]);
 
   useEffect(() => {
+    if (!queryID) {
+      return;
+    }
     setIsLoading(true);
-    callApi(`${BASE_API_URL}/plants/user/${userIdToQuery}`)
+    callApi(`${BASE_API_URL}/plants/user/${queryID}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -91,9 +87,8 @@ export function PlantList(): JSX.Element {
       .finally(() => {
         setIsLoading(false);
       });
-    // TODO: figure out why adding dependencies here causes infinite loop; authprovider may briefly reset userId
-    //    upon calling to protected route
-  }, []);
+    // TODO: figure out why showAlert causes a seecond render. And whhy both crreate an infinite loop
+  }, [queryID]);
   // }, [userIdToQuery, showAlert, callApi]);
 
   return (
