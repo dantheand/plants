@@ -79,16 +79,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Perform an immediate check on mount
     checkAuthenticationStatus(true);
 
-    // Set up a timer for periodic rechecks
-    const interval = setInterval(
-      () => {
-        checkAuthenticationStatus();
-      },
-      5 * 60 * 1000,
-    ); // Recheck every 5 minutes,
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
+    // // Set up a timer for periodic rechecks
+    // const interval = setInterval(
+    //   () => {
+    //     checkAuthenticationStatus();
+    //   },
+    //   10 * 60 * 1000,
+    // ); // Recheck every 10 minutes,
+    //
+    // // Cleanup interval on component unmount
+    // return () => clearInterval(interval);
   }, []);
 
   const login = async (
@@ -98,8 +98,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsAuthenticating(true);
       const tokenId = googleOauthResponse.credential;
-      const backendUrl = BASE_API_URL + "/token";
-      const res = await fetch(backendUrl, {
+      const res = await fetch(BASE_API_URL + "/token", {
         method: "POST",
         credentials: "include", // This is important for cookies to be sent and received
         headers: {
