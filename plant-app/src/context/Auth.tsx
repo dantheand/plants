@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { BASE_API_URL, JWT_TOKEN_STORAGE, USER_ID_STORAGE } from "../constants";
@@ -11,6 +12,7 @@ import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse } from "@react-oauth/google";
 import { useAlert } from "./Alerts";
+import useLocalStorageState from "use-local-storage-state";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -28,32 +30,32 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { showAlert } = useAlert();
 
+  const [storedUserId, setStoredUserId] = useLocalStorageState<string | null>(
+    USER_ID_STORAGE,
+    {
+      defaultValue: null,
+    },
+  );
+
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const isAuthenticated = useMemo(() => storedUserId != null, [storedUserId]);
   const navigate = useNavigate();
 
   // TODO Gracefully handle cases where:
-  // 1. There is no JWT token
+  // 1. There is no ID token
   // 2. There is no session cookie
+  // 3. The session token is invalid/expired
   // Combinations of each
 
-  // If there isnt a userID set, we may be in a fresh session, so try to extract it from local storage
-  useEffect(() => {
-    if (!userId) {
-      const extractedUserId = localStorage.getItem(USER_ID_STORAGE);
-      if (extractedUserId) {
-        setUserId(extractedUserId);
-      } else {
-        setIsAuthenticated(false);
-      }
+  const userId = useMemo(() => {
+    if (storedUserId) {
+      return storedUserId;
+    } else {
+      return undefined;
     }
-  }, [userId]);
+  }, [storedUserId]);
 
-  // Function to check authentication status
   const checkAuthenticationStatus = async (showLoading = false) => {
-    // Implement call to /check_token endpoint
-    // This example assumes fetch is wrapped to handle HTTP-only cookie automatically
     try {
       if (showLoading) {
         setIsAuthenticating(true);
@@ -62,17 +64,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         credentials: "include",
       });
       if (response.ok) {
-        setIsAuthenticated(true);
       } else {
-        setIsAuthenticated(false);
-        localStorage.removeItem("userId");
-        setUserId(undefined);
+        setStoredUserId(null);
       }
     } catch (error) {
       console.error("Error checking authentication status:", error);
-      setIsAuthenticated(false);
-      localStorage.removeItem("userId");
-      setUserId(undefined);
+      setStoredUserId(null);
     } finally {
       setIsAuthenticating(false);
     }
@@ -115,16 +112,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // TODO: just store the userID in local storage rather than a token (change API return)
       localStorage.setItem(JWT_TOKEN_STORAGE, data);
       const userIdFromToken = getGoogleIdFromToken();
-      setUserId(userIdFromToken);
-      if (userIdFromToken) {
-        localStorage.setItem(USER_ID_STORAGE, userIdFromToken);
-      }
-      setIsAuthenticated(true);
+      setStoredUserId(userIdFromToken);
       showAlert("Successfully logged in!", "success");
       navigate(`/plants/user/me`);
     } catch (error) {
       console.error("Error authenticating with backend:", error);
-      setIsAuthenticated(false);
+      setStoredUserId(null);
       showAlert("Error authenticating with backend", "danger");
     } finally {
       setIsAuthenticating(false);
@@ -139,11 +132,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (response.ok) {
+        setStoredUserId(null);
         localStorage.removeItem(JWT_TOKEN_STORAGE);
-        localStorage.removeItem(USER_ID_STORAGE);
         console.log("logged out");
-        setIsAuthenticated(false);
-        setUserId(undefined);
         navigate("/login");
       } else {
         // Handle server-side errors (e.g., session not found)
