@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE, USER_ID_STORAGE } from "../constants";
 import { LoadingOverlay } from "../components/authentication/LoadingOverlay";
 import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 import { useNavigate } from "react-router-dom";
@@ -38,21 +38,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // 2. There is no session cookie
   // Combinations of each
 
-  // Check if there is a JWT token and set the user ID from it, otherwise set auth to false
+  // If there isnt a userID set, we may be in a fresh session, so try to extract it from local storage
   useEffect(() => {
-    try {
-      const extractedUserId = getGoogleIdFromToken();
-      console.log("Extracted user ID:", extractedUserId);
+    if (!userId) {
+      const extractedUserId = localStorage.getItem(USER_ID_STORAGE);
       if (extractedUserId) {
         setUserId(extractedUserId);
       } else {
         setIsAuthenticated(false);
       }
-    } catch (error) {
-      console.error("Error extracting user ID from token:", error);
-      setIsAuthenticated(false);
     }
-  }, []);
+  }, [userId]);
 
   // Function to check authentication status
   const checkAuthenticationStatus = async (showLoading = false) => {
@@ -118,7 +114,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const data = await res.json();
       // TODO: just store the userID in local storage rather than a token (change API return)
       localStorage.setItem(JWT_TOKEN_STORAGE, data);
-      setUserId(getGoogleIdFromToken());
+      const userIdFromToken = getGoogleIdFromToken();
+      setUserId(userIdFromToken);
+      if (userIdFromToken) {
+        localStorage.setItem(USER_ID_STORAGE, userIdFromToken);
+      }
       setIsAuthenticated(true);
       showAlert("Successfully logged in!", "success");
       navigate(`/plants/user/me`);
@@ -140,6 +140,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (response.ok) {
         localStorage.removeItem(JWT_TOKEN_STORAGE);
+        localStorage.removeItem(USER_ID_STORAGE);
         console.log("logged out");
         setIsAuthenticated(false);
         setUserId(undefined);
