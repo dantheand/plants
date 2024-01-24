@@ -46,6 +46,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error("Error extracting user ID from token:", error);
       setIsAuthenticated(false);
+    } finally {
+      setIsAuthenticating(false);
     }
   }, []);
 

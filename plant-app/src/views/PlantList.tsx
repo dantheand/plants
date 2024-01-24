@@ -87,9 +87,7 @@ export function PlantList(): JSX.Element {
       .finally(() => {
         setIsLoading(false);
       });
-    // TODO: figure out why showAlert causes a seecond render. And whhy both crreate an infinite loop
-  }, [queryID]);
-  // }, [userIdToQuery, showAlert, callApi]);
+  }, [queryID, showAlert, callApi]);
 
   return (
     <BaseLayout>
