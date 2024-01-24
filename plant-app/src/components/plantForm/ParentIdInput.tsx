@@ -40,8 +40,7 @@ export const ParentIdInput = ({
       })
       .catch((error) => {
         showAlert(`Error fetching parent: ${error}`, "danger");
-      })
-      .finally(() => {});
+      });
   };
 
   return (
