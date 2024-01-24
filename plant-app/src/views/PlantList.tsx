@@ -1,5 +1,5 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
-import React, { JSX, useEffect, useMemo, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL } from "../constants";
 import { Card } from "react-bootstrap";
 

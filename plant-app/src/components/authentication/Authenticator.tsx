@@ -16,18 +16,17 @@ export function AuthFromFrontEnd() {
   const nonce = generateNonce();
 
   // And redirect to plants if user is already logged in
-  const { login, isAuthenticated, userId } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
+  const { login, isAuthenticated } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
 
   const handleGoogleSuccess = (response: CredentialResponse) => {
     login(response, nonce);
   };
-  console.log("userId:", userId);
 
   const navigate = useNavigate();
   // Redirect if logged in
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(`/plants/user/${userId}`);
+      navigate(`/plants/user/me`);
     }
   }, [isAuthenticated, navigate]);
   return (

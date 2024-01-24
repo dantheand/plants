@@ -46,11 +46,11 @@ export const useAlert = () => useContext(AlertContext);
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alert, setAlert] = useState<AlertProps>(defaultAlert);
   const showAlert = useCallback((message: string, variant: string) => {
-    setAlert({ show: true, message, variant });
+    setAlert(() => ({ show: true, message, variant }));
     setTimeout(
-      () => setAlert({ ...alert, show: false }),
+      () => setAlert((currentAlert) => ({ ...currentAlert, show: false })),
       getTimeOutLength(variant),
-    ); // auto-hide
+    );
   }, []);
   return (
     <AlertContext.Provider value={{ alert, showAlert }}>
