@@ -27,7 +27,13 @@ const getPlantImages = async (plant_id: string | undefined) => {
   });
 };
 
-export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
+export function PlantImages({
+  plant_id,
+  isYourPlant,
+}: {
+  plant_id: string | undefined;
+  isYourPlant: boolean;
+}) {
   const { showAlert } = useAlert();
   const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
@@ -125,6 +131,7 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           onHide={handleCloseImageModal}
           image={selectedImage}
           onDelete={handleDeleteClick}
+          isYourPlant={isYourPlant}
         />
       )}
       {selectedImage && showConfirmDeleteModal && (
@@ -143,10 +150,12 @@ export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
           onUploadSuccess={onUploadSuccess}
         />
       )}
-      <FloatingActionButton
-        icon={<FaCamera size="2em" />}
-        handleOnClick={handleShowUploadModal}
-      />
+      {isYourPlant && (
+        <FloatingActionButton
+          icon={<FaCamera size="2em" />}
+          handleOnClick={handleShowUploadModal}
+        />
+      )}
     </Card>
   );
 }

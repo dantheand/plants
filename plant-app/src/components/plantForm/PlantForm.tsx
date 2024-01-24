@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
 import { EditableInput } from "./EditableInput";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
 import { PlantFormHeader } from "./PlantFormHeader";
 import { ParentIdInput } from "./ParentIdInput";
+import { useAuth } from "../../context/Auth";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -19,6 +20,7 @@ interface PlantFormProps {
   isFormNewPlant?: boolean;
   nextId?: number;
   setPlantIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  isYourPlant: boolean;
 }
 
 export const PlantForm = ({
@@ -30,6 +32,7 @@ export const PlantForm = ({
   setIsFormEditable,
   isFormNewPlant = false,
   setPlantIsLoading,
+  isYourPlant,
 }: PlantFormProps) => {
   const [plantBeforeEdit, setPlantBeforeEdit] = useState<NewPlant>(plant);
 
@@ -68,6 +71,7 @@ export const PlantForm = ({
           toggleEditable={toggleEditable}
           isFormNewPlant={isFormNewPlant}
           buttonsDisabled={false}
+          isYourPlant={isYourPlant}
         />
         <EditableInput
           label="Unique ID Number"
@@ -160,7 +164,7 @@ export const PlantForm = ({
           isEditable={isFormEditable}
         />
 
-        {!isFormNewPlant && (
+        {!isFormNewPlant && isYourPlant && (
           <Card.Footer className="mt-2">
             <DeleteButtonWConfirmation
               buttonText="Remove Plant"

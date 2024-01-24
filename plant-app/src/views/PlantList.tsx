@@ -48,7 +48,11 @@ export function PlantList(): JSX.Element {
 
   // Set query ID based on URL path or user ID
   useEffect(() => {
-    if (pathSpecifiedId === "me" || pathSpecifiedId === undefined) {
+    if (
+      pathSpecifiedId === "me" ||
+      pathSpecifiedId === undefined ||
+      pathSpecifiedId === userId
+    ) {
       setIsYourPlants(true);
       setQueryID(userId);
     } else {

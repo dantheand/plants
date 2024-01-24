@@ -48,6 +48,7 @@ export function PlantCreate() {
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
+    setPlantIsLoading(true);
     console.log("Submitting new plant:");
     console.log(plantInForm);
     const createdPlantResult = await createPlant(plantInForm);
@@ -58,6 +59,7 @@ export function PlantCreate() {
     } else {
       showAlert(`Error creating plant: ${createdPlantResult.error}`, "danger");
     }
+    setPlantIsLoading(false);
   };
   return (
     <BaseLayout>
@@ -70,6 +72,7 @@ export function PlantCreate() {
         setIsFormEditable={() => {}} // no-op function since form should always be editable
         isFormNewPlant={true}
         setPlantIsLoading={setPlantIsLoading}
+        isYourPlant={true}
       />
       {/*<Button onClick={handleSubmitNewPlant}>Save New Plant</Button>*/}
     </BaseLayout>

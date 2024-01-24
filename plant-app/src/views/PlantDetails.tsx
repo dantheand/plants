@@ -15,6 +15,7 @@ import { Card } from "react-bootstrap";
 import { PlantImagesLoadingPlaceholder } from "../components/plantImages/PlantImagesLoadingPlaceholder";
 import { PlantForm } from "../components/plantForm/PlantForm";
 import { PlantFormPlaceholder } from "../components/plantForm/PlantFormPlaceholder";
+import { useAuth } from "../context/Auth";
 
 const updatePlant = async (
   plantData: NewPlant,
@@ -126,6 +127,17 @@ export function PlantDetails() {
     usePlantDetails(plantId);
   const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
   const { showAlert } = useAlert();
+  const { userId } = useAuth();
+  const [isYourPlant, setIsYourPlant] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!plant || !userId) {
+      return;
+    }
+    if (plant.user_id !== userId) {
+      setIsYourPlant(false);
+    }
+  }, [plant, userId]);
 
   useEffect(() => {
     if (error) {
@@ -189,8 +201,9 @@ export function PlantDetails() {
         isFormEditable={isFormEditable}
         setIsFormEditable={setIsFormEditable}
         setPlantIsLoading={setPlantIsLoading}
+        isYourPlant={isYourPlant}
       />
-      <PlantImages plant_id={plantId} />
+      <PlantImages plant_id={plantId} isYourPlant={isYourPlant} />
     </BaseLayout>
   );
 }
