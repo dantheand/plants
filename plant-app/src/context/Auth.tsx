@@ -1,6 +1,7 @@
 import React, {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -55,25 +56,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [storedUserId]);
 
-  const checkAuthenticationStatus = async (showLoading = false) => {
-    try {
-      if (showLoading) {
-        setIsAuthenticating(true);
-      }
-      const response = await fetch(`${BASE_API_URL}/check_token`, {
-        credentials: "include",
-      });
-      if (response.ok) {
-      } else {
+  const checkAuthenticationStatus = useCallback(
+    async (showLoading = false) => {
+      try {
+        if (showLoading) {
+          setIsAuthenticating(true);
+        }
+        const response = await fetch(`${BASE_API_URL}/check_token`, {
+          credentials: "include",
+        });
+        if (response.ok) {
+        } else {
+          setStoredUserId(null);
+        }
+      } catch (error) {
+        console.error("Error checking authentication status:", error);
         setStoredUserId(null);
+      } finally {
+        setIsAuthenticating(false);
       }
-    } catch (error) {
-      console.error("Error checking authentication status:", error);
-      setStoredUserId(null);
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
+    },
+    [setStoredUserId],
+  );
 
   useEffect(() => {
     // Perform an immediate check on mount
@@ -89,7 +93,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     //
     // // Cleanup interval on component unmount
     // return () => clearInterval(interval);
-  }, []);
+  }, [checkAuthenticationStatus]);
 
   const login = async (
     googleOauthResponse: CredentialResponse,
