@@ -7,6 +7,7 @@ import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/Auth";
 
 type UserCardProps = {
   user: User;
@@ -14,6 +15,8 @@ type UserCardProps = {
 
 export const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
+  const { userId } = useAuth();
 
   return (
     <ListGroup.Item as="li" className="mb-2">
@@ -24,6 +27,9 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
       <Button
         variant="primary"
         onClick={() => {
+          if (user.google_id !== userId) {
+            showAlert("Creep mode engaged.", "success");
+          }
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
