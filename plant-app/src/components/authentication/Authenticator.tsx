@@ -76,13 +76,13 @@ export function AuthFromFrontEnd() {
             delay={5000}
           >
             <Toast.Header>
-              <strong className="me-auto">New Account Inforomation</strong>
+              <strong className="me-auto">New Account Information</strong>
             </Toast.Header>
             <Toast.Body>
               <p>Interested in beta testing?</p>
               <p>
                 Click the login button to transmit your account information and
-                then ask Dan to enable your account.
+                then ask Dan to enable you.
               </p>
             </Toast.Body>
           </Toast>
