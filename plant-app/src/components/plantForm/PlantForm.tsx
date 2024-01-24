@@ -18,6 +18,7 @@ interface PlantFormProps {
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
   isFormNewPlant?: boolean;
   nextId?: number;
+  setPlantIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const PlantForm = ({
@@ -28,6 +29,7 @@ export const PlantForm = ({
   isFormEditable,
   setIsFormEditable,
   isFormNewPlant = false,
+  setPlantIsLoading,
 }: PlantFormProps) => {
   const [plantBeforeEdit, setPlantBeforeEdit] = useState<NewPlant>(plant);
 
@@ -113,6 +115,7 @@ export const PlantForm = ({
             label="Plant Parent ID(s)"
             value={plant.parent_id}
             plant={plant}
+            setPlantIsLoading={setPlantIsLoading}
           />
         )}
         <EditableInput

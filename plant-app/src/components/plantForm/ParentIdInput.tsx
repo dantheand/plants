@@ -10,16 +10,20 @@ interface ParentIdInputProps {
   label: string;
   value: string[] | undefined;
   plant: NewPlant;
+  setPlantIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
-  const [navigationIsLoading, setNavigationIsLoading] =
-    useState<boolean>(false);
+export const ParentIdInput = ({
+  label,
+  value,
+  plant,
+  setPlantIsLoading,
+}: ParentIdInputProps) => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
 
   const handleParentClick = (parentHumanId: string) => {
-    setNavigationIsLoading(true);
+    setPlantIsLoading(true);
     // Query the API endpoint to get the parent plant ID and navigate to that plant's page
     fetch(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {
       credentials: "include",
@@ -33,12 +37,11 @@ export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
       .then((data) => {
         navigate(`/plants/${data.plant_id}`);
         // Setting delay to give the new plant page time to load
-        setTimeout(() => setNavigationIsLoading(false), 500); // Adjust delay as needed
       })
       .catch((error) => {
-        setNavigationIsLoading(false);
         showAlert(`Error fetching parent: ${error}`, "danger");
-      });
+      })
+      .finally(() => {});
   };
 
   return (
@@ -54,7 +57,6 @@ export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
               idx={idx}
               parent_id={parent_id}
               handleParentClick={handleParentClick}
-              navigationIsLoading={navigationIsLoading}
             />
           ))
         ) : (

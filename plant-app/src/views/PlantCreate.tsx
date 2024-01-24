@@ -41,6 +41,7 @@ export function PlantCreate() {
   }
   const [plantInForm, setPlantInForm] = useState<NewPlant>(newPlant);
   const navigate = useNavigate();
+  const [plantIsLoading, setPlantIsLoading] = useState<boolean>(false);
   const { showAlert } = useAlert();
 
   const handleSubmitNewPlant = async (
@@ -68,6 +69,7 @@ export function PlantCreate() {
         isFormEditable={true}
         setIsFormEditable={() => {}} // no-op function since form should always be editable
         isFormNewPlant={true}
+        setPlantIsLoading={setPlantIsLoading}
       />
       {/*<Button onClick={handleSubmitNewPlant}>Save New Plant</Button>*/}
     </BaseLayout>

@@ -80,10 +80,10 @@ export function AuthFromFrontEnd() {
             </Toast.Header>
             <Toast.Body>
               <p>Interested in beta testing?</p>
-              <p>
-                Click the login button to transmit your account information and
-                then ask Dan to enable you.
-              </p>
+              <ul>
+                <li>Create a new account by logging in with Google (above)</li>
+                <li>Ask Dan to enable your account.</li>
+              </ul>
             </Toast.Body>
           </Toast>
         </ToastContainer>

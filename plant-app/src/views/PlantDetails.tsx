@@ -74,7 +74,7 @@ const usePlantDetails = (plantId: string | undefined) => {
         setPlantIsLoading(false);
       });
   }, [plantId]);
-  return { plant, plantIsLoading, error, setPlant };
+  return { plant, plantIsLoading, error, setPlant, setPlantIsLoading };
 };
 
 export const deletePlant = async (
@@ -122,7 +122,8 @@ export function PlantDetails() {
   const navigate = useNavigate();
   const [plantInForm, setPlantInForm] =
     useState<NewPlant>(initialNewPlantState);
-  const { plant, plantIsLoading, error, setPlant } = usePlantDetails(plantId);
+  const { plant, plantIsLoading, error, setPlant, setPlantIsLoading } =
+    usePlantDetails(plantId);
   const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
   const { showAlert } = useAlert();
 
@@ -187,6 +188,7 @@ export function PlantDetails() {
         setPlantInForm={setPlantInForm}
         isFormEditable={isFormEditable}
         setIsFormEditable={setIsFormEditable}
+        setPlantIsLoading={setPlantIsLoading}
       />
       <PlantImages plant_id={plantId} />
     </BaseLayout>
