@@ -4,6 +4,7 @@ import React from "react";
 import { AuthFromFrontEnd } from "./Authenticator";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "../../context/Auth";
 
 // Mocking GoogleOAuthProvider to bypass Google Login functionality
 jest.mock("@react-oauth/google", () => ({
@@ -17,7 +18,9 @@ describe("AuthFromFrontEnd", () => {
   it("renders the application logo and name", () => {
     render(
       <BrowserRouter>
-        <AuthFromFrontEnd />
+        <AuthProvider>
+          <AuthFromFrontEnd />
+        </AuthProvider>
       </BrowserRouter>,
     );
     const logo = screen.getByAltText(/logo/i);

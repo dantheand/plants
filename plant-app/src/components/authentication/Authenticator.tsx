@@ -9,17 +9,23 @@ import cryptoRandomString from "crypto-random-string";
 import { useAuth } from "../../context/Auth";
 
 function generateNonce(length = 32) {
-  return cryptoRandomString({ length: length, type: "hex" });
+  const nonce = cryptoRandomString({ length: length, type: "hex" });
+  sessionStorage.setItem("nonce", nonce);
+}
+
+function getNonce() {
+  return sessionStorage.getItem("nonce") || "";
 }
 
 export function AuthFromFrontEnd() {
-  const nonce = generateNonce();
+  // TODO figure out how to make this nonce only once per session authentication attempt
+  generateNonce();
 
   // And redirect to plants if user is already logged in
   const { login, isAuthenticated } = useAuth(); // Use the useAuth hook to get setIsAuthenticated
 
   const handleGoogleSuccess = (response: CredentialResponse) => {
-    login(response, nonce);
+    login(response, getNonce());
   };
 
   const navigate = useNavigate();
@@ -41,10 +47,10 @@ export function AuthFromFrontEnd() {
             />
             <h2>{APP_BRAND_NAME}</h2>
           </div>
-          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={getNonce()}>
             <div className="auth-form-group">
               <GoogleLogin
-                nonce={nonce}
+                nonce={getNonce()}
                 onSuccess={handleGoogleSuccess}
                 onError={() => {
                   console.log("Login Failed");

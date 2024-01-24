@@ -33,6 +33,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
+  // TODO Gracefully handle cases where:
+  // 1. There is no JWT token
+  // 2. There is no session cookie
+  // Combinations of each
+
   // Check if there is a JWT token and set the user ID from it, otherwise set auth to false
   useEffect(() => {
     try {
@@ -46,16 +51,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error("Error extracting user ID from token:", error);
       setIsAuthenticated(false);
-    } finally {
-      setIsAuthenticating(false);
     }
   }, []);
 
   // Function to check authentication status
-  const checkAuthenticationStatus = async () => {
+  const checkAuthenticationStatus = async (showLoading = false) => {
     // Implement call to /check_token endpoint
     // This example assumes fetch is wrapped to handle HTTP-only cookie automatically
     try {
+      if (showLoading) {
+        setIsAuthenticating(true);
+      }
       const response = await fetch(`${BASE_API_URL}/check_token`, {
         credentials: "include",
       });
@@ -71,12 +77,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsAuthenticated(false);
       localStorage.removeItem("userId");
       setUserId(undefined);
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
   useEffect(() => {
     // Perform an immediate check on mount
-    checkAuthenticationStatus();
+    checkAuthenticationStatus(true);
 
     // Set up a timer for periodic rechecks
     const interval = setInterval(
