@@ -34,7 +34,7 @@ export const useApi = () => {
         return Promise.reject(error);
       }
     },
-    [],
+    [storedJwt],
   );
   return { callApi };
 };

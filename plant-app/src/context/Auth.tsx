@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     },
     //   TODO: figure out why we can't use callApi here (it results in a rerun of the effect on page navigation)
-    [setstoredJwt, storedJwt],
+    [setstoredJwt, storedJwt, showAlert],
   );
 
   useEffect(() => {
