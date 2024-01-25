@@ -43,6 +43,7 @@ async def check_valid_user_token(user: Annotated[User, Depends(get_current_user_
     return user
 
 
+# TODO: it'd be great if we didnt have to do this...
 def set_session_token_cookie(response: Response, token_id: str):
     response.set_cookie(
         key=SESSION_TOKEN_KEY,
@@ -50,7 +51,7 @@ def set_session_token_cookie(response: Response, token_id: str):
         httponly=True,
         path="/",
         secure=True if get_deployment_env() == AWS_DEPLOYMENT_ENV else False,
-        samesite="lax",
+        samesite="none" if get_deployment_env() == AWS_DEPLOYMENT_ENV else "lax",
     )
 
 

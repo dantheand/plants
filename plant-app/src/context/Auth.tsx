@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthenticationStatus(true);
 
     // TODO: implement some sort of polling to check authentication status and navigate to login if not authenticated
+    // You can query the backend with a GET request to /check_token
   }, [checkAuthenticationStatus]);
 
   const login = async (
