@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
+from plant_api.dependencies import decode_jwt_token
 from plant_api.routers.auth import create_access_token_for_user
 from plant_api.schema import User
 from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
@@ -18,7 +19,7 @@ from plant_api.utils.secrets import get_aws_secret
 
 def create_current_access_token() -> str:
     payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
-    current_access_token, _ = create_access_token_for_user(payload)
+    current_access_token = create_access_token_for_user(payload)
     return current_access_token
 
 
@@ -64,10 +65,10 @@ class TestTokenFlow:
             json={"token": mock_oauth2_token, "nonce": mock_nonce},
         )
         assert response.status_code == 200
-        access_token = response.json()
-        decoded_access_token = jwt.decode(access_token, get_jwt_secret(), algorithms=[ALGORITHM])
+        access_token = response.json()["token"]
+        decoded_access_token = decode_jwt_token(access_token)
 
-        assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
+        assert decoded_access_token.google_id == DEFAULT_TEST_USER.google_id
 
     def test_check_token_w_valid_token(self, client_no_session, mock_db, default_enabled_user_in_db):
         current_session_token = create_current_session_token(default_enabled_user_in_db)
