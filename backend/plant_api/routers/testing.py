@@ -25,7 +25,7 @@ async def set_cookie_test(request: Request, response: Response):
         httponly=True,
         path="/",
         secure=True if get_deployment_env() == AWS_DEPLOYMENT_ENV else False,
-        samesite="lax",
+        samesite="none",
     )
     return {"message": "I'm working"}
 
