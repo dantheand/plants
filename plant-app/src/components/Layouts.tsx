@@ -1,11 +1,11 @@
 import { Container } from "react-bootstrap";
 import React, { ReactNode } from "react";
-import { AlertComponent, AlertProvider } from "../context/Alerts";
 
 import "../styles/styles.scss";
 import { useLocation } from "react-router-dom";
 import { AppNavbar } from "./AppNavbar";
 import Footer from "./Footer";
+import { AlertComponent } from "../context/Alerts";
 
 export const GlobalLayout = ({ children }: { children: ReactNode }) => {
   // Exclude the navbar from the login page
@@ -16,12 +16,12 @@ export const GlobalLayout = ({ children }: { children: ReactNode }) => {
     location.pathname === "/logout";
 
   return (
-    <AlertProvider>
+    <div>
       {!isLoginPage && <AppNavbar />}
       <AlertComponent />
       {children}
       <Footer />
-    </AlertProvider>
+    </div>
   );
 };
 

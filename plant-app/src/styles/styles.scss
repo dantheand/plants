@@ -32,7 +32,7 @@ html {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .required-asterisk {
@@ -115,7 +115,7 @@ html {
 }
 
 /* Top level cards */
-.top-level-card{
+.top-level-card {
   margin-bottom: 3rem;
 }
 
@@ -139,7 +139,6 @@ html {
   opacity: 1.0;
   z-index: 1000;
 
-  margin-bottom: 5px;
 }
 
 .plant-form-item {
@@ -170,7 +169,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 90vh; /* Full viewport height */
+  height: 80vh;
 }
 
 .auth-card {
@@ -189,7 +188,13 @@ html {
 .auth-form-group {
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+.create-account-button{
+  display: flex;
+  justify-content: center;
+
 
 }
