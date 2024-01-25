@@ -53,12 +53,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [storedUserId]);
 
   const checkAuthenticationStatus = useCallback(
-    async (showLoading = false) => {
+    async (showLoadingOverlay = false) => {
       try {
-        if (showLoading) {
+        if (showLoadingOverlay) {
           setIsAuthenticating(true);
         }
-        const response = await callApi(`${BASE_API_URL}/check_token`);
+        const response = await fetch(`${BASE_API_URL}/check_token`);
         if (response.ok) {
         } else {
           setStoredUserId(null);
@@ -70,11 +70,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAuthenticating(false);
       }
     },
-    [setStoredUserId, callApi],
+    //   TODO: figure out why we can't use callApi here (it results in a rerun of the effect on page navigation)
+    [setStoredUserId],
   );
 
   useEffect(() => {
-    // Perform an immediate check on mount
+    // Perform an immediate check on initial mount
     checkAuthenticationStatus(true);
 
     // TODO: implement some sort of polling to check authentication status and navigate to login if not authenticated
