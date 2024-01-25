@@ -1,6 +1,3 @@
-// TODO: standardize API calls into a function that takes in the endpoint, the method
-// and the body of the request, then catches different types of error (like API errors vs javascript errors) and
-
 import { useCallback } from "react";
 import { JWT_TOKEN_STORAGE } from "../constants";
 import useLocalStorageState from "use-local-storage-state";
