@@ -57,6 +57,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const checkAuthenticationStatus = useCallback(
     async (showLoadingOverlay = false) => {
+      if (!storedJwt) {
+        showAlert("Session expired. Please log in again.", "danger");
+        return;
+      }
       try {
         if (showLoadingOverlay) {
           setIsAuthenticating(true);
@@ -68,6 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         });
         if (response.ok) {
         } else {
+          showAlert("Session expired. Please log in again.", "danger");
           setstoredJwt(null);
         }
       } catch (error) {
