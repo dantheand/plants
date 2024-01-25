@@ -66,104 +66,105 @@ export const PlantForm = ({
   return (
     <Form onSubmit={handleSubmit}>
       <Card className="top-level-card">
-        <PlantFormHeader
-          isFormEditable={isFormEditable}
-          toggleEditable={toggleEditable}
-          isFormNewPlant={isFormNewPlant}
-          buttonsDisabled={false}
-          isYourPlant={isYourPlant}
-        />
-        <EditableInput
-          label="Unique ID Number"
-          type="text"
-          value={plantInForm.human_id}
-          OnChange={handleInputChange("human_id")}
-          isEditable={isFormEditable}
-          editsAllowed={false || isFormNewPlant}
-          isRequired={true}
-          placeholder={"e.g. 1"}
-        />
-        <EditableInput
-          label="Plant Name"
-          type="text"
-          value={plantInForm.human_name}
-          OnChange={handleInputChange("human_name")}
-          isEditable={isFormEditable}
-          isRequired={true}
-        />
-        <EditableInput
-          label="Species"
-          type="text"
-          value={plantInForm.species}
-          OnChange={handleInputChange("species")}
-          isEditable={isFormEditable}
-        />
-        <EditableInput
-          label="Location"
-          type="text"
-          value={plantInForm.location}
-          OnChange={handleInputChange("location")}
-          isEditable={isFormEditable}
-        />
-        {isFormEditable ? (
+        <Card.Body>
+          <PlantFormHeader
+            isFormEditable={isFormEditable}
+            toggleEditable={toggleEditable}
+            isFormNewPlant={isFormNewPlant}
+            buttonsDisabled={false}
+            isYourPlant={isYourPlant}
+          />
           <EditableInput
-            label="Plant Parent ID(s)"
+            label="Unique ID Number"
             type="text"
-            value={plantInForm.parent_id}
-            OnChange={handleInputChange("parent_id")}
+            value={plantInForm.human_id}
+            OnChange={handleInputChange("human_id")}
             isEditable={isFormEditable}
-            placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
+            editsAllowed={false || isFormNewPlant}
+            isRequired={true}
+            placeholder={"e.g. 1"}
           />
-        ) : (
-          <ParentIdInput
-            label="Plant Parent ID(s)"
-            value={plant.parent_id}
-            plant={plant}
-            setPlantIsLoading={setPlantIsLoading}
+          <EditableInput
+            label="Plant Name"
+            type="text"
+            value={plantInForm.human_name}
+            OnChange={handleInputChange("human_name")}
+            isEditable={isFormEditable}
+            isRequired={true}
           />
-        )}
-        <EditableInput
-          label="Source"
-          type="text"
-          value={plantInForm.source}
-          OnChange={handleInputChange("source")}
-          isEditable={isFormEditable}
-          isRequired={true}
-          placeholder={"e.g. 'Home Depot', 'Mom', 'Plant"}
-        />
-        <EditableInput
-          label={"Source Date"}
-          type={"date"}
-          value={plantInForm.source_date}
-          OnChange={handleInputChange("source_date")}
-          isEditable={isFormEditable}
-          isRequired={true}
-        />
+          <EditableInput
+            label="Species"
+            type="text"
+            value={plantInForm.species}
+            OnChange={handleInputChange("species")}
+            isEditable={isFormEditable}
+          />
+          <EditableInput
+            label="Location"
+            type="text"
+            value={plantInForm.location}
+            OnChange={handleInputChange("location")}
+            isEditable={isFormEditable}
+          />
+          {isFormEditable ? (
+            <EditableInput
+              label="Plant Parent ID(s)"
+              type="text"
+              value={plantInForm.parent_id}
+              OnChange={handleInputChange("parent_id")}
+              isEditable={isFormEditable}
+              placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
+            />
+          ) : (
+            <ParentIdInput
+              label="Plant Parent ID(s)"
+              value={plant.parent_id}
+              plant={plant}
+              setPlantIsLoading={setPlantIsLoading}
+            />
+          )}
+          <EditableInput
+            label="Source"
+            type="text"
+            value={plantInForm.source}
+            OnChange={handleInputChange("source")}
+            isEditable={isFormEditable}
+            isRequired={true}
+            placeholder={"e.g. 'Home Depot', 'Mom', 'Plant"}
+          />
+          <EditableInput
+            label={"Source Date"}
+            type={"date"}
+            value={plantInForm.source_date}
+            OnChange={handleInputChange("source_date")}
+            isEditable={isFormEditable}
+            isRequired={true}
+          />
 
-        <EditableInput
-          label={"Sink"}
-          type={"text"}
-          value={plantInForm.sink}
-          OnChange={handleInputChange("sink")}
-          isEditable={isFormEditable}
-          placeholder={"e.g. 'Trash', 'Gift to Neighbor'"}
-        />
-        <EditableInput
-          label={"Sink Date"}
-          type={"date"}
-          value={plantInForm.sink_date}
-          OnChange={handleInputChange("sink_date")}
-          isEditable={isFormEditable}
-        />
+          <EditableInput
+            label={"Sink"}
+            type={"text"}
+            value={plantInForm.sink}
+            OnChange={handleInputChange("sink")}
+            isEditable={isFormEditable}
+            placeholder={"e.g. 'Trash', 'Gift to Neighbor'"}
+          />
+          <EditableInput
+            label={"Sink Date"}
+            type={"date"}
+            value={plantInForm.sink_date}
+            OnChange={handleInputChange("sink_date")}
+            isEditable={isFormEditable}
+          />
 
-        <EditableInput
-          label={"Notes"}
-          type={"textarea"}
-          value={plantInForm.notes}
-          OnChange={handleInputChange("notes")}
-          isEditable={isFormEditable}
-        />
-
+          <EditableInput
+            label={"Notes"}
+            type={"textarea"}
+            value={plantInForm.notes}
+            OnChange={handleInputChange("notes")}
+            isEditable={isFormEditable}
+          />
+        </Card.Body>
         {!isFormNewPlant && isYourPlant && (
           <Card.Footer className="mt-2">
             <DeleteButtonWConfirmation

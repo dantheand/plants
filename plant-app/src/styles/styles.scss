@@ -115,8 +115,12 @@ html {
 }
 
 /* Top level cards */
-.top-level-card{
+.top-level-card {
   margin-bottom: 3rem;
+}
+
+.top-level-card .card-body{
+  padding-bottom: 1rem;
 }
 
 .top-level-card .card-header {
