@@ -14,11 +14,12 @@ import { useNavigate } from "react-router-dom";
 import { CredentialResponse } from "@react-oauth/google";
 import { useAlert } from "./Alerts";
 import useLocalStorageState from "use-local-storage-state";
+import { useApi } from "../utils/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (googleOauthResponse: CredentialResponse, nonce: string) => void; // Define how login is handled
-  logout: () => void; // Define how logout is handled
+  login: (googleOauthResponse: CredentialResponse, nonce: string) => void;
+  logout: () => void;
   userId: string | undefined;
 }
 
@@ -41,12 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const isAuthenticated = useMemo(() => storedUserId != null, [storedUserId]);
   const navigate = useNavigate();
-
-  // TODO Gracefully handle cases where:
-  // 1. There is no ID token
-  // 2. There is no session cookie
-  // 3. The session token is invalid/expired
-  // Combinations of each
+  const { callApi } = useApi();
 
   const userId = useMemo(() => {
     if (storedUserId) {
@@ -62,9 +58,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (showLoading) {
           setIsAuthenticating(true);
         }
-        const response = await fetch(`${BASE_API_URL}/check_token`, {
-          credentials: "include",
-        });
+        const response = await callApi(`${BASE_API_URL}/check_token`);
         if (response.ok) {
         } else {
           setStoredUserId(null);
@@ -76,23 +70,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAuthenticating(false);
       }
     },
-    [setStoredUserId],
+    [setStoredUserId, callApi],
   );
 
   useEffect(() => {
     // Perform an immediate check on mount
     checkAuthenticationStatus(true);
 
-    // // Set up a timer for periodic rechecks
-    // const interval = setInterval(
-    //   () => {
-    //     checkAuthenticationStatus();
-    //   },
-    //   10 * 60 * 1000,
-    // ); // Recheck every 10 minutes,
-    //
-    // // Cleanup interval on component unmount
-    // return () => clearInterval(interval);
+    // TODO: implement some sort of polling to check authentication status and navigate to login if not authenticated
   }, [checkAuthenticationStatus]);
 
   const login = async (
@@ -102,9 +87,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsAuthenticating(true);
       const tokenId = googleOauthResponse.credential;
-      const res = await fetch(BASE_API_URL + "/token", {
+      const res = await callApi(BASE_API_URL + "/token", {
         method: "POST",
-        credentials: "include", // This is important for cookies to be sent and received
         headers: {
           "Content-Type": "application/json",
         },
@@ -129,9 +113,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      const response = await fetch(BASE_API_URL + "/logout", {
+      const response = await callApi(BASE_API_URL + "/logout", {
         method: "GET",
-        credentials: "include",
       });
 
       if (response.ok) {
