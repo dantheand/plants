@@ -70,11 +70,7 @@ export function AuthFromFrontEnd() {
         </Card>
         {/* Toast for displaying the message */}
         <ToastContainer position={"bottom-center"} className={"mb-3"}>
-          <Toast
-            show={showCreateAccountToast}
-            onClose={toggleShowToast}
-            delay={5000}
-          >
+          <Toast show={showCreateAccountToast} onClose={toggleShowToast}>
             <Toast.Header>
               <strong className="me-auto">New Account Information</strong>
             </Toast.Header>
