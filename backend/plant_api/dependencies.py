@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Depends
@@ -43,7 +43,7 @@ def get_current_user_session(session_token: Annotated[str, Depends(oauth2_google
 
     decoded_token = decode_jwt_token(session_token)
 
-    if decoded_token.exp < datetime.utcnow():
+    if decoded_token.exp < datetime.utcnow().replace(tzinfo=timezone.utc):
         LOGGER.error("Session token is expired.")
         raise CREDENTIALS_EXCEPTION
 
