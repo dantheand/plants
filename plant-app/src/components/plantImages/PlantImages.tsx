@@ -13,18 +13,22 @@ import { PlantImagesTimeline } from "./PlantImagesTimeline";
 import { PlantImagesLoadingPlaceholder } from "./PlantImagesLoadingPlaceholder";
 import { ImageUploadModal } from "./ImageUploadModal";
 import { FloatingActionButton } from "../FloatingActionButton";
+import { useApi } from "../../utils/api";
 
-const deletePlantImage = async (image: PlantImage) => {
-  return fetch(`${BASE_API_URL}/images/${image.image_id}`, {
+const deletePlantImage = async (
+  callApi: (url: string, options?: RequestInit) => Promise<Response>,
+  image: PlantImage,
+) => {
+  return callApi(`${BASE_API_URL}/images/${image.image_id}`, {
     method: "DELETE",
-    credentials: "include",
   });
 };
 
-const getPlantImages = async (plant_id: string | undefined) => {
-  return fetch(`${BASE_API_URL}/images/plants/${plant_id}`, {
-    credentials: "include",
-  });
+const getPlantImages = async (
+  callApi: (url: string, options?: RequestInit) => Promise<Response>,
+  plant_id: string | undefined,
+) => {
+  return callApi(`${BASE_API_URL}/images/plants/${plant_id}`);
 };
 
 export function PlantImages({
@@ -35,6 +39,7 @@ export function PlantImages({
   isYourPlant: boolean;
 }) {
   const { showAlert } = useAlert();
+  const { callApi } = useApi();
   const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
@@ -66,7 +71,7 @@ export function PlantImages({
     setShowConfirmDeleteModal(true);
   };
   const confirmDeleteImage = (image: PlantImage) => {
-    deletePlantImage(image)
+    deletePlantImage(callApi, image)
       .then((response) => {
         if (!response.ok) {
           showAlert("Error deleting image.", "danger");
@@ -86,7 +91,7 @@ export function PlantImages({
 
   useEffect(() => {
     if (SHOW_IMAGES) {
-      getPlantImages(plant_id)
+      getPlantImages(callApi, plant_id)
         .then((response) => {
           if (!response.ok) {
             if (response.status === 404) {

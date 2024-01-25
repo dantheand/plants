@@ -9,6 +9,7 @@ import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
 import { PlantFormHeader } from "./PlantFormHeader";
 import { ParentIdInput } from "./ParentIdInput";
 import { useAuth } from "../../context/Auth";
+import { useApi } from "../../utils/api";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -38,6 +39,7 @@ export const PlantForm = ({
 
   const { showAlert } = useAlert();
   const navigate = useNavigate();
+  const { callApi } = useApi();
 
   type PlantField = keyof Plant;
   const handleInputChange =
@@ -46,7 +48,7 @@ export const PlantForm = ({
     };
 
   const handleDelete = async () => {
-    const response = await deletePlant(plant.plant_id);
+    const response = await deletePlant(callApi, plant.plant_id);
     if (response.success) {
       showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
       navigate("/plants/user/me");

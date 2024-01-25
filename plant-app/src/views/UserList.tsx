@@ -8,6 +8,7 @@ import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Auth";
+import { useApi } from "../utils/api";
 
 type UserCardProps = {
   user: User;
@@ -60,11 +61,10 @@ export function UserList(): JSX.Element {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { showAlert } = useAlert();
+  const { callApi } = useApi();
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/users/`, {
-      credentials: "include",
-    })
+    callApi(`${BASE_API_URL}/users/`, {})
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);

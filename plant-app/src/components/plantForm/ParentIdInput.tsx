@@ -5,6 +5,7 @@ import { BASE_API_URL } from "../../constants";
 import { Col, Form, Row } from "react-bootstrap";
 import { ParentIdButton } from "./ParentIdButton";
 import { NewPlant } from "../../types/interfaces";
+import { useApi } from "../../utils/api";
 
 interface ParentIdInputProps {
   label: string;
@@ -21,13 +22,11 @@ export const ParentIdInput = ({
 }: ParentIdInputProps) => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const { callApi } = useApi();
 
   const handleParentClick = (parentHumanId: string) => {
     setPlantIsLoading(true);
-    // Query the API endpoint to get the parent plant ID and navigate to that plant's page
-    fetch(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {
-      credentials: "include",
-    })
+    callApi(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {})
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);

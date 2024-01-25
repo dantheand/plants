@@ -16,16 +16,17 @@ import { PlantImagesLoadingPlaceholder } from "../components/plantImages/PlantIm
 import { PlantForm } from "../components/plantForm/PlantForm";
 import { PlantFormPlaceholder } from "../components/plantForm/PlantFormPlaceholder";
 import { useAuth } from "../context/Auth";
+import { useApi } from "../utils/api";
 
 const updatePlant = async (
+  callApi: (url: string, options?: RequestInit) => Promise<Response>,
   plantData: NewPlant,
 ): Promise<ApiResponse<Plant>> => {
   try {
-    const response = await fetch(
+    const response = await callApi(
       `${BASE_API_URL}/plants/${plantData.plant_id}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -55,11 +56,10 @@ const usePlantDetails = (plantId: string | undefined) => {
   const [plant, setPlant] = useState<Plant | null>(null);
   const [plantIsLoading, setPlantIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { callApi } = useApi();
 
   useEffect(() => {
-    fetch(`${BASE_API_URL}/plants/${plantId}`, {
-      credentials: "include",
-    })
+    callApi(`${BASE_API_URL}/plants/${plantId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -79,6 +79,7 @@ const usePlantDetails = (plantId: string | undefined) => {
 };
 
 export const deletePlant = async (
+  callApi: (url: string, options?: RequestInit) => Promise<Response>,
   plantId: string | undefined,
 ): Promise<ApiResponse<null>> => {
   if (!plantId) {
@@ -90,9 +91,8 @@ export const deletePlant = async (
   }
   try {
     // Perform the DELETE request
-    const response = await fetch(`${BASE_API_URL}/plants/${plantId}`, {
+    const response = await callApi(`${BASE_API_URL}/plants/${plantId}`, {
       method: "DELETE",
-      credentials: "include",
     });
     if (!response.ok) {
       return {
@@ -129,6 +129,7 @@ export function PlantDetails() {
   const { showAlert } = useAlert();
   const { userId } = useAuth();
   const [isYourPlant, setIsYourPlant] = useState<boolean>(true);
+  const { callApi } = useApi();
 
   useEffect(() => {
     if (!plant || !userId) {
@@ -157,7 +158,7 @@ export function PlantDetails() {
     }
     console.log("Submitting form");
     console.log(plantInForm);
-    const updatedPlantResult = await updatePlant(plantInForm);
+    const updatedPlantResult = await updatePlant(callApi, plantInForm);
     if (updatedPlantResult.success) {
       setPlant(updatedPlantResult.data);
       setIsFormEditable(false);

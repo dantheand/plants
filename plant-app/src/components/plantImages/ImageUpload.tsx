@@ -3,6 +3,7 @@ import { Button, Form, Image, Spinner } from "react-bootstrap";
 import { useAlert } from "../../context/Alerts";
 import { BASE_API_URL } from "../../constants";
 import resizeImageWithPica from "../../utils/images";
+import { useApi } from "../../utils/api";
 
 interface ImageUploadProps {
   plant_id: string;
@@ -21,6 +22,7 @@ const ImageUpload = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const { showAlert } = useAlert();
+  const { callApi } = useApi();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -61,12 +63,11 @@ const ImageUpload = ({
       // TODO: enable timestamp data input
       // formData.append('timestamp', new Date().toISOString());
 
-      const response = await fetch(
+      const response = await callApi(
         `${BASE_API_URL}/images/plants/${plant_id}`,
         {
           method: "POST",
           body: formData,
-          credentials: "include",
         },
       );
 

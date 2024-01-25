@@ -6,11 +6,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
 
 import { PlantForm } from "../components/plantForm/PlantForm";
+import { useApi } from "../utils/api";
 
-const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
-  const response = await fetch(`${BASE_API_URL}/plants/create`, {
+interface CreatePlantProps {
+  callApi: (url: string, options?: RequestInit) => Promise<Response>;
+  plant: NewPlant;
+}
+
+const createPlant = async ({
+  callApi,
+  plant,
+}: CreatePlantProps): Promise<ApiResponse<Plant>> => {
+  const response = await callApi(`${BASE_API_URL}/plants/create`, {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -43,6 +51,7 @@ export function PlantCreate() {
   const navigate = useNavigate();
   const [plantIsLoading, setPlantIsLoading] = useState<boolean>(false);
   const { showAlert } = useAlert();
+  const { callApi } = useApi();
 
   const handleSubmitNewPlant = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -51,7 +60,10 @@ export function PlantCreate() {
     setPlantIsLoading(true);
     console.log("Submitting new plant:");
     console.log(plantInForm);
-    const createdPlantResult = await createPlant(plantInForm);
+    const createdPlantResult = await createPlant({
+      callApi: callApi,
+      plant: plantInForm,
+    });
     if (createdPlantResult.success && createdPlantResult.data) {
       showAlert("Successfully created plant", "success");
       // Navigate to the new plant's page
