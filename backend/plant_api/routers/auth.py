@@ -1,21 +1,18 @@
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Annotated, Optional, Tuple, Union
+from typing import Annotated, Optional
 
-from boto3.dynamodb.conditions import Key
 
 import jose
-from fastapi import Cookie, Depends, Response
+from fastapi import Depends
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from jose import jwt
 from starlette.requests import Request
 
-from plant_api.constants import SESSION_TOKEN_KEY
 from plant_api.constants import (
     ALGORITHM,
-    AWS_DEPLOYMENT_ENV,
     CREDENTIALS_EXCEPTION,
     GOOGLE_CLIENT_ID,
     GoogleOauthPayload,
@@ -23,15 +20,13 @@ from plant_api.constants import (
     TOKEN_URL,
     get_jwt_secret,
 )
-from plant_api.dependencies import get_current_user_session, get_session_token
+from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
-from plant_api.schema import EntityType, ItemKeys, SessionTokenItem, UserItem
-from plant_api.utils.deployment import get_deployment_env
+from plant_api.schema import EntityType, ItemKeys, UserItem
 from plant_api.utils.db import get_db_table, get_user_by_google_id
 from plant_api.schema import User
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-SESSION_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 7 * 24 * 60
 
 router = BaseRouter()
 
@@ -43,34 +38,8 @@ async def check_valid_user_token(user: Annotated[User, Depends(get_current_user_
     return user
 
 
-# TODO: it'd be great if we didnt have to do this...
-def set_session_token_cookie(response: Response, token_id: str):
-    response.set_cookie(
-        key=SESSION_TOKEN_KEY,
-        value=token_id,
-        httponly=True,
-        path="/",
-        secure=True if get_deployment_env() == AWS_DEPLOYMENT_ENV else False,
-        samesite="none" if get_deployment_env() == AWS_DEPLOYMENT_ENV else "lax",
-    )
-
-
-def generate_and_save_session_token(user: UserItem) -> str:
-    """Generates a session token for the user and saves it to the DB"""
-    token_id = str(uuid.uuid4())
-    token_item = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN.value}#{token_id}",
-        SK=f"{ItemKeys.USER.value}#{user.google_id}",
-        entity_type=EntityType.REFRESH_TOKEN,
-        issued_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(minutes=SESSION_TOKEN_EXPIRE_MINUTES),
-    )
-    add_session_token_to_db(token_item)
-    return token_id
-
-
 @router.post(f"/{TOKEN_URL}")
-async def auth(request: Request, response: Response):
+async def auth(request: Request):
     """Authenticates a users oauth2 token and returns a JWT access token and sets a refresh token cookie"""
     body = await request.json()
     token = body.get("token")
@@ -98,9 +67,7 @@ async def auth(request: Request, response: Response):
             LOGGER.info("User is disabled: %s", payload.email)
             raise CREDENTIALS_EXCEPTION
 
-        new_refresh_token = generate_and_save_session_token(user)
-        set_session_token_cookie(response, new_refresh_token)
-        token, _ = create_access_token_for_user(payload)
+        token = create_access_token_for_user(payload)
         return token
 
     except Exception as e:
@@ -109,31 +76,12 @@ async def auth(request: Request, response: Response):
 
 
 @router.get("/logout")
-async def logout(response: Response, session_token: Union[str, None] = Cookie(default=None, alias=SESSION_TOKEN_KEY)):
-    """Logs out the user by revoking their refresh token"""
-    if not session_token:
-        return
-    session_token_item = get_session_token(session_token)
-    revoke_session_token(session_token_item)
-    response.delete_cookie(key=SESSION_TOKEN_KEY, path="/")
+async def logout():
+    """Place holder for logout. Doesn't do anything because the frontend handles login state."""
+    return {"message": "Logged out"}
 
 
-def revoke_session_token(token: SessionTokenItem):
-    """Invalidates the refresh token"""
-    _ = get_db_table().update_item(
-        Key={"PK": token.PK, "SK": token.SK},
-        UpdateExpression="SET revoked = :revoked",
-        ExpressionAttributeValues={
-            ":revoked": True,
-        },
-    )
-
-
-def add_session_token_to_db(token: SessionTokenItem):
-    """Adds a refresh token to the DB"""
-    _ = get_db_table().put_item(Item=token.dynamodb_dump())
-
-
+# TODO: pull in firstname last name
 def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
     """Adds a new user to the DB"""
     user_item = UserItem(
@@ -147,7 +95,7 @@ def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
     _ = get_db_table().put_item(Item=user_item.dynamodb_dump())
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> Tuple[str, datetime]:
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Creates a signed JWT token with the given data and expiration time"""
     to_encode = data.copy()
     if expires_delta is None:
@@ -161,21 +109,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     except jose.JWTError as e:
         logging.error(e)
         raise e
-    return encoded_jwt, expire
+    return encoded_jwt
 
 
-def create_refresh_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
-    return create_access_token(
-        data={"google_id": payload.sub, "email": payload.email},
-        expires_delta=timedelta(minutes=SESSION_TOKEN_EXPIRE_MINUTES),
-    )
-
-
-def create_access_token_for_user(payload: GoogleOauthPayload) -> Tuple[str, datetime]:
+def create_access_token_for_user(payload: GoogleOauthPayload) -> str:
     return create_access_token(data={"google_id": payload.sub, "email": payload.email})
-
-
-def create_token_for_user(
-    payload: GoogleOauthPayload, expires_delta: Optional[timedelta] = None
-) -> Tuple[str, datetime]:
-    return create_access_token(data={"google_id": payload.sub, "email": payload.email}, expires_delta=expires_delta)

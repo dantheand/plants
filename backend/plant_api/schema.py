@@ -52,6 +52,7 @@ class DynamoDBMixin(BaseModel):
 
 
 # TODO: try to consolidate User and UserItem
+# TODO: add first name and last name
 class User(BaseModel):
     email: str
     google_id: str
@@ -60,7 +61,7 @@ class User(BaseModel):
     n_active_plants: Optional[int] = None
 
 
-# TODO: separate creation and full item schema (creation doesn't require google_id)
+# TODO: add first name and last name
 class UserItem(DynamoDBMixin):
     PK: str = Field(..., pattern=USER_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
@@ -176,29 +177,6 @@ class ImageItem(ImageBase):
         return values
 
 
-class SessionTokenItem(DynamoDBMixin):
-    """Session token schema"""
-
-    PK: str = Field(..., pattern=SESSION_TOKEN_KEY_PATTERN)
-    SK: str = Field(..., pattern=USER_KEY_PATTERN)
-    entity_type: str = Field(EntityType.SESSION_TOKEN)
-    issued_at: datetime
-    expires_at: datetime
-    revoked: bool = False
-    token_id: Optional[str] = None
-    user_id: Optional[str] = None
-
-    @model_validator(mode="before")
-    def extract_token_str(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        values["token_id"] = values["PK"].split("#")[1]
-        return values
-
-    @model_validator(mode="before")
-    def extract_user_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        values["user_id"] = values["SK"].split("#")[1]
-        return values
-
-
 # TODO: leave this out for now and just keep it simple with source stored as list of human_id in PlantItem
 class PlantSourceItem(DynamoDBMixin):
     PK: str = Field(
@@ -212,4 +190,4 @@ class PlantSourceItem(DynamoDBMixin):
     source_date: date
 
 
-DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, SessionTokenItem]
+DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem]
