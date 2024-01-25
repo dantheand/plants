@@ -10,8 +10,6 @@ class ItemKeys(str, Enum):
     PLANT = "PLANT"
     IMAGE = "IMAGE"
     SOURCE = "SOURCE"
-    SESSION_TOKEN = "SESSION_TOKEN"
-    REFRESH_TOKEN = "TOKEN"
 
 
 class EntityType(str, Enum):
@@ -19,8 +17,6 @@ class EntityType(str, Enum):
     PLANT = "Plant"
     IMAGE = "Image"
     LINEAGE = "Lineage"
-    SESSION_TOKEN = "Session token"
-    REFRESH_TOKEN = "Token"
 
 
 class SourceType(str, Enum):
@@ -37,8 +33,6 @@ USER_KEY_PATTERN = f"^{ItemKeys.USER.value}#"
 PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT.value}#"
 IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE.value}#"
 SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE.value}#"
-SESSION_TOKEN_KEY_PATTERN = f"^{ItemKeys.SESSION_TOKEN.value}#"
-REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN.value}#"
 
 
 class DynamoDBMixin(BaseModel):

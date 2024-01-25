@@ -1,13 +1,10 @@
 import uuid
 from datetime import datetime, timedelta
-from fastapi.exceptions import HTTPException
 
-import pytest
 from jose import jwt
 
-from plant_api.dependencies import get_current_user_session
 from plant_api.routers.auth import create_access_token_for_user
-from plant_api.schema import EntityType, ItemKeys, User
+from plant_api.schema import User
 from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
 from plant_api.constants import (
     ALGORITHM,
@@ -15,7 +12,6 @@ from plant_api.constants import (
     JWT_KEY_IN_SECRETS_MANAGER,
     JwtPayload,
     get_jwt_secret,
-    SESSION_TOKEN_KEY,
 )
 from plant_api.utils.secrets import get_aws_secret
 
@@ -39,21 +35,6 @@ def create_current_session_token(user: User) -> str:
     )
 
 
-#
-#
-# def create_revoked_session_token(mock_db, user_id: str) -> SessionTokenItem:
-#     session_token = SessionTokenItem(
-#         PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
-#         SK=f"{ItemKeys.USER.value}#{user_id}",
-#         entity_type=EntityType.SESSION_TOKEN,
-#         issued_at=datetime.utcnow(),
-#         expires_at=datetime.utcnow() + timedelta(days=1),
-#         revoked=True,
-#     )
-#     mock_db.insert_mock_data(session_token)
-#     return session_token
-#
-#
 def create_expired_session_token(user: User) -> str:
     return jwt.encode(
         JwtPayload(
