@@ -7,6 +7,7 @@ interface PlantFormHeaderProps {
   toggleEditable: () => void;
   isFormNewPlant: boolean;
   buttonsDisabled: boolean;
+  isYourPlant: boolean;
 }
 
 export const PlantFormHeader = ({
@@ -14,19 +15,22 @@ export const PlantFormHeader = ({
   toggleEditable,
   isFormNewPlant,
   buttonsDisabled,
+  isYourPlant,
 }: PlantFormHeaderProps) => {
   return (
     <Card.Header
       as="h4"
-      className="d-flex justify-content-between align-items-center"
+      className="d-flex justify-content-between align-items-center "
     >
       <span>Plant Information</span>
-      <HeaderEditSaveButtons
-        isFormEditable={isFormEditable}
-        toggleEditable={toggleEditable}
-        isFormNewPlant={isFormNewPlant}
-        buttonsDisabled={buttonsDisabled}
-      />
+      {isYourPlant && (
+        <HeaderEditSaveButtons
+          isFormEditable={isFormEditable}
+          toggleEditable={toggleEditable}
+          isFormNewPlant={isFormNewPlant}
+          buttonsDisabled={buttonsDisabled}
+        />
+      )}
     </Card.Header>
   );
 };

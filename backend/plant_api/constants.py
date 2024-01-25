@@ -19,7 +19,6 @@ ALGORITHM = "HS256"
 CREDENTIALS_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"},
 )
 JWT_KEY_IN_SECRETS_MANAGER = "jwt_signing_key"
 DEPLOYMENT_ENV_VAR = "DEPLOYMENT_ENV"
@@ -41,3 +40,6 @@ class JwtPayload(BaseModel):
     google_id: str = Field(..., description="Google's unique identifier for the user.")
     exp: datetime = Field(..., description="Expiration time for the token.")
     jti: str = Field(..., description="Unique identifier for the token.")
+
+
+SESSION_TOKEN_KEY = "session_token"

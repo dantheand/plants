@@ -1,6 +1,6 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
+import { BASE_API_URL } from "../constants";
 import { Card } from "react-bootstrap";
 
 import { Plant } from "../types/interfaces";
@@ -11,7 +11,8 @@ import { PlantListTable } from "../components/plantList/PlantListTable";
 import { BaseLayout } from "../components/Layouts";
 import { FloatingActionButton } from "../components/FloatingActionButton";
 import { useAlert } from "../context/Alerts";
-import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
+import { useAuth } from "../context/Auth";
+import { useApi } from "../utils/api";
 
 function incrementLargestId(plants: Plant[]): number {
   if (plants.length === 0) {
@@ -33,43 +34,41 @@ export function PlantList(): JSX.Element {
   const params = useParams<string>();
   const pathSpecifiedId = params.userId;
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
-  const { showAlert } = useAlert();
+  const [queryID, setQueryID] = useState<string | undefined>(undefined);
   // const [isGridView, setIsGridView] = useState<boolean>(false);
   // const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
-  useState<boolean>(true);
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [nextPlantId, setNextPlantId] = useState<number>(0);
   const navigate = useNavigate();
-  let userIdToQuery: string | null = null;
+  const { showAlert } = useAlert();
+  const { callApi } = useApi();
+  const { userId } = useAuth();
 
-  if (pathSpecifiedId === "me" || pathSpecifiedId === undefined) {
-    userIdToQuery = getGoogleIdFromToken();
-  } else {
-    userIdToQuery = pathSpecifiedId;
-  }
-
-  const currentUserId = getGoogleIdFromToken();
-
+  // Set query ID based on URL path or user ID
   useEffect(() => {
-    // This is to prevent the user from seeing the wrong list of plants
-    setIsLoading(true);
-    if (userIdToQuery === currentUserId) {
+    if (
+      pathSpecifiedId === "me" ||
+      pathSpecifiedId === undefined ||
+      pathSpecifiedId === userId
+    ) {
       setIsYourPlants(true);
+      setQueryID(userId);
     } else {
       setIsYourPlants(false);
+      setQueryID(pathSpecifiedId);
     }
-  }, [userIdToQuery, currentUserId]);
+  }, [pathSpecifiedId, userId]);
 
+  // Fetch plants from API
   useEffect(() => {
+    // Don't fetch if the query user ID has not been set yet
+    if (!queryID) {
+      return;
+    }
     setIsLoading(true);
-
-    fetch(`${BASE_API_URL}/plants/user/${userIdToQuery}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
-    })
+    callApi(`${BASE_API_URL}/plants/user/${queryID}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -86,12 +85,13 @@ export function PlantList(): JSX.Element {
       })
       .catch((error) => {
         showAlert(`Error fetching plant list: ${error}`, "danger");
+        console.error("Error fetching plant list:", error);
         setIsLoading(false);
       })
       .finally(() => {
         setIsLoading(false);
       });
-  }, [userIdToQuery, pathSpecifiedId, showAlert]);
+  }, [queryID, showAlert, callApi]);
 
   return (
     <BaseLayout>
