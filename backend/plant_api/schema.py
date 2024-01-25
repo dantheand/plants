@@ -10,7 +10,6 @@ class ItemKeys(str, Enum):
     PLANT = "PLANT"
     IMAGE = "IMAGE"
     SOURCE = "SOURCE"
-    SESSION_TOKEN = "SESSION_TOKEN"
     REFRESH_TOKEN = "TOKEN"
 
 
@@ -19,7 +18,6 @@ class EntityType(str, Enum):
     PLANT = "Plant"
     IMAGE = "Image"
     LINEAGE = "Lineage"
-    SESSION_TOKEN = "Session token"
     REFRESH_TOKEN = "Token"
 
 
@@ -37,7 +35,6 @@ USER_KEY_PATTERN = f"^{ItemKeys.USER.value}#"
 PLANT_KEY_PATTERN = f"^{ItemKeys.PLANT.value}#"
 IMAGE_KEY_PATTERN = f"^{ItemKeys.IMAGE.value}#"
 SOURCE_KEY_PATTERN = f"^{ItemKeys.SOURCE.value}#"
-SESSION_TOKEN_KEY_PATTERN = f"^{ItemKeys.SESSION_TOKEN.value}#"
 REFRESH_TOKEN_KEY_PATTERN = f"^{ItemKeys.REFRESH_TOKEN.value}#"
 
 
@@ -176,21 +173,21 @@ class ImageItem(ImageBase):
         return values
 
 
-class SessionTokenItem(DynamoDBMixin):
-    """Session token schema"""
+class TokenItem(DynamoDBMixin):
+    """Refresh token schema"""
 
-    PK: str = Field(..., pattern=SESSION_TOKEN_KEY_PATTERN)
+    PK: str = Field(..., pattern=REFRESH_TOKEN_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
-    entity_type: str = Field(EntityType.SESSION_TOKEN)
+    entity_type: str = Field(EntityType.REFRESH_TOKEN)
     issued_at: datetime
     expires_at: datetime
     revoked: bool = False
-    token_id: Optional[str] = None
+    token_str: Optional[str] = None
     user_id: Optional[str] = None
 
     @model_validator(mode="before")
     def extract_token_str(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        values["token_id"] = values["PK"].split("#")[1]
+        values["token_str"] = values["PK"].split("#")[1]
         return values
 
     @model_validator(mode="before")
@@ -212,4 +209,4 @@ class PlantSourceItem(DynamoDBMixin):
     source_date: date
 
 
-DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, SessionTokenItem]
+DbModelType = Union[UserItem, PlantItem, ImageItem, PlantSourceItem, TokenItem]

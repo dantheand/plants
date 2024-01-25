@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 import { Alert } from "react-bootstrap";
 import "../styles/styles.scss";
 import { Variant } from "react-bootstrap/types";
@@ -45,16 +39,15 @@ export const useAlert = () => useContext(AlertContext);
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alert, setAlert] = useState<AlertProps>(defaultAlert);
-  const showAlert = useCallback((message: string, variant: string) => {
-    setAlert(() => ({ show: true, message, variant }));
+  const showAlert = (message: string, variant: string) => {
+    setAlert({ show: true, message, variant });
     setTimeout(
-      () => setAlert((currentAlert) => ({ ...currentAlert, show: false })),
+      () => setAlert({ ...alert, show: false }),
       getTimeOutLength(variant),
-    );
-  }, []);
+    ); // auto-hide
+  };
   return (
     <AlertContext.Provider value={{ alert, showAlert }}>
-      <AlertComponent />
       {children}
     </AlertContext.Provider>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BASE_API_URL } from "../../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
 import { Card } from "react-bootstrap";
 import { PlantImage } from "../../types/interfaces";
 import { SHOW_IMAGES } from "../../featureFlags";
@@ -13,33 +13,26 @@ import { PlantImagesTimeline } from "./PlantImagesTimeline";
 import { PlantImagesLoadingPlaceholder } from "./PlantImagesLoadingPlaceholder";
 import { ImageUploadModal } from "./ImageUploadModal";
 import { FloatingActionButton } from "../FloatingActionButton";
-import { useApi } from "../../utils/api";
 
-const deletePlantImage = async (
-  callApi: (url: string, options?: RequestInit) => Promise<Response>,
-  image: PlantImage,
-) => {
-  return callApi(`${BASE_API_URL}/images/${image.image_id}`, {
+const deletePlantImage = async (image: PlantImage) => {
+  return fetch(`${BASE_API_URL}/images/${image.image_id}`, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+    },
   });
 };
 
-const getPlantImages = async (
-  callApi: (url: string, options?: RequestInit) => Promise<Response>,
-  plant_id: string | undefined,
-) => {
-  return callApi(`${BASE_API_URL}/images/plants/${plant_id}`);
+const getPlantImages = async (plant_id: string | undefined) => {
+  return fetch(`${BASE_API_URL}/images/plants/${plant_id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+    },
+  });
 };
 
-export function PlantImages({
-  plant_id,
-  isYourPlant,
-}: {
-  plant_id: string | undefined;
-  isYourPlant: boolean;
-}) {
+export function PlantImages({ plant_id }: { plant_id: string | undefined }) {
   const { showAlert } = useAlert();
-  const { callApi } = useApi();
   const [plantImages, setPlantImages] = useState<PlantImage[]>([]);
   const [imagesIsLoading, setImagesIsLoading] = useState<boolean>(true);
   const [hasImages, setHasImages] = useState<boolean>(false);
@@ -71,7 +64,7 @@ export function PlantImages({
     setShowConfirmDeleteModal(true);
   };
   const confirmDeleteImage = (image: PlantImage) => {
-    deletePlantImage(callApi, image)
+    deletePlantImage(image)
       .then((response) => {
         if (!response.ok) {
           showAlert("Error deleting image.", "danger");
@@ -91,7 +84,7 @@ export function PlantImages({
 
   useEffect(() => {
     if (SHOW_IMAGES) {
-      getPlantImages(callApi, plant_id)
+      getPlantImages(plant_id)
         .then((response) => {
           if (!response.ok) {
             if (response.status === 404) {
@@ -112,7 +105,7 @@ export function PlantImages({
       setImagesIsLoading(false);
       setHasImages(false);
     }
-  }, [plant_id, reloadTrigger, callApi]);
+  }, [plant_id, reloadTrigger]);
 
   return (
     <Card className="top-level-card">
@@ -136,7 +129,6 @@ export function PlantImages({
           onHide={handleCloseImageModal}
           image={selectedImage}
           onDelete={handleDeleteClick}
-          isYourPlant={isYourPlant}
         />
       )}
       {selectedImage && showConfirmDeleteModal && (
@@ -155,12 +147,10 @@ export function PlantImages({
           onUploadSuccess={onUploadSuccess}
         />
       )}
-      {isYourPlant && (
-        <FloatingActionButton
-          icon={<FaCamera size="2em" />}
-          handleOnClick={handleShowUploadModal}
-        />
-      )}
+      <FloatingActionButton
+        icon={<FaCamera size="2em" />}
+        handleOnClick={handleShowUploadModal}
+      />
     </Card>
   );
 }

@@ -1,11 +1,8 @@
 module.exports = {
-  verbose: true,
   testEnvironment: "jsdom",
   preset: "ts-jest",
-  transformIgnorePatterns: [
-    // Ignore ES modules in node_modules
-    "node_modules/(?!(crypto-random-string|use-local-storage-state)/)",
-  ],
+  // Random package is not compatible with Jest
+  transformIgnorePatterns: ["node_modules/(?!(crypto-random-string)/)"],
   transform: {
     "^.+\\.(ts|tsx)?$": "ts-jest",
     "^.+\\.(js|jsx)$": "babel-jest",

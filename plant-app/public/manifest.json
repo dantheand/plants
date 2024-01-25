@@ -1,9 +1,9 @@
 {
-  "short_name": "Plantopticon",
-  "name": "Plantopticon",
+  "short_name": "Plant App",
+  "name": "Plant App",
   "icons": [
     {
-      "src": "plantopticon-favicon.png",
+      "src": "leaf-icon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }

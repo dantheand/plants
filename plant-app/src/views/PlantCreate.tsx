@@ -1,26 +1,18 @@
 import { BaseLayout } from "../components/Layouts";
 import { useState } from "react";
 import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
-import { BASE_API_URL } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
 
 import { PlantForm } from "../components/plantForm/PlantForm";
-import { useApi } from "../utils/api";
 
-interface CreatePlantProps {
-  callApi: (url: string, options?: RequestInit) => Promise<Response>;
-  plant: NewPlant;
-}
-
-const createPlant = async ({
-  callApi,
-  plant,
-}: CreatePlantProps): Promise<ApiResponse<Plant>> => {
-  const response = await callApi(`${BASE_API_URL}/plants/create`, {
+const createPlant = async (plant: NewPlant): Promise<ApiResponse<Plant>> => {
+  const response = await fetch(`${BASE_API_URL}/plants/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
     },
     body: JSON.stringify(plant),
   });
@@ -50,7 +42,6 @@ export function PlantCreate() {
   const [plantInForm, setPlantInForm] = useState<NewPlant>(newPlant);
   const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const { callApi } = useApi();
 
   const handleSubmitNewPlant = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -58,10 +49,7 @@ export function PlantCreate() {
     event.preventDefault();
     console.log("Submitting new plant:");
     console.log(plantInForm);
-    const createdPlantResult = await createPlant({
-      callApi: callApi,
-      plant: plantInForm,
-    });
+    const createdPlantResult = await createPlant(plantInForm);
     if (createdPlantResult.success && createdPlantResult.data) {
       showAlert("Successfully created plant", "success");
       // Navigate to the new plant's page
@@ -80,7 +68,6 @@ export function PlantCreate() {
         isFormEditable={true}
         setIsFormEditable={() => {}} // no-op function since form should always be editable
         isFormNewPlant={true}
-        isYourPlant={true}
       />
       {/*<Button onClick={handleSubmitNewPlant}>Save New Plant</Button>*/}
     </BaseLayout>
