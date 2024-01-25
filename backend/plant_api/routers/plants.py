@@ -6,7 +6,7 @@ from uuid import UUID
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import Depends, HTTPException, status
 
-from plant_api.dependencies import get_current_user_session
+from plant_api.dependencies import get_current_user
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import get_db_table, query_by_plant_id
 from plant_api.schema import ImageItem, PlantCreate, PlantItem, PlantUpdate, User
@@ -20,7 +20,7 @@ PLANT_ROUTE = "/plants"
 
 router = BaseRouter(
     prefix=PLANT_ROUTE,
-    dependencies=[Depends(get_current_user_session)],
+    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -55,7 +55,7 @@ def get_plant(plant_id: UUID):
 
 
 @router.post("/create", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
-async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(get_current_user_session)]):
+async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(get_current_user)]):
     LOGGER.info(f"Creating plant for user {user.google_id}")
     table = get_db_table()
     # Query to check if a plant with the same human_id already exists for this user
@@ -77,7 +77,7 @@ async def create_plant(plant_data: PlantCreate, user: Annotated[User, Depends(ge
 
 
 @router.patch("/{plant_id}", response_model=PlantItem)
-async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_current_user_session)):
+async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_current_user)):
     table = get_db_table()
     pk = f"USER#{user.google_id}"
     sk = f"PLANT#{str(plant_id)}"
@@ -95,7 +95,7 @@ async def update_plant(plant_id: UUID, new_data: PlantUpdate, user=Depends(get_c
 
 
 @router.delete("/{plant_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_plant(plant_id: UUID, user=Depends(get_current_user_session)):
+async def delete_plant(plant_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
     pk = f"USER#{user.google_id}"
     sk = f"PLANT#{str(plant_id)}"

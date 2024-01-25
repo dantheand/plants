@@ -9,7 +9,6 @@ interface ImageDisplayModalProps {
   onHide: () => void;
   image: PlantImage;
   onDelete: (image: PlantImage) => void;
-  isYourPlant: boolean;
 }
 
 export function ImageDisplayModal({
@@ -17,7 +16,6 @@ export function ImageDisplayModal({
   onHide,
   image,
   onDelete,
-  isYourPlant,
 }: ImageDisplayModalProps) {
   return (
     <Modal
@@ -41,12 +39,10 @@ export function ImageDisplayModal({
         />
       </Modal.Body>
       <Modal.Footer className="justify-content-center">
-        {isYourPlant ? (
-          <Button variant="danger" onClick={() => onDelete(image)}>
-            Delete Image
-          </Button>
-        ) : null}
-        <Button onClick={onHide}>Close</Button>
+        <Button variant="danger" onClick={() => onDelete(image)}>
+          Delete Image
+        </Button>
+        <Button>Close</Button>
       </Modal.Footer>
     </Modal>
   );

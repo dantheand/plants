@@ -11,7 +11,7 @@ from pydantic import TypeAdapter
 from starlette import status
 
 from plant_api.constants import IMAGES_FOLDER, S3_BUCKET_NAME
-from plant_api.dependencies import get_current_user_session
+from plant_api.dependencies import get_current_user
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
 from plant_api.utils.s3 import create_presigned_urls_for_image, get_s3_client
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 router = BaseRouter(
     prefix="/images",
-    dependencies=[Depends(get_current_user_session)],
+    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -55,7 +55,7 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
 
 
 @router.get("/plants/{plant_id}", response_model=list[ImageItem])
-async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
+async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user)) -> list[ImageItem]:
     table = get_db_table()
     response = table.query(
         KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
@@ -84,7 +84,7 @@ async def get_image(image_id: UUID):
 async def create_image(
     plant_id: UUID,
     image_file: Annotated[UploadFile, File()],
-    user=Depends(get_current_user_session),
+    user=Depends(get_current_user),
     timestamp: Annotated[Optional[datetime], Form()] = None,
 ):
 
@@ -145,7 +145,7 @@ def delete_image_from_s3(image: ImageItem):
 
 
 @router.delete("/{image_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_image(image_id: UUID, user=Depends(get_current_user_session)):
+async def delete_image(image_id: UUID, user=Depends(get_current_user)):
     table = get_db_table()
 
     # Check if image exists
@@ -169,7 +169,7 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user_session)):
 
 
 @router.patch("/{image_id}", response_model=ImageItem)
-async def update_image(image_id: UUID, new_data: ImageItem, user=Depends(get_current_user_session)):
+async def update_image(image_id: UUID, new_data: ImageItem, user=Depends(get_current_user)):
     table = get_db_table()
     stored_item = query_by_image_id(table, image_id)
 

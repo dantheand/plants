@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { Button, Card, ListGroup, Placeholder } from "react-bootstrap";
 
 import "../styles/styles.scss";
@@ -7,8 +7,6 @@ import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/Auth";
-import { useApi } from "../utils/api";
 
 type UserCardProps = {
   user: User;
@@ -16,8 +14,6 @@ type UserCardProps = {
 
 export const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const navigate = useNavigate();
-  const { showAlert } = useAlert();
-  const { userId } = useAuth();
 
   return (
     <ListGroup.Item as="li" className="mb-2">
@@ -28,9 +24,6 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
       <Button
         variant="primary"
         onClick={() => {
-          if (user.google_id !== userId) {
-            showAlert("Creep mode engaged.", "success");
-          }
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
@@ -61,10 +54,13 @@ export function UserList(): JSX.Element {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { showAlert } = useAlert();
-  const { callApi } = useApi();
 
   useEffect(() => {
-    callApi(`${BASE_API_URL}/users/`, {})
+    fetch(`${BASE_API_URL}/users/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -84,7 +80,7 @@ export function UserList(): JSX.Element {
         showAlert(`Error fetching users: ${error}`, "danger");
         setIsLoading(false);
       });
-  }, [showAlert, callApi]);
+  }, [showAlert]);
 
   return (
     <BaseLayout>
