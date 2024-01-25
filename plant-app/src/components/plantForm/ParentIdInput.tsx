@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../../context/Alerts";
 import { BASE_API_URL } from "../../constants";
@@ -11,7 +11,7 @@ interface ParentIdInputProps {
   label: string;
   value: string[] | undefined;
   plant: NewPlant;
-  setPlantIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setPlantIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ParentIdInput = ({
@@ -25,7 +25,9 @@ export const ParentIdInput = ({
   const { callApi } = useApi();
 
   const handleParentClick = (parentHumanId: string) => {
-    setPlantIsLoading(true);
+    if (setPlantIsLoading) {
+      setPlantIsLoading(true);
+    }
     callApi(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {})
       .then((response) => {
         if (!response.ok) {

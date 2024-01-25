@@ -112,7 +112,7 @@ export function PlantImages({
       setImagesIsLoading(false);
       setHasImages(false);
     }
-  }, [plant_id, reloadTrigger]);
+  }, [plant_id, reloadTrigger, callApi]);
 
   return (
     <Card className="top-level-card">

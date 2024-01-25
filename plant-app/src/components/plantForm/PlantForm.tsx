@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import { NewPlant, Plant } from "../../types/interfaces";
 import { EditableInput } from "./EditableInput";
@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
 import { PlantFormHeader } from "./PlantFormHeader";
 import { ParentIdInput } from "./ParentIdInput";
-import { useAuth } from "../../context/Auth";
 import { useApi } from "../../utils/api";
 
 interface PlantFormProps {
@@ -20,7 +19,7 @@ interface PlantFormProps {
   setIsFormEditable: React.Dispatch<React.SetStateAction<boolean>>;
   isFormNewPlant?: boolean;
   nextId?: number;
-  setPlantIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setPlantIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   isYourPlant: boolean;
 }
 
@@ -68,14 +67,14 @@ export const PlantForm = ({
   return (
     <Form onSubmit={handleSubmit}>
       <Card className="top-level-card">
+        <PlantFormHeader
+          isFormEditable={isFormEditable}
+          toggleEditable={toggleEditable}
+          isFormNewPlant={isFormNewPlant}
+          buttonsDisabled={false}
+          isYourPlant={isYourPlant}
+        />
         <Card.Body>
-          <PlantFormHeader
-            isFormEditable={isFormEditable}
-            toggleEditable={toggleEditable}
-            isFormNewPlant={isFormNewPlant}
-            buttonsDisabled={false}
-            isYourPlant={isYourPlant}
-          />
           <EditableInput
             label="Unique ID Number"
             type="text"

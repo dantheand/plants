@@ -74,7 +74,7 @@ const usePlantDetails = (plantId: string | undefined) => {
         setError(error.message);
         setPlantIsLoading(false);
       });
-  }, [plantId]);
+  }, [plantId, callApi]);
   return { plant, plantIsLoading, error, setPlant, setPlantIsLoading };
 };
 

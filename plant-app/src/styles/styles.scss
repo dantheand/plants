@@ -119,10 +119,6 @@ html {
   margin-bottom: 3rem;
 }
 
-.top-level-card .card-body{
-  padding-bottom: 1rem;
-}
-
 .top-level-card .card-header {
     /*Overriding Bootstrap CSS for sticky headers*/
   --bs-card-cap-bg: #f8f5f0;
@@ -143,7 +139,6 @@ html {
   opacity: 1.0;
   z-index: 1000;
 
-  margin-bottom: 5px;
 }
 
 .plant-form-item {
