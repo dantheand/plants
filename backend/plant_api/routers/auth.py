@@ -68,7 +68,7 @@ async def auth(request: Request):
             raise CREDENTIALS_EXCEPTION
 
         token = create_access_token_for_user(payload)
-        return token
+        return {"token": token}
 
     except Exception as e:
         logging.error(e)

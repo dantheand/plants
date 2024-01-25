@@ -2,13 +2,19 @@
 // and the body of the request, then catches different types of error (like API errors vs javascript errors) and
 
 import { useCallback } from "react";
+import { JWT_TOKEN_STORAGE } from "../constants";
+import useLocalStorageState from "use-local-storage-state";
 
 export const useApi = () => {
+  const [storedJwt] = useLocalStorageState<string | null>(JWT_TOKEN_STORAGE);
+
   // useCallback is used to memoize the function so that it is not recreated on every render
   const callApi = useCallback(
     async (endpoint: string, options: RequestInit = {}) => {
       const defaultOptions: RequestInit = {
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${storedJwt}`,
+        },
       };
       const fetchOptions: RequestInit = { ...defaultOptions, ...options };
 

@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsAuthenticating(true);
       const tokenId = googleOauthResponse.credential;
-      const res = await fetch(BASE_API_URL + "/token", {
+      const response = await fetch(BASE_API_URL + "/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,8 +104,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify({ token: tokenId, nonce: nonce }),
       });
 
-      const data = await res.json();
-      setstoredJwt(data);
+      const data = await response.json();
+      console.log("Storing token:", data.token);
+
+      setstoredJwt(data.token);
       showAlert("Successfully logged in!", "success");
       navigate(`/plants/user/me`);
     } catch (error) {
