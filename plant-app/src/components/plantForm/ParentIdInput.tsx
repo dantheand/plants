@@ -1,31 +1,34 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../../context/Alerts";
-import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../../constants";
+import { BASE_API_URL } from "../../constants";
 import { Col, Form, Row } from "react-bootstrap";
 import { ParentIdButton } from "./ParentIdButton";
 import { NewPlant } from "../../types/interfaces";
+import { useApi } from "../../utils/api";
 
 interface ParentIdInputProps {
   label: string;
   value: string[] | undefined;
   plant: NewPlant;
+  setPlantIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
-  const [navigationIsLoading, setNavigationIsLoading] =
-    useState<boolean>(false);
+export const ParentIdInput = ({
+  label,
+  value,
+  plant,
+  setPlantIsLoading,
+}: ParentIdInputProps) => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const { callApi } = useApi();
 
   const handleParentClick = (parentHumanId: string) => {
-    setNavigationIsLoading(true);
-    // Query the API endpoint to get the parent plant ID and navigate to that plant's page
-    fetch(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(JWT_TOKEN_STORAGE)}`,
-      },
-    })
+    if (setPlantIsLoading) {
+      setPlantIsLoading(true);
+    }
+    callApi(`${BASE_API_URL}/plants/user/${plant.user_id}/${parentHumanId}`, {})
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -35,10 +38,8 @@ export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
       .then((data) => {
         navigate(`/plants/${data.plant_id}`);
         // Setting delay to give the new plant page time to load
-        setTimeout(() => setNavigationIsLoading(false), 500); // Adjust delay as needed
       })
       .catch((error) => {
-        setNavigationIsLoading(false);
         showAlert(`Error fetching parent: ${error}`, "danger");
       });
   };
@@ -56,7 +57,6 @@ export const ParentIdInput = ({ label, value, plant }: ParentIdInputProps) => {
               idx={idx}
               parent_id={parent_id}
               handleParentClick={handleParentClick}
-              navigationIsLoading={navigationIsLoading}
             />
           ))
         ) : (

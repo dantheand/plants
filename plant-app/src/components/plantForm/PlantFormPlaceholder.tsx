@@ -10,6 +10,7 @@ export const PlantFormPlaceholder = () => {
         toggleEditable={() => {}}
         isFormNewPlant={false}
         buttonsDisabled={true}
+        isYourPlant={false}
       />
       <Card.Body>
         {[...Array(8)].map((_, idx) => (

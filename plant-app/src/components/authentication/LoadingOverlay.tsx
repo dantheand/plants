@@ -1,11 +1,15 @@
 import { Spinner } from "react-bootstrap";
 
-export const LoadingOverlay = () => {
+interface LoadingOverlayProps {
+  loadingText: string;
+}
+
+export const LoadingOverlay = ({ loadingText }: LoadingOverlayProps) => {
   return (
     <div className="loading-overlay">
       <div className="loading-content">
         <Spinner animation="border" variant="light" />
-        <p>Authenticating...</p>
+        <p>{loadingText}</p>
       </div>
     </div>
   );
