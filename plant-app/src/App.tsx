@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { PlantDetails } from "./views/PlantDetails";
 import { UserList } from "./views/UserList";
+import { TestBox } from "./views/TestBox";
 import {
   BrowserRouter as Router,
   Routes,
@@ -126,6 +127,7 @@ function App() {
             <Route path="/plants/create/:nextId" element={<PlantCreate />} />
             <Route path="/users" element={<UserList />} />
           </Route>
+          <Route path="/testing" element={<TestBox />} />
         </Routes>
       </GlobalLayout>
     </Router>
