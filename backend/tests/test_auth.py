@@ -1,21 +1,12 @@
-import uuid
 from datetime import datetime, timedelta
-from fastapi.exceptions import HTTPException
 
-import pytest
 from jose import jwt
 
-from plant_api.dependencies import get_current_user_session, get_session_token
-from plant_api.routers.auth import create_access_token_for_user
-from plant_api.schema import EntityType, ItemKeys, SessionTokenItem
+from plant_api.routers.auth import create_access_token_for_user, create_refresh_token_for_user, create_token_for_user
+from plant_api.schema import EntityType, ItemKeys, TokenItem
+from plant_api.routers.auth import REFRESH_TOKEN, get_token_item_by_token
 from tests.lib import DEFAULT_TEST_USER, TEST_JWT_SECRET
-from plant_api.constants import (
-    ALGORITHM,
-    GoogleOauthPayload,
-    JWT_KEY_IN_SECRETS_MANAGER,
-    get_jwt_secret,
-    SESSION_TOKEN_KEY,
-)
+from plant_api.constants import ALGORITHM, GoogleOauthPayload, JWT_KEY_IN_SECRETS_MANAGER, get_jwt_secret
 from plant_api.utils.secrets import get_aws_secret
 
 
@@ -25,43 +16,34 @@ def create_current_access_token() -> str:
     return current_access_token
 
 
-def create_current_session_token(mock_db, user_id: str) -> SessionTokenItem:
-    session_token = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER.value}#{user_id}",
-        entity_type=EntityType.SESSION_TOKEN,
+def create_current_refresh_token(mock_db) -> TokenItem:
+    payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
+    current_refresh_token, exp = create_refresh_token_for_user(payload)
+
+    current_refresh_token_item = TokenItem(
+        PK=f"{ItemKeys.REFRESH_TOKEN.value}#{current_refresh_token}",
+        SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(days=1),
-        revoked=False,
+        expires_at=exp,
     )
-    mock_db.insert_mock_data(session_token)
-    return session_token
+    mock_db.insert_mock_data(current_refresh_token_item)
+    return current_refresh_token_item
 
 
-def create_revoked_session_token(mock_db, user_id: str) -> SessionTokenItem:
-    session_token = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER.value}#{user_id}",
-        entity_type=EntityType.SESSION_TOKEN,
+def create_expired_refresh_token(mock_db) -> TokenItem:
+    payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
+    current_refresh_token, exp = create_token_for_user(payload, expires_delta=timedelta(days=-1))
+
+    current_refresh_token_item = TokenItem(
+        PK=f"{ItemKeys.REFRESH_TOKEN.value}#{current_refresh_token}",
+        SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        entity_type=EntityType.REFRESH_TOKEN,
         issued_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(days=1),
-        revoked=True,
+        expires_at=exp,
     )
-    mock_db.insert_mock_data(session_token)
-    return session_token
-
-
-def create_expired_session_token(mock_db, user_id: str) -> SessionTokenItem:
-    session_token = SessionTokenItem(
-        PK=f"{ItemKeys.SESSION_TOKEN.value}#{uuid.uuid4()}",
-        SK=f"{ItemKeys.USER.value}#{user_id}",
-        entity_type=EntityType.SESSION_TOKEN,
-        issued_at=datetime.utcnow() - timedelta(days=2),
-        expires_at=datetime.utcnow() - timedelta(days=1),
-        revoked=False,
-    )
-    mock_db.insert_mock_data(session_token)
-    return session_token
+    mock_db.insert_mock_data(current_refresh_token_item)
+    return current_refresh_token_item
 
 
 class TestAWSAccess:
@@ -71,78 +53,61 @@ class TestAWSAccess:
 
 
 class TestTokenFlow:
-    def test_get_jwt_and_session_on_login(
-        self, client_no_session, mock_google_oauth, default_enabled_user_in_db, mock_db
-    ):
+    def test_get_tokens_on_login(self, client_logged_in, mock_google_oauth, default_enabled_user_in_db, mock_db):
         mock_oauth2_token = "mock_oauth2_token"
         mock_nonce = "mock_nonce"
 
-        response = client_no_session().post(
+        response = client_logged_in().post(
             "/token",
             json={"token": mock_oauth2_token, "nonce": mock_nonce},
         )
         assert response.status_code == 200
         access_token = response.json()
         decoded_access_token = jwt.decode(access_token, get_jwt_secret(), algorithms=[ALGORITHM])
-        session_token_item = get_session_token(response.cookies[SESSION_TOKEN_KEY])
+        decoded_refresh_token = jwt.decode(response.cookies["refresh_token"], get_jwt_secret(), algorithms=[ALGORITHM])
 
         assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
-        assert session_token_item.user_id == DEFAULT_TEST_USER.google_id
+        assert decoded_refresh_token["google_id"] == DEFAULT_TEST_USER.google_id
 
-    def test_check_token_w_valid_token(self, client_no_session, mock_db, default_enabled_user_in_db):
-        current_session_token = create_current_session_token(mock_db, default_enabled_user_in_db.google_id)
+    def test_get_new_tokens_from_refresh_token(self, client_logged_in, default_enabled_user_in_db, mock_db):
+        # Create refresh token in DB
+        current_refresh_token = create_current_refresh_token(mock_db)
+        client = client_logged_in()
+        client.cookies.set(REFRESH_TOKEN, current_refresh_token.token_str)
 
-        response = client_no_session().get("/check_token", cookies={SESSION_TOKEN_KEY: current_session_token.token_id})
+        response = client.post("/refresh_token")
         assert response.status_code == 200
-        assert response.json()["google_id"] == default_enabled_user_in_db.google_id
+        # Assert that the old one is revoked
+        old_token_in_db = get_token_item_by_token(current_refresh_token.token_str)
+        print(old_token_in_db)
+        assert old_token_in_db.revoked is True
 
-    def test_check_token_w_expired_token(self, client_no_session, mock_db, default_enabled_user_in_db):
-        expired_session_token = create_expired_session_token(mock_db, default_enabled_user_in_db.google_id)
+        # Assert that we get a new one and that it's in the DB
+        access_token = response.json()
+        decoded_access_token = jwt.decode(access_token, get_jwt_secret(), algorithms=[ALGORITHM])
+        decoded_refresh_token = jwt.decode(response.cookies[REFRESH_TOKEN], get_jwt_secret(), algorithms=[ALGORITHM])
 
-        response = client_no_session().get("/check_token", cookies={SESSION_TOKEN_KEY: expired_session_token.token_id})
+        assert decoded_access_token["google_id"] == DEFAULT_TEST_USER.google_id
+        assert decoded_refresh_token["google_id"] == DEFAULT_TEST_USER.google_id
+
+    def test_get_access_token_from_expired_refresh_token(self, client_logged_in, default_enabled_user_in_db, mock_db):
+        expired_refresh_token = create_expired_refresh_token(mock_db)
+        client = client_logged_in()
+        client.cookies.set(REFRESH_TOKEN, expired_refresh_token.token_str)
+
+        response = client.post("/refresh_token")
+
         assert response.status_code == 401
 
-    def test_logout_revokes_session_token(self, client_no_session, mock_db, default_enabled_user_in_db):
-        current_session_token = create_current_session_token(mock_db, default_enabled_user_in_db.google_id)
+    def test_check_token(self, client_no_jwt, mock_db):
+        response = client_no_jwt().get("/check_token")
+        assert response.status_code == 401
 
-        response = client_no_session().get("/logout", cookies={SESSION_TOKEN_KEY: current_session_token.token_id})
+    def test_check_token_with_valid_token(self, client_no_jwt, default_enabled_user_in_db):
+        jwt_access_token = create_current_access_token()
+        response = client_no_jwt().get("/check_token", headers={"Authorization": f"Bearer {jwt_access_token}"})
         assert response.status_code == 200
 
-        session_token_item = get_session_token(current_session_token.token_id)
-        assert session_token_item.revoked
-
-
-class TestAuthDependencies:
-    def test_get_current_user_w_valid_session(self, mock_db, default_enabled_user_in_db):
-        current_session_token = create_current_session_token(mock_db, default_enabled_user_in_db.google_id)
-
-        session_user = get_current_user_session(current_session_token.token_id)
-        assert session_user.google_id == default_enabled_user_in_db.google_id
-
-    def test_get_current_user_w_expired_session(self, mock_db, default_enabled_user_in_db):
-        expired_session_token = create_expired_session_token(mock_db, default_enabled_user_in_db.google_id)
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(expired_session_token)
-
-    def test_get_current_user_w_revoked_session(self, mock_db, default_enabled_user_in_db):
-        current_session_token = create_revoked_session_token(mock_db, default_enabled_user_in_db.google_id)
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(current_session_token.token_id)
-
-    def test_get_current_user_w_no_session(self, default_enabled_user_in_db):
-        with pytest.raises(HTTPException):
-            get_current_user_session("")
-
-    def test_get_current_user_w_invalid_user(self, mock_db):
-        current_session_token = create_current_session_token(mock_db, user_id="invalid_user_id")
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(current_session_token.token_id)
-
-    def test_get_current_user_w_disabled_user(self, mock_db, default_disabled_user_in_db):
-        current_session_token = create_current_session_token(mock_db, user_id=default_disabled_user_in_db.google_id)
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(current_session_token.token_id)
+    # TODO: implement this to prevent refresh token replay attacks
+    def test_refresh_token_reuse_invalidates_all_users_tokens(self):
+        pass
