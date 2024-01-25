@@ -189,10 +189,12 @@ html {
   display: flex;
   justify-content: center;
   margin-bottom: 0px;
-  margin-top: 50px;
+  margin-top: 0px;
 }
 
 .create-account-button{
-  width: 75%;
-  margin: 0px auto;
+  display: flex;
+  justify-content: center;
+
+
 }

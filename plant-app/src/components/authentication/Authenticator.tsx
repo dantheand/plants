@@ -46,8 +46,9 @@ export function AuthFromFrontEnd() {
               alt={`${APP_BRAND_NAME} Logo`}
               className="auth-logo"
             />
-            <h2>{APP_BRAND_NAME}</h2>
+            <h2 className="mb-3">{APP_BRAND_NAME}</h2>
           </div>
+          <hr />
           <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
             <div className="auth-form-group">
               <GoogleLogin
@@ -59,9 +60,8 @@ export function AuthFromFrontEnd() {
               />
             </div>
           </GoogleOAuthProvider>
-          <hr />
           <Button
-            variant="secondary"
+            variant="link"
             className={"create-account-button"}
             onClick={toggleShowToast}
           >
@@ -76,10 +76,13 @@ export function AuthFromFrontEnd() {
             </Toast.Header>
             <Toast.Body>
               <p>Interested in beta testing?</p>
-              <ul>
-                <li>Create a new account by logging in with Google (above)</li>
+              <ol>
+                <li>
+                  Create a new account by trying to log in with your Google
+                  account.
+                </li>
                 <li>Ask Dan to enable your account.</li>
-              </ul>
+              </ol>
             </Toast.Body>
           </Toast>
         </ToastContainer>
