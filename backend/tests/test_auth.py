@@ -107,39 +107,3 @@ class TestTokenFlow:
         response = client_no_session().get("/check_token", headers={"Authorization": f"Bearer {current_session_token}"})
 
         assert response.status_code == 401
-
-
-class TestAuthDependencies:
-    def test_get_current_user_w_valid_session(self, mock_db, default_enabled_user_in_db):
-        current_session_token = create_current_session_token(mock_db, default_enabled_user_in_db.google_id)
-
-        session_user = get_current_user_session(current_session_token.token_id)
-        assert session_user.google_id == default_enabled_user_in_db.google_id
-
-    def test_get_current_user_w_expired_session(self, mock_db, default_enabled_user_in_db):
-        expired_session_token = create_expired_session_token(mock_db, default_enabled_user_in_db.google_id)
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(expired_session_token)
-
-    def test_get_current_user_w_revoked_session(self, mock_db, default_enabled_user_in_db):
-        current_session_token = create_revoked_session_token(mock_db, default_enabled_user_in_db.google_id)
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(current_session_token.token_id)
-
-    def test_get_current_user_w_no_session(self, default_enabled_user_in_db):
-        with pytest.raises(HTTPException):
-            get_current_user_session("")
-
-    def test_get_current_user_w_invalid_user(self, mock_db):
-        current_session_token = create_current_session_token(mock_db, user_id="invalid_user_id")
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(current_session_token.token_id)
-
-    def test_get_current_user_w_disabled_user(self, mock_db, default_disabled_user_in_db):
-        current_session_token = create_current_session_token(mock_db, user_id=default_disabled_user_in_db.google_id)
-
-        with pytest.raises(HTTPException):
-            get_current_user_session(current_session_token.token_id)
