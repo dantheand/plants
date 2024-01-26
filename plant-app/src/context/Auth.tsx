@@ -7,14 +7,16 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE, USER_ID_STORAGE } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE } from "../constants";
 import { LoadingOverlay } from "../components/authentication/LoadingOverlay";
-import { getGoogleIdFromToken } from "../utils/GetGoogleIdFromToken";
 import { useNavigate } from "react-router-dom";
 import { CredentialResponse } from "@react-oauth/google";
 import { useAlert } from "./Alerts";
 import useLocalStorageState from "use-local-storage-state";
 import { useApi } from "../utils/api";
+
+import { jwtDecode } from "jwt-decode";
+import { JwtPayload } from "../types/interfaces";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -32,46 +34,56 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { showAlert } = useAlert();
 
-  const [storedUserId, setStoredUserId] = useLocalStorageState<string | null>(
-    USER_ID_STORAGE,
+  const [storedJwt, setstoredJwt] = useLocalStorageState<string | null>(
+    JWT_TOKEN_STORAGE,
     {
       defaultValue: null,
     },
   );
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const isAuthenticated = useMemo(() => storedUserId != null, [storedUserId]);
+  const isAuthenticated = useMemo(() => storedJwt != null, [storedJwt]);
   const navigate = useNavigate();
   const { callApi } = useApi();
 
   const userId = useMemo(() => {
-    if (storedUserId) {
-      return storedUserId;
+    if (storedJwt) {
+      const decodedToken: JwtPayload = jwtDecode(storedJwt);
+      return decodedToken.google_id;
     } else {
       return undefined;
     }
-  }, [storedUserId]);
+  }, [storedJwt]);
 
   const checkAuthenticationStatus = useCallback(
     async (showLoadingOverlay = false) => {
+      if (!storedJwt) {
+        showAlert("Session expired. Please log in again.", "danger");
+        return;
+      }
       try {
         if (showLoadingOverlay) {
           setIsAuthenticating(true);
         }
-        const response = await fetch(`${BASE_API_URL}/check_token`);
+        const response = await fetch(`${BASE_API_URL}/check_token`, {
+          headers: {
+            Authorization: `Bearer ${storedJwt}`,
+          },
+        });
         if (response.ok) {
         } else {
-          setStoredUserId(null);
+          showAlert("Session expired. Please log in again.", "danger");
+          setstoredJwt(null);
         }
       } catch (error) {
         console.error("Error checking authentication status:", error);
-        setStoredUserId(null);
+        setstoredJwt(null);
       } finally {
         setIsAuthenticating(false);
       }
     },
     //   TODO: figure out why we can't use callApi here (it results in a rerun of the effect on page navigation)
-    [setStoredUserId],
+    [setstoredJwt, storedJwt, showAlert],
   );
 
   useEffect(() => {
@@ -79,6 +91,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthenticationStatus(true);
 
     // TODO: implement some sort of polling to check authentication status and navigate to login if not authenticated
+    // You can query the backend with a GET request to /check_token
   }, [checkAuthenticationStatus]);
 
   const login = async (
@@ -88,7 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsAuthenticating(true);
       const tokenId = googleOauthResponse.credential;
-      const res = await callApi(BASE_API_URL + "/token", {
+      const response = await fetch(BASE_API_URL + "/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,16 +109,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify({ token: tokenId, nonce: nonce }),
       });
 
-      const data = await res.json();
-      // TODO: just store the userID in local storage rather than a token (change API return)
-      localStorage.setItem(JWT_TOKEN_STORAGE, data);
-      const userIdFromToken = getGoogleIdFromToken();
-      setStoredUserId(userIdFromToken);
+      const data = await response.json();
+      console.log("Storing token:", data.token);
+
+      setstoredJwt(data.token);
       showAlert("Successfully logged in!", "success");
       navigate(`/plants/user/me`);
     } catch (error) {
       console.error("Error authenticating with backend:", error);
-      setStoredUserId(null);
+      setstoredJwt(null);
       showAlert("Error authenticating with backend", "danger");
     } finally {
       setIsAuthenticating(false);
@@ -119,8 +131,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (response.ok) {
-        setStoredUserId(null);
-        localStorage.removeItem(JWT_TOKEN_STORAGE);
+        setstoredJwt(null);
         console.log("logged out");
         navigate("/login");
       } else {

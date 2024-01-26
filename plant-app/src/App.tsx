@@ -1,6 +1,7 @@
 import React from "react";
 import { PlantDetails } from "./views/PlantDetails";
 import { UserList } from "./views/UserList";
+import { TestBox } from "./views/TestBox";
 import {
   BrowserRouter as Router,
   Routes,
@@ -42,6 +43,7 @@ function App() {
               </Route>
               {/* Redirect to login by default */}
               <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="/testing" element={<TestBox />} />
             </Routes>
           </GlobalLayout>
         </AuthProvider>
