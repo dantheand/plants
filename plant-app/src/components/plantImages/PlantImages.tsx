@@ -24,13 +24,6 @@ const deletePlantImage = async (
   });
 };
 
-const getPlantImages = async (
-  callApi: (url: string, options?: RequestInit) => Promise<Response>,
-  plant_id: string | undefined,
-) => {
-  return callApi(`${BASE_API_URL}/images/plants/${plant_id}`);
-};
-
 export function PlantImages({
   plant_id,
   isYourPlant,
@@ -91,13 +84,12 @@ export function PlantImages({
 
   useEffect(() => {
     if (SHOW_IMAGES) {
-      getPlantImages(callApi, plant_id)
+      callApi(`${BASE_API_URL}/images/plants/${plant_id}`)
         .then((response) => {
           if (!response.ok) {
             if (response.status === 404) {
               return [];
             }
-            throw new Error(`Error: ${response.status}`);
           }
           return response.json();
         })
@@ -105,14 +97,18 @@ export function PlantImages({
           setPlantImages(data);
           setHasImages(data.length > 0);
         })
-        .then(() => {
+        .catch((error) => {
+          console.error("Error fetching plant images:", error);
+          showAlert(`Error fetching plant images: ${error}`, "danger");
+        })
+        .finally(() => {
           setImagesIsLoading(false);
         });
     } else {
       setImagesIsLoading(false);
       setHasImages(false);
     }
-  }, [plant_id, reloadTrigger, callApi]);
+  }, [plant_id, reloadTrigger, callApi, showAlert]);
 
   return (
     <Card className="top-level-card">
