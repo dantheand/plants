@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const checkAuthenticationStatus = useCallback(
     async (showLoadingOverlay = false) => {
       if (!storedJwt) {
-        showAlert("Session expired. Please log in again.", "danger");
         return;
       }
       try {
@@ -70,8 +69,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             Authorization: `Bearer ${storedJwt}`,
           },
         });
-        if (response.ok) {
-        } else {
+        if (!response.ok) {
           showAlert("Session expired. Please log in again.", "danger");
           setstoredJwt(null);
         }
@@ -110,10 +108,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       const data = await response.json();
-      console.log("Storing token:", data.token);
 
       setstoredJwt(data.token);
-      showAlert("Successfully logged in!", "success");
+      showAlert("Logged in!", "success");
       navigate(`/plants/user/me`);
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -132,7 +129,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (response.ok) {
         setstoredJwt(null);
-        console.log("logged out");
+        showAlert("Logged out!", "success");
         navigate("/login");
       } else {
         // Handle server-side errors (e.g., session not found)
