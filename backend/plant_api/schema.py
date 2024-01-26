@@ -146,6 +146,7 @@ class ImageCreate(BaseModel):
 class ImageBase(DynamoDBMixin):
     full_photo_s3_url: str
     thumbnail_photo_s3_url: str
+    small_thumbnail_photo_s3_url: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 

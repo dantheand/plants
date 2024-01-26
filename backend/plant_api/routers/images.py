@@ -71,6 +71,13 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return parsed_response
 
 
+# TODO: implement this
+@router.post("/plants/small_thumbs", response_model=list[ImageItem])
+async def get_plant_small_thumbs(plant_ids: list[UUID], user=Depends(get_current_user_session)) -> list[ImageItem]:
+    """Returns a list of all small thumbnails for the plant ids provided in the request body"""
+    ...
+
+
 # TODO: cleanup routes: /images/plant/<plant_id>
 #   /images/image/<image_id>
 @router.get("/{image_id}", response_model=ImageItem)
@@ -97,13 +104,7 @@ async def create_image(
     image_id = uuid4()
     image_content = await image_file.read()
 
-    # logger.info(f"Received file: {image_file.filename}, Content Type: {image_file.content_type}")
-    # logger.info(f"File Size: {len(image_content)} bytes")
-    # logger.debug(f"File Content (first 100 bytes): {image_content[:100]}")
-    # logger.debug(f"File Content (last 100 bytes): {image_content[-100:]}")
-
     # Save Original to S3
-
     image = img.open(io.BytesIO(image_content))
     image = _orient_image(image)
     original_s3_path = upload_image_to_s3(image, image_id, plant_id, ImageSuffixes.ORIGINAL)

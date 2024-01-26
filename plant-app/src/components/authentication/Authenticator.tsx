@@ -47,6 +47,7 @@ export function AuthFromFrontEnd() {
               className="auth-logo"
             />
             <h2 className="mb-3">{APP_BRAND_NAME}</h2>
+            <p className="mb-3">Monitor -- Manage -- Multiply</p>
           </div>
           <hr />
           <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
@@ -68,14 +69,18 @@ export function AuthFromFrontEnd() {
             Create Account
           </Button>
         </Card>
-        {/* Toast for displaying the message */}
         <ToastContainer position={"bottom-center"} className={"mb-3"}>
-          <Toast show={showCreateAccountToast} onClose={toggleShowToast}>
+          <Toast
+            show={showCreateAccountToast}
+            onClose={toggleShowToast}
+            // Solid background instead of slightly transparent
+            style={{ backgroundColor: "#ffffff" }}
+          >
             <Toast.Header>
               <strong className="me-auto">New Account Information</strong>
             </Toast.Header>
             <Toast.Body>
-              <p>Interested in beta testing?</p>
+              <p>Interested in beta testing? Follow these steps:</p>
               <ol>
                 <li>
                   Create a new account by trying to log in with your Google
