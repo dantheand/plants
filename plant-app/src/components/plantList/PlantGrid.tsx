@@ -27,7 +27,6 @@ export function PlantGrid({
             <Card
               key={plant.plant_id}
               className="m-1 clickable-item"
-              style={{ width: "10rem" }}
               onClick={() => handlePlantClick(plant.plant_id, navigate)}
             >
               <Card.Img src="https://placehold.co/200x200" alt="Card image" />
