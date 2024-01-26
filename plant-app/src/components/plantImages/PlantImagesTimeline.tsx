@@ -5,6 +5,7 @@ import {
 } from "react-vertical-timeline-component";
 import { convertTimestampToDateString } from "../../utils/utils";
 import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export function PlantImagesTimeline({
   plant_images,
@@ -27,7 +28,7 @@ export function PlantImagesTimeline({
           className="verticalTimelineElement"
         >
           <div className="timelineElementContent">
-            <img
+            <LazyLoadImage
               src={plant_image.signed_thumbnail_photo_url}
               alt={`Plant taken on ${plant_image.timestamp}`}
               className="img-fluid timelineImage clickable-item"

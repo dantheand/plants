@@ -160,7 +160,7 @@ html {
 
 .flexible-image {
     max-height: 100%; /* Maximum height is the container's height */
-    width: auto; /* Maintain the aspect ratio */
+    width: 95vw; /* Maintain the aspect ratio */
     object-fit: contain; /* Ensure the image is fully visible */
 }
 

@@ -1,13 +1,6 @@
 import React from "react";
 import { Plant } from "../../types/interfaces";
-import {
-  Card,
-  Col,
-  ListGroup,
-  Placeholder,
-  Row,
-  Spinner,
-} from "react-bootstrap";
+import { Card, Col, Row, Spinner } from "react-bootstrap";
 import { NavigateFunction } from "react-router-dom";
 
 interface PlantGridProps {
