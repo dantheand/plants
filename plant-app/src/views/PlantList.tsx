@@ -4,7 +4,7 @@ import { BASE_API_URL } from "../constants";
 import { Button, Card } from "react-bootstrap";
 
 import { Plant } from "../types/interfaces";
-import { FaPlus, FaTable, FaTh } from "react-icons/fa";
+import { FaPlus, FaList, FaTh } from "react-icons/fa";
 
 import "../styles/styles.scss";
 import { PlantListTable } from "../components/plantList/PlantListTable";
@@ -108,7 +108,7 @@ export function PlantList(): JSX.Element {
             className="float-right"
             onClick={() => setIsGridView(!isGridView)}
           >
-            {isGridView ? <FaTable /> : <FaTh />}
+            {isGridView ? <FaList /> : <FaTh />}
           </Button>
         </Card.Header>
         <Card.Body>
