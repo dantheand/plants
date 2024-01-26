@@ -1,5 +1,5 @@
 import { PlantImage } from "../../types/interfaces";
-import { Button, Image, Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { convertTimestampToDateString } from "../../utils/utils";
 import React from "react";
 import "../../styles/styles.scss";
