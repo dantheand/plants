@@ -8,12 +8,13 @@ export const useApi = () => {
   // useCallback is used to memoize the function so that it is not recreated on every render
   const callApi = useCallback(
     async (endpoint: string, options: RequestInit = {}) => {
-      const defaultOptions: RequestInit = {
+      const fetchOptions: RequestInit = {
+        ...options,
         headers: {
-          Authorization: `Bearer ${storedJwt}`,
+          ...options.headers,
+          ...(storedJwt ? { Authorization: `Bearer ${storedJwt}` } : {}),
         },
       };
-      const fetchOptions: RequestInit = { ...defaultOptions, ...options };
 
       try {
         const response = await fetch(endpoint, fetchOptions);
@@ -26,7 +27,7 @@ export const useApi = () => {
           );
         }
         if (!response.ok) {
-          return Promise.reject(new Error("Error: " + response.status));
+          return response;
         }
         console.log(response);
         return response;
