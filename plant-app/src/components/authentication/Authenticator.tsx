@@ -47,7 +47,7 @@ export function AuthFromFrontEnd() {
               className="auth-logo"
             />
             <h2 className="mb-3">{APP_BRAND_NAME}</h2>
-            <p className="mb-3">Monitor -- Manage -- Multiply</p>
+            <p className="mb-3">Monitor | Manage | Multiply</p>
           </div>
           <hr />
           <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} nonce={nonce}>
