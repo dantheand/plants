@@ -88,3 +88,6 @@ def get_n_plants_for_user(user: User) -> Tuple[int, int]:
     total_plants = len(parsed_plants)
     unsunk_plants = len([plant for plant in parsed_plants if not plant.sink])
     return total_plants, unsunk_plants
+
+
+## TODO: add get number of images for user and add to user return

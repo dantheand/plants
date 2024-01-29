@@ -54,28 +54,43 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
     return s3_path
 
 
-@router.get("/plants/{plant_id}", response_model=list[ImageItem])
-async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
+def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
     table = get_db_table()
     response = table.query(
         KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
     )
-    # Catch the case where there are no images for this plant
-    if "Items" not in response or response["Count"] == 0:
+    return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
+
+
+@router.get("/plants/{plant_id}", response_model=list[ImageItem])
+async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
+    images = get_images_for_plant(plant_id)
+    if not images:
         raise HTTPException(status_code=404, detail="Could not find images for plant.")
 
-    parsed_response = TypeAdapter(list[ImageItem]).validate_python(response["Items"])
-    for image in parsed_response:
+    for image in images:
         create_presigned_urls_for_image(image)
 
-    return parsed_response
+    return images
 
 
-# TODO: implement this
-@router.post("/plants/small_thumbs", response_model=list[ImageItem])
-async def get_plant_small_thumbs(plant_ids: list[UUID], user=Depends(get_current_user_session)) -> list[ImageItem]:
-    """Returns a list of all small thumbnails for the plant ids provided in the request body"""
-    ...
+def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
+    images = get_images_for_plant(plant_id)
+    # Sort images by timestamp
+    images.sort(key=lambda x: x.timestamp, reverse=True)
+    return images[0] if images else None
+
+
+@router.post("/plants/most_recent", response_model=list[ImageItem])
+async def get_plants_most_recent(plant_ids: list[UUID], user=Depends(get_current_user_session)) -> list[ImageItem]:
+    """Returns a list of the most recent image for plant ids provided in the request body"""
+    images = [get_most_recent_image_for_plant(plant_id) for plant_id in plant_ids]
+    images = [image for image in images if image is not None]
+    if not images:
+        raise HTTPException(status_code=404, detail="Could not find any images for plants.")
+    for image in images:
+        create_presigned_urls_for_image(image)
+    return images
 
 
 # TODO: cleanup routes: /images/plant/<plant_id>

@@ -56,6 +56,37 @@ class TestImageRead:
         for image in parsed_response:
             assert image.PK == f"PLANT#{plant.plant_id}"
 
+    def test_get_plant_wo_images(self, mock_db, client_mock_session, default_user_plant):
+        plant = default_user_plant
+
+        test_client = client_mock_session(DEFAULT_TEST_USER)
+        response = test_client.get(f"/images/plants/{plant.plant_id}")
+        assert response.status_code == 404
+
+    def test_get_most_recent_image_for_plant(self, mock_db, client_mock_session, default_user_plant):
+        plant = default_user_plant
+        timestamps = [
+            datetime(2020, 1, 1, 12, 0, 0),
+            datetime(2020, 1, 1, 12, 0, 2),
+            datetime(2020, 1, 1, 12, 0, 1),
+        ]
+        for timestamp in timestamps:
+            create_and_insert_image_record(mock_db, plant_id=plant.plant_id, timestamp=timestamp)
+
+        test_client = client_mock_session(DEFAULT_TEST_USER)
+        response = test_client.post(f"/images/plants/most_recent", json=[plant.plant_id])
+        assert response.status_code == 200
+        parsed_response = TypeAdapter(list[ImageItem]).validate_python(response.json())
+        assert parsed_response[0].plant_id == plant.plant_id
+        assert parsed_response[0].timestamp == timestamps[1]
+
+    def test_get_most_recent_image_for_plant_with_no_images(self, mock_db, client_mock_session, default_user_plant):
+        plant = default_user_plant
+
+        test_client = client_mock_session(DEFAULT_TEST_USER)
+        response = test_client.post(f"/images/plants/most_recent", json=[plant.plant_id])
+        assert response.status_code == 404
+
 
 class TestImageUpload:
     def test_upload_image_for_plant(self, client_mock_session, mock_db, fake_s3, default_user_plant):
