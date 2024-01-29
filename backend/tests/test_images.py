@@ -85,7 +85,9 @@ class TestImageRead:
 
         test_client = client_mock_session(DEFAULT_TEST_USER)
         response = test_client.post(f"/images/plants/most_recent", json=[plant.plant_id])
-        assert response.status_code == 404
+        assert response.status_code == 200
+        parsed_response = TypeAdapter(list[ImageItem]).validate_python(response.json())
+        assert parsed_response == []
 
 
 class TestImageUpload:

@@ -25,6 +25,10 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600
     return response
 
 
+def create_presigned_thumbnail_url(image: ImageItem) -> None:
+    image.signed_thumbnail_photo_url = create_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
+
+
 def create_presigned_urls_for_image(image: ImageItem) -> None:
     image.signed_full_photo_url = create_presigned_url(S3_BUCKET_NAME, image.full_photo_s3_url)
     image.signed_thumbnail_photo_url = create_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
