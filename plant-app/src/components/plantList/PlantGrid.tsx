@@ -25,6 +25,7 @@ export function PlantGrid({
   const { callApi } = useApi();
   const { showAlert } = useAlert();
 
+  // TODO: make it cancel this (or any API call) if navigating away
   useEffect(() => {
     if (!plants || plants.length === 0) {
       return;
