@@ -1,6 +1,6 @@
-import asyncio
 import io
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from enum import Enum
 from typing import Annotated, Optional
@@ -14,7 +14,12 @@ from starlette import status
 from plant_api.constants import IMAGES_FOLDER, S3_BUCKET_NAME
 from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
-from plant_api.utils.db import get_db_table, make_image_query_key, query_by_image_id, query_by_plant_id
+from plant_api.utils.db import (
+    get_db_table,
+    make_image_query_key,
+    query_by_image_id,
+    query_by_plant_id,
+)
 from plant_api.utils.s3 import create_presigned_thumbnail_url, create_presigned_urls_for_image, get_s3_client
 from plant_api.schema import EntityType, ImageItem
 from PIL import Image as img, ImageOps
@@ -83,14 +88,26 @@ def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
 
 
 @router.post("/plants/most_recent", response_model=list[Optional[ImageItem]])
-async def get_plants_most_recent(plant_ids: list[UUID], user=Depends(get_current_user_session)) -> list[ImageItem]:
+async def get_plants_most_recent_image(
+    plant_ids: list[UUID], user=Depends(get_current_user_session)
+) -> list[ImageItem]:
     """Returns a list of the most recent image for plant ids provided in the request body"""
-    images = [get_most_recent_image_for_plant(plant_id) for plant_id in plant_ids]
-    images = [image for image in images if image is not None]
+
+    def fetch_image(plant_id: UUID):
+        return get_most_recent_image_for_plant(plant_id)
+
+    images = []
+    # TODO: make this use async calls instead of multithreading
+    with ThreadPoolExecutor() as executor:
+        # Start the operations and mark each future with its plant_id
+        future_to_image = {executor.submit(fetch_image, plant_id): plant_id for plant_id in plant_ids}
+        for future in as_completed(future_to_image):
+            image = future.result()
+            if image:
+                create_presigned_thumbnail_url(image)
+                images.append(image)
     if not images:
         return []
-    for image in images:
-        create_presigned_thumbnail_url(image)
     return images
 
 
