@@ -68,17 +68,20 @@ export function PlantGrid({
           <Col key={plant.plant_id}>
             <Card
               key={plant.plant_id}
-              className="m-1 clickable-item"
+              className="m-1 clickable-item card-hoverable"
               onClick={() => handlePlantClick(plant.plant_id, navigate)}
             >
               <Card.Img
                 loading="lazy"
                 src={plantImages[plant.plant_id] || PLACEHOLDER_IMAGE_URL}
                 alt="Card image"
+                className="custom-card-img"
               />
               <Card.ImgOverlay>
-                <Card.Title>{plant.human_name}</Card.Title>
-                <Card.Text>{plant.source}</Card.Text>
+                <div className="card-top-content">
+                  <Card.Title>{plant.human_name}</Card.Title>
+                </div>
+                <div className="card-bottom-content">{plant.human_id}</div>
               </Card.ImgOverlay>
             </Card>
           </Col>
