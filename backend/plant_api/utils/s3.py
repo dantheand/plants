@@ -25,6 +25,7 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600
     return response
 
 
+# TODO switch this over to baby thumbnail
 def create_presigned_thumbnail_url(image: ImageItem) -> None:
     image.signed_thumbnail_photo_url = create_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
 

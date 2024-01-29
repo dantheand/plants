@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Plant, PlantImage } from "../../types/interfaces";
 import { Card, Col, Row, Spinner } from "react-bootstrap";
+import imagePlaceholder from "../../assets/200x200_image_placeholder.png";
 import { NavigateFunction } from "react-router-dom";
 import { useApi } from "../../utils/api";
 import { useAlert } from "../../context/Alerts";
@@ -12,8 +13,6 @@ interface PlantGridProps {
   handlePlantClick: (plantID: string, navigate: NavigateFunction) => void;
   navigate: NavigateFunction;
 }
-
-const PLACEHOLDER_IMAGE_URL = "https://placehold.co/200x200";
 
 export function PlantGrid({
   isLoading,
@@ -52,7 +51,7 @@ export function PlantGrid({
         );
         imageMap[id] = foundImage
           ? foundImage.signed_thumbnail_photo_url
-          : PLACEHOLDER_IMAGE_URL;
+          : imagePlaceholder;
       });
       setPlantImages(imageMap);
       showAlert("Loaded plant images", "success");
@@ -74,7 +73,7 @@ export function PlantGrid({
             >
               <Card.Img
                 loading="lazy"
-                src={plantImages[plant.plant_id] || PLACEHOLDER_IMAGE_URL}
+                src={plantImages[plant.plant_id] || imagePlaceholder}
                 alt="Card image"
                 className="custom-card-img"
               />
