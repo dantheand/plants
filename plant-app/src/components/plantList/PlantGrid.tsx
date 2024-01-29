@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Plant, PlantImage } from "../../types/interfaces";
 import { Card, Col, Row, Spinner } from "react-bootstrap";
-import imagePlaceholder from "../../assets/200x200_image_placeholder.png";
+import noimagePlaceholder from "../../assets/200x200_image_placeholder.png";
+import loadingImagePlaceholder from "../../assets/200x200_loading_image.png";
 import { NavigateFunction } from "react-router-dom";
 import { useApi } from "../../utils/api";
 import { useAlert } from "../../context/Alerts";
@@ -20,13 +21,16 @@ export function PlantGrid({
   handlePlantClick,
   navigate,
 }: PlantGridProps) {
+  const [plantGridIsLoading, setPlantGridIsLoading] = useState<boolean>(true);
   const [plantImages, setPlantImages] = useState<Record<string, string>>({});
   const { callApi } = useApi();
   const { showAlert } = useAlert();
 
   // TODO: make it cancel this (or any API call) if navigating away
   useEffect(() => {
+    setPlantGridIsLoading(true);
     if (!plants || plants.length === 0) {
+      setPlantGridIsLoading(false);
       return;
     }
     const plantIds = plants.map((plant) => plant.plant_id);
@@ -51,9 +55,10 @@ export function PlantGrid({
         );
         imageMap[id] = foundImage
           ? foundImage.signed_thumbnail_photo_url
-          : imagePlaceholder;
+          : noimagePlaceholder;
       });
       setPlantImages(imageMap);
+      setPlantGridIsLoading(false);
       showAlert("Loaded plant images", "success");
     });
   }, [plants, callApi, showAlert]);
@@ -71,12 +76,22 @@ export function PlantGrid({
               className="m-1 clickable-item card-hoverable"
               onClick={() => handlePlantClick(plant.plant_id, navigate)}
             >
-              <Card.Img
-                loading="lazy"
-                src={plantImages[plant.plant_id] || imagePlaceholder}
-                alt="Card image"
-                className="custom-card-img"
-              />
+              {plantGridIsLoading ? (
+                // Render placeholder image if still loading
+                <Card.Img
+                  src={loadingImagePlaceholder}
+                  alt="Loading..."
+                  className="custom-card-img"
+                />
+              ) : (
+                // Render actual image if loading is complete
+                <Card.Img
+                  loading="lazy"
+                  src={plantImages[plant.plant_id] || noimagePlaceholder}
+                  alt="Plant image"
+                  className="custom-card-img"
+                />
+              )}
               <Card.ImgOverlay>
                 <div className="card-top-content">
                   <Card.Title>{plant.human_name}</Card.Title>
