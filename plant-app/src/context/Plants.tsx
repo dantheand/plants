@@ -125,7 +125,8 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
     });
   }, [plants, callApi, showAlert, isAuthenticated]);
 
-  // TODO: convert this to force reload YOUR plants
+  // TODO: convert this to force reload YOUR plants (this is an edge case where someone CRUDs a plant after visiting
+  //    another users plant list
   const forceReloadPlants = async () => {
     if (!lastQueryID) {
       return;
