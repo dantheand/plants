@@ -21,18 +21,18 @@ export function PlantGrid({
   handlePlantClick,
   navigate,
 }: PlantGridProps) {
-  const [plantGridIsLoading, setPlantGridIsLoading] = useState<boolean>(true);
+  const [plantGridIsLoading, setPlantGridIsLoading] = useState<boolean>(false);
   const [plantImages, setPlantImages] = useState<Record<string, string>>({});
   const { callApi } = useApi();
   const { showAlert } = useAlert();
 
   // TODO: make it cancel this (or any API call) if navigating away
   useEffect(() => {
-    setPlantGridIsLoading(true);
+    // Check if image data for all plants already exists
     if (!plants || plants.length === 0) {
-      setPlantGridIsLoading(false);
-      return;
+      return; // No need to fetch data
     }
+    setPlantGridIsLoading(true);
     const plantIds = plants.map((plant) => plant.plant_id);
     console.log(plantIds);
     callApi(BASE_API_URL + "/images/plants/most_recent/", {

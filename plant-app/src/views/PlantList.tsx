@@ -1,6 +1,6 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL } from "../constants";
+import { BASE_API_URL, JWT_TOKEN_STORAGE, USE_GRID_VIEW } from "../constants";
 import { Button, Card } from "react-bootstrap";
 
 import { Plant } from "../types/interfaces";
@@ -14,6 +14,7 @@ import { FloatingActionButton } from "../components/FloatingActionButton";
 import { useAlert } from "../context/Alerts";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
+import useLocalStorageState from "use-local-storage-state";
 
 function incrementLargestId(plants: Plant[]): number {
   if (plants.length === 0) {
@@ -37,8 +38,12 @@ export function PlantList(): JSX.Element {
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
   const [queryID, setQueryID] = useState<string | undefined>(undefined);
   // TODO: make a global state for this
-  const [isGridView, setIsGridView] = useState<boolean>(false);
-  // const [isShowOnlyCurrentPlants, setIsShowOnlyCurrentPlants] =
+  const [isGridView, setIsGridView] = useLocalStorageState<boolean>(
+    USE_GRID_VIEW,
+    {
+      defaultValue: false,
+    },
+  );
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
