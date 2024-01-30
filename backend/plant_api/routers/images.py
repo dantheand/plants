@@ -16,7 +16,6 @@ from plant_api.constants import AWS_REGION, IMAGES_FOLDER, S3_BUCKET_NAME, TABLE
 from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import (
-    get_async_db_table,
     get_db_table,
     make_image_query_key,
     query_by_image_id,
@@ -91,7 +90,7 @@ def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
 
 
 async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Optional[ImageItem]:
-    logger.info(f"Fetching most recent image for plant {plant_id}")
+    logger.debug(f"Fetching most recent image for plant {plant_id}")
     images = await get_async_images_for_plant(session, plant_id)
     # Sort images by timestamp
     images.sort(key=lambda x: x.timestamp, reverse=True)

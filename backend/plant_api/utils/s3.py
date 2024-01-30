@@ -13,12 +13,6 @@ def get_s3_client():
     return boto3.client("s3")
 
 
-async def get_async_s3_client():
-    session = aioboto3.Session()
-    async with session.client("s3") as s3:
-        return await s3
-
-
 def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=86400):
     """Generate a presigned URL to share an S3 object"""
 
@@ -55,7 +49,7 @@ def create_presigned_thumbnail_url(image: ImageItem) -> None:
 
 
 async def create_async_presigned_thumbnail_url(session, image: ImageItem) -> None:
-    logger.info(f"Creating presigned URL for image {image.image_id}")
+    logger.debug(f"Creating presigned URL for image {image.image_id}")
     image.signed_thumbnail_photo_url = await create_async_presigned_url(
         session, S3_BUCKET_NAME, image.thumbnail_photo_s3_url
     )
