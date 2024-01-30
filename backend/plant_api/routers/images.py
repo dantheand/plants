@@ -74,8 +74,7 @@ def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
     return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
 
 
-async def get_async_images_for_plant(plant_id: UUID) -> list[ImageItem]:
-    session = aioboto3.Session()
+async def get_async_images_for_plant(session, plant_id: UUID) -> list[ImageItem]:
     async with session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
         table = await dynamodb.Table(TABLE_NAME)
         response = await table.query(
@@ -91,8 +90,9 @@ def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
     return images[0] if images else None
 
 
-async def get_async_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
-    images = await get_async_images_for_plant(plant_id)
+async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Optional[ImageItem]:
+    logger.info(f"Fetching most recent image for plant {plant_id}")
+    images = await get_async_images_for_plant(session, plant_id)
     # Sort images by timestamp
     images.sort(key=lambda x: x.timestamp, reverse=True)
     return images[0] if images else None
@@ -116,11 +116,12 @@ async def get_plants_most_recent_image(
 ) -> list[ImageItem]:
     """Returns a list of the most recent image for plant ids provided in the request body"""
 
+    session = aioboto3.Session()
+
     async def fetch_image(plant_id: UUID):
-        logger.info(f"Fetching most recent image for plant {plant_id}")
-        image = await get_async_most_recent_image_for_plant(plant_id)
+        image = await get_async_most_recent_image_for_plant(session, plant_id)
         if image:
-            await create_async_presigned_thumbnail_url(image)
+            await create_async_presigned_thumbnail_url(session, image)
         return image
 
     # Use asyncio.gather to run fetch_image concurrently for each plant_id

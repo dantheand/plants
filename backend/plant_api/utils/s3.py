@@ -6,6 +6,8 @@ from botocore.exceptions import ClientError
 from plant_api.constants import S3_BUCKET_NAME
 from plant_api.schema import ImageItem
 
+logger = logging.getLogger(__name__)
+
 
 def get_s3_client():
     return boto3.client("s3")
@@ -32,10 +34,9 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=8640
     return response
 
 
-async def create_async_presigned_url(bucket_name: str, object_name: str, expiration_sec=86400):
+async def create_async_presigned_url(session, bucket_name: str, object_name: str, expiration_sec=86400):
     """Generate a presigned URL to share an S3 object"""
 
-    session = aioboto3.Session()
     async with session.client("s3") as s3:
         try:
             response = await s3.generate_presigned_url(
@@ -53,8 +54,11 @@ def create_presigned_thumbnail_url(image: ImageItem) -> None:
     image.signed_thumbnail_photo_url = create_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
 
 
-async def create_async_presigned_thumbnail_url(image: ImageItem) -> None:
-    image.signed_thumbnail_photo_url = await create_async_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
+async def create_async_presigned_thumbnail_url(session, image: ImageItem) -> None:
+    logger.info(f"Creating presigned URL for image {image.image_id}")
+    image.signed_thumbnail_photo_url = await create_async_presigned_url(
+        session, S3_BUCKET_NAME, image.thumbnail_photo_s3_url
+    )
 
 
 def create_presigned_urls_for_image(image: ImageItem) -> None:
