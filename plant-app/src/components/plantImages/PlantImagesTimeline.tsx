@@ -27,7 +27,7 @@ export function PlantImagesTimeline({
           className="verticalTimelineElement"
         >
           <div className="timelineElementContent">
-            {/*TODO: figure out why this doesnt load the thumbnail image that was previously loaded*/}
+            {/*TODO: use a nice lazy load package here and use thumbnail as placeholder*/}
             <img
               loading="lazy"
               src={plant_image.signed_thumbnail_photo_url}
