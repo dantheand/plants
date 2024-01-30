@@ -10,7 +10,7 @@ def get_s3_client():
     return boto3.client("s3")
 
 
-def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600):
+def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=86400):
     """Generate a presigned URL to share an S3 object"""
 
     s3_client = get_s3_client()
