@@ -83,6 +83,8 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
 
   // TODO: centralize all the plant create, update, delete methods here
 
+  // TODO: also add in method to fetch the PlantGrid images
+
   return (
     <PlantContext.Provider
       value={{ plants, isLoading, fetchPlants, nextPlantId, forceReloadPlants }}
