@@ -1,6 +1,6 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, JWT_TOKEN_STORAGE, USE_GRID_VIEW } from "../constants";
+import { BASE_API_URL, USE_GRID_VIEW } from "../constants";
 import { Button, Card } from "react-bootstrap";
 
 import { Plant } from "../types/interfaces";

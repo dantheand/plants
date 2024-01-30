@@ -36,6 +36,7 @@ export function ImageDisplayModal({
       </Modal.Header>
       <Modal.Body className={"flex-modal-body"}>
         <LazyLoadImage
+          // TODO: figure out why this doesnt load the thumbnail image that was previously loaded
           placeholderSrc={image.signed_thumbnail_photo_url}
           src={image.signed_full_photo_url}
           alt="Plant"
