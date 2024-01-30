@@ -84,6 +84,7 @@ export const PlantForm = ({
             value={plantInForm.human_id}
             OnChange={handleInputChange("human_id")}
             isEditable={isFormEditable}
+            // This is redundant, but keeping it for clarity
             editsAllowed={false || isFormNewPlant}
             isRequired={true}
             placeholder={"e.g. 1"}
