@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 from uuid import UUID
 
+import aioboto3
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import HTTPException
@@ -18,6 +19,12 @@ def get_db_connection():
 
 def get_db_table():
     return get_db_connection().Table(TABLE_NAME)
+
+
+async def get_async_db_table():
+    session = aioboto3.Session()
+    async with session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
+        return await dynamodb.Table(TABLE_NAME)
 
 
 def query_by_plant_id(table, plant_id: UUID) -> PlantItem:

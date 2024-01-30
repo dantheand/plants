@@ -1,6 +1,7 @@
+import asyncio
+import aioboto3
 import io
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from enum import Enum
 from typing import Annotated, Optional
@@ -11,16 +12,21 @@ from fastapi import Depends, File, HTTPException, UploadFile
 from pydantic import TypeAdapter
 from starlette import status
 
-from plant_api.constants import IMAGES_FOLDER, S3_BUCKET_NAME
+from plant_api.constants import AWS_REGION, IMAGES_FOLDER, S3_BUCKET_NAME, TABLE_NAME
 from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import (
+    get_async_db_table,
     get_db_table,
     make_image_query_key,
     query_by_image_id,
     query_by_plant_id,
 )
-from plant_api.utils.s3 import create_presigned_thumbnail_url, create_presigned_urls_for_image, get_s3_client
+from plant_api.utils.s3 import (
+    create_async_presigned_thumbnail_url,
+    create_presigned_urls_for_image,
+    get_s3_client,
+)
 from plant_api.schema import EntityType, ImageItem
 from PIL import Image as img, ImageOps
 from PIL.Image import Image
@@ -28,7 +34,7 @@ from PIL.Image import Image
 from fastapi import Form
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 
 router = BaseRouter(
@@ -68,6 +74,30 @@ def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
     return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
 
 
+async def get_async_images_for_plant(plant_id: UUID) -> list[ImageItem]:
+    session = aioboto3.Session()
+    async with session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
+        table = await dynamodb.Table(TABLE_NAME)
+        response = await table.query(
+            KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
+        )
+        return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
+
+
+def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
+    images = get_images_for_plant(plant_id)
+    # Sort images by timestamp
+    images.sort(key=lambda x: x.timestamp, reverse=True)
+    return images[0] if images else None
+
+
+async def get_async_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
+    images = await get_async_images_for_plant(plant_id)
+    # Sort images by timestamp
+    images.sort(key=lambda x: x.timestamp, reverse=True)
+    return images[0] if images else None
+
+
 @router.get("/plants/{plant_id}", response_model=list[ImageItem])
 async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
     images = get_images_for_plant(plant_id)
@@ -80,35 +110,23 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return images
 
 
-def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
-    images = get_images_for_plant(plant_id)
-    # Sort images by timestamp
-    images.sort(key=lambda x: x.timestamp, reverse=True)
-    return images[0] if images else None
-
-
 @router.post("/plants/most_recent", response_model=list[Optional[ImageItem]])
 async def get_plants_most_recent_image(
     plant_ids: list[UUID], user=Depends(get_current_user_session)
 ) -> list[ImageItem]:
     """Returns a list of the most recent image for plant ids provided in the request body"""
 
-    def fetch_image(plant_id: UUID):
-        return get_most_recent_image_for_plant(plant_id)
+    async def fetch_image(plant_id: UUID):
+        logger.info(f"Fetching most recent image for plant {plant_id}")
+        image = await get_async_most_recent_image_for_plant(plant_id)
+        if image:
+            await create_async_presigned_thumbnail_url(image)
+        return image
 
-    images = []
-    # TODO: make this use async calls instead of multithreading
-    with ThreadPoolExecutor() as executor:
-        # Start the operations and mark each future with its plant_id
-        future_to_image = {executor.submit(fetch_image, plant_id): plant_id for plant_id in plant_ids}
-        for future in as_completed(future_to_image):
-            image = future.result()
-            if image:
-                create_presigned_thumbnail_url(image)
-                images.append(image)
-    if not images:
-        return []
-    return images
+    # Use asyncio.gather to run fetch_image concurrently for each plant_id
+    images = await asyncio.gather(*(fetch_image(plant_id) for plant_id in plant_ids))
+
+    return [image for image in images if image]
 
 
 # TODO: cleanup routes: /images/plant/<plant_id>
