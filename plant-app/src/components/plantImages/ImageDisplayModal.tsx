@@ -1,10 +1,8 @@
 import { PlantImage } from "../../types/interfaces";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Image, Modal } from "react-bootstrap";
 import { convertTimestampToDateString } from "../../utils/utils";
 import React from "react";
 import "../../styles/styles.scss";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
 
 interface ImageDisplayModalProps {
   show: boolean;
@@ -35,17 +33,13 @@ export function ImageDisplayModal({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={"flex-modal-body"}>
-        <LazyLoadImage
-          // TODO: figure out why this doesnt load the thumbnail image that was previously loaded
-          placeholderSrc={image.signed_thumbnail_photo_url}
+        {/*TODO: make this load lazily*/}
+        <Image
+          loading="lazy"
           src={image.signed_full_photo_url}
           alt="Plant"
           className={"flexible-image"}
-          wrapperProps={{
-            // If you need to, you can tweak the effect transition using the wrapper style.
-            style: { transitionDelay: "0.2s" },
-          }}
-          effect="blur"
+          fluid
         />
       </Modal.Body>
       <Modal.Footer className="justify-content-center">

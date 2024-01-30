@@ -51,7 +51,7 @@ def get_items_with_pk_and_sk_starting_with(table, prefix):
 
 def get_all_users() -> List[User]:
     """Queries DB for all entries where both PK and SK begin with USER#"""
-    table = get_db_table()  # Assuming get_db_table() returns the DynamoDB table object
+    table = get_db_table()
     response = get_items_with_pk_and_sk_starting_with(table, ItemKeys.USER)
     user_items = [UserItem(**item) for item in response]
     users = [User(**user_item.model_dump()) for user_item in user_items]

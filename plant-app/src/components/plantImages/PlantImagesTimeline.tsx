@@ -5,7 +5,6 @@ import {
 } from "react-vertical-timeline-component";
 import { convertTimestampToDateString } from "../../utils/utils";
 import React from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export function PlantImagesTimeline({
   plant_images,
@@ -29,7 +28,8 @@ export function PlantImagesTimeline({
         >
           <div className="timelineElementContent">
             {/*TODO: figure out why this doesnt load the thumbnail image that was previously loaded*/}
-            <LazyLoadImage
+            <img
+              loading="lazy"
               src={plant_image.signed_thumbnail_photo_url}
               alt={`Plant taken on ${plant_image.timestamp}`}
               className="img-fluid timelineImage clickable-item"
