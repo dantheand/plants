@@ -106,7 +106,7 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
     }
     setPlantGridIsLoading(true);
     const plantIds = plants.map((plant) => plant.plant_id);
-    callApi(BASE_API_URL + "/images/plants/most_recent/", {
+    callApi(BASE_API_URL + "/images/plants/most_recent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
