@@ -3,7 +3,6 @@ import React, { JSX, useEffect, useState } from "react";
 import { USE_GRID_VIEW } from "../constants";
 import { Button, Card } from "react-bootstrap";
 
-import { Plant } from "../types/interfaces";
 import { FaPlus, FaList, FaTh } from "react-icons/fa";
 
 import "../styles/styles.scss";
@@ -11,9 +10,7 @@ import { PlantListTable } from "../components/plantList/PlantListTable";
 import { PlantGrid } from "../components/plantList/PlantGrid";
 import { BaseLayout } from "../components/Layouts";
 import { FloatingActionButton } from "../components/FloatingActionButton";
-import { useAlert } from "../context/Alerts";
 import { useAuth } from "../context/Auth";
-import { useApi } from "../utils/api";
 import useLocalStorageState from "use-local-storage-state";
 import { usePlants } from "../context/Plants";
 
@@ -34,8 +31,6 @@ export function PlantList(): JSX.Element {
   );
 
   const navigate = useNavigate();
-  const { showAlert } = useAlert();
-  const { callApi } = useApi();
   const { userId } = useAuth();
   const { plants, isLoading, fetchPlants, nextPlantId } = usePlants();
 
