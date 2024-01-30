@@ -1,6 +1,6 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
-import { BASE_API_URL, USE_GRID_VIEW } from "../constants";
+import { USE_GRID_VIEW } from "../constants";
 import { Button, Card } from "react-bootstrap";
 
 import { Plant } from "../types/interfaces";
@@ -15,18 +15,7 @@ import { useAlert } from "../context/Alerts";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import useLocalStorageState from "use-local-storage-state";
-
-function incrementLargestId(plants: Plant[]): number {
-  if (plants.length === 0) {
-    return 1; // Return 1 if there are no plants, assuming IDs start from 1
-  }
-
-  const maxHumanId = plants.reduce((maxId, plant) => {
-    return plant.human_id > maxId ? plant.human_id : maxId;
-  }, plants[0].human_id);
-
-  return maxHumanId + 1; // Increment after finding the max
-}
+import { usePlants } from "../context/Plants";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
@@ -37,7 +26,6 @@ export function PlantList(): JSX.Element {
   const pathSpecifiedId = params.userId;
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
   const [queryID, setQueryID] = useState<string | undefined>(undefined);
-  // TODO: make a global state for this
   const [isGridView, setIsGridView] = useLocalStorageState<boolean>(
     USE_GRID_VIEW,
     {
@@ -45,13 +33,11 @@ export function PlantList(): JSX.Element {
     },
   );
 
-  const [plants, setPlants] = useState<Plant[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [nextPlantId, setNextPlantId] = useState<number>(0);
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const { callApi } = useApi();
   const { userId } = useAuth();
+  const { plants, isLoading, fetchPlants, nextPlantId } = usePlants();
 
   // Set query ID based on URL path or user ID
   useEffect(() => {
@@ -74,31 +60,8 @@ export function PlantList(): JSX.Element {
     if (!queryID) {
       return;
     }
-    setIsLoading(true);
-    callApi(`${BASE_API_URL}/plants/user/${queryID}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const sortedPlants = data.sort((a: Plant, b: Plant) => {
-          return a.human_id - b.human_id;
-        });
-        setNextPlantId(incrementLargestId(sortedPlants));
-        setPlants(sortedPlants);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        showAlert(`Error fetching plant list: ${error}`, "danger");
-        console.error("Error fetching plant list:", error);
-        setIsLoading(false);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [queryID, showAlert, callApi]);
+    fetchPlants(queryID);
+  }, [queryID, fetchPlants]);
 
   return (
     <BaseLayout>
