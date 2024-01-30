@@ -29,10 +29,10 @@ export const PlantListTable = ({
               key={plant.plant_id}
               action
               onClick={() => handlePlantClick(plant.plant_id, navigate)}
-              className="d-flex justify-content-start"
+              className="d-flex justify-content-between align-items-center"
             >
-              <div className="me-auto">{plant.human_id}</div>
-              <div className={"me-auto mx-3"}>{plant.human_name}</div>
+              <div className="me-3">{plant.human_id}</div>
+              <div className="text-center flex-grow-1">{plant.human_name}</div>
             </ListGroup.Item>
           ))}
     </ListGroup>

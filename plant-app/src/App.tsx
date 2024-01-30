@@ -17,6 +17,7 @@ import { GlobalLayout } from "./components/Layouts";
 import "./styles/styles.scss";
 import { AuthProvider, useAuth } from "./context/Auth";
 import { AlertProvider } from "./context/Alerts";
+import { PlantProvider } from "./context/Plants";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useAuth(); // Use the custom hook to access auth state
@@ -28,24 +29,26 @@ function App() {
     <Router basename="/">
       <AlertProvider>
         <AuthProvider>
-          <GlobalLayout>
-            <Routes>
-              <Route path="/" element={<AuthFromFrontEnd />} />
-              <Route path="/login" element={<AuthFromFrontEnd />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/plants/user/:userId" element={<PlantList />} />
-                <Route path="/plants/:plantId" element={<PlantDetails />} />
-                <Route
-                  path="/plants/create/:nextId"
-                  element={<PlantCreate />}
-                />
-                <Route path="/users" element={<UserList />} />
-              </Route>
-              {/* Redirect to login by default */}
-              <Route path="*" element={<Navigate to="/login" replace />} />
-              <Route path="/testing" element={<TestBox />} />
-            </Routes>
-          </GlobalLayout>
+          <PlantProvider>
+            <GlobalLayout>
+              <Routes>
+                <Route path="/" element={<AuthFromFrontEnd />} />
+                <Route path="/login" element={<AuthFromFrontEnd />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/plants/user/:userId" element={<PlantList />} />
+                  <Route path="/plants/:plantId" element={<PlantDetails />} />
+                  <Route
+                    path="/plants/create/:nextId"
+                    element={<PlantCreate />}
+                  />
+                  <Route path="/users" element={<UserList />} />
+                </Route>
+                {/* Redirect to login by default */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
+                <Route path="/testing" element={<TestBox />} />
+              </Routes>
+            </GlobalLayout>
+          </PlantProvider>
         </AuthProvider>
       </AlertProvider>
     </Router>

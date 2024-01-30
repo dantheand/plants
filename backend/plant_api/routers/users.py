@@ -15,6 +15,7 @@ router = BaseRouter(
 
 @router.get("/", response_model=list[User])
 async def get_users():
+    # TODO: add get number of images for user and add to user return
     users = get_all_active_users()
     for user in users:
         total_plants, active_plants = get_n_plants_for_user(user)

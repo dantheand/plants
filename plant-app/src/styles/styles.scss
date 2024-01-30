@@ -160,7 +160,7 @@ html {
 
 .flexible-image {
     max-height: 100%; /* Maximum height is the container's height */
-    width: auto; /* Maintain the aspect ratio */
+    width: 95vw; /* Maintain the aspect ratio */
     object-fit: contain; /* Ensure the image is fully visible */
 }
 
@@ -195,6 +195,44 @@ html {
 .create-account-button{
   display: flex;
   justify-content: center;
-
-
 }
+
+// Plant Image Grid
+.card-hoverable:hover .card-img-overlay {
+  background: transparent; /* Remove the dark overlay on hover */
+}
+
+.card-hoverable:hover .card-title,
+.card-hoverable:hover .card-text,
+.card-hoverable:hover .card-bottom-content {
+  text-shadow: none; /* Remove text shadow on hover */
+  color: transparent; /* Make text transparent on hover */
+}
+
+.card-hoverable .card-img-overlay {
+  transition: background 0.3s ease, color 0.3s ease;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Align content to top and bottom */
+  padding: 5px;
+}
+
+.card-hoverable .card-title,
+.card-hoverable .card-text {
+  margin: 0;
+  font-weight: bold;
+  //text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.custom-card-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-top-content,
+.card-bottom-content {
+  align-self: flex-start;
+}
+

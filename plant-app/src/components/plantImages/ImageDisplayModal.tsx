@@ -33,11 +33,13 @@ export function ImageDisplayModal({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={"flex-modal-body"}>
+        {/*TODO: make this load lazily*/}
         <Image
+          loading="lazy"
           src={image.signed_full_photo_url}
           alt="Plant"
-          fluid
           className={"flexible-image"}
+          fluid
         />
       </Modal.Body>
       <Modal.Footer className="justify-content-center">

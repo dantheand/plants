@@ -65,6 +65,8 @@ def image_record_factory(
         plant_id = fake.uuid4()
     if image_id is None:
         image_id = fake.uuid4()
+    if timestamp is None:
+        timestamp = fake.date_time()
     return ImageItem(
         PK=f"{ItemKeys.PLANT.value}#{plant_id}",
         SK=f"{ItemKeys.IMAGE.value}#{image_id}",
@@ -73,7 +75,7 @@ def image_record_factory(
         thumbnail_photo_s3_url=(
             thumbnail_photo_s3_url or make_s3_path_for_image(image_id, plant_id, ImageSuffixes.THUMB)
         ),
-        timestamp=timestamp or fake.date_time(),
+        timestamp=timestamp,
     )
 
 

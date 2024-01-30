@@ -52,8 +52,8 @@ def create_plants_for_user(mock_db, user: User, n_plants: int):
     return plants
 
 
-def create_and_insert_image_record(mock_db, plant_id=None):
-    image = image_record_factory(plant_id=plant_id)
+def create_and_insert_image_record(mock_db, plant_id=None, timestamp=None):
+    image = image_record_factory(plant_id=plant_id, timestamp=timestamp)
     mock_db.insert_mock_data(image)
     return image
 

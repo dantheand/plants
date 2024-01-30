@@ -27,7 +27,9 @@ export function PlantImagesTimeline({
           className="verticalTimelineElement"
         >
           <div className="timelineElementContent">
+            {/*TODO: use a nice lazy load package here and use thumbnail as placeholder*/}
             <img
+              loading="lazy"
               src={plant_image.signed_thumbnail_photo_url}
               alt={`Plant taken on ${plant_image.timestamp}`}
               className="img-fluid timelineImage clickable-item"

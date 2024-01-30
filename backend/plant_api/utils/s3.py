@@ -10,7 +10,7 @@ def get_s3_client():
     return boto3.client("s3")
 
 
-def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600):
+def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=86400):
     """Generate a presigned URL to share an S3 object"""
 
     s3_client = get_s3_client()
@@ -23,6 +23,11 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=3600
         return None
 
     return response
+
+
+# TODO switch this over to baby thumbnail
+def create_presigned_thumbnail_url(image: ImageItem) -> None:
+    image.signed_thumbnail_photo_url = create_presigned_url(S3_BUCKET_NAME, image.thumbnail_photo_s3_url)
 
 
 def create_presigned_urls_for_image(image: ImageItem) -> None:

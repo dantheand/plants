@@ -1,43 +1,12 @@
 import { BaseLayout } from "../components/Layouts";
 import { useState } from "react";
-import { ApiResponse, NewPlant, Plant } from "../types/interfaces";
-import { BASE_API_URL } from "../constants";
+import { NewPlant } from "../types/interfaces";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "../context/Alerts";
 
 import { PlantForm } from "../components/plantForm/PlantForm";
 import { useApi } from "../utils/api";
-
-interface CreatePlantProps {
-  callApi: (url: string, options?: RequestInit) => Promise<Response>;
-  plant: NewPlant;
-}
-
-const createPlant = async ({
-  callApi,
-  plant,
-}: CreatePlantProps): Promise<ApiResponse<Plant>> => {
-  const response = await callApi(`${BASE_API_URL}/plants/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(plant),
-  });
-  if (!response.ok) {
-    const error_response = await response.json();
-    const error_message = JSON.stringify(error_response);
-    return {
-      success: false,
-      data: null,
-      error: `Error: ${error_message}`,
-    };
-  }
-  return {
-    success: true,
-    data: await response.json(),
-  };
-};
+import { usePlants } from "../context/Plants";
 
 export const initialNewPlantState: NewPlant = {};
 
@@ -51,7 +20,9 @@ export function PlantCreate() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const { callApi } = useApi();
+  const { forceReloadPlants, createPlant } = usePlants();
 
+  // TODO: move this into the Plants provider
   const handleSubmitNewPlant = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -66,6 +37,7 @@ export function PlantCreate() {
       showAlert("Successfully created plant", "success");
       // Navigate to the new plant's page
       navigate(`/plants/${createdPlantResult.data.plant_id}`);
+      forceReloadPlants();
     } else {
       showAlert(`Error creating plant: ${createdPlantResult.error}`, "danger");
     }
@@ -82,7 +54,6 @@ export function PlantCreate() {
         isFormNewPlant={true}
         isYourPlant={true}
       />
-      {/*<Button onClick={handleSubmitNewPlant}>Save New Plant</Button>*/}
     </BaseLayout>
   );
 }

@@ -17,7 +17,9 @@ import { PlantForm } from "../components/plantForm/PlantForm";
 import { PlantFormPlaceholder } from "../components/plantForm/PlantFormPlaceholder";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
+import { usePlants } from "../context/Plants";
 
+// TODO: move this into the Plants provider
 const updatePlant = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
   plantData: NewPlant,
@@ -78,6 +80,7 @@ const usePlantDetails = (plantId: string | undefined) => {
   return { plant, plantIsLoading, error, setPlant, setPlantIsLoading };
 };
 
+// TODO: move this into the Plants provider
 export const deletePlant = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
   plantId: string | undefined,
@@ -117,7 +120,6 @@ export const deletePlant = async (
   }
 };
 
-// TODO: make this not show editable form or image upload if not the user's plant'
 export function PlantDetails() {
   const { plantId } = useParams<{ plantId: string }>();
   const navigate = useNavigate();
@@ -130,6 +132,7 @@ export function PlantDetails() {
   const { userId } = useAuth();
   const [isYourPlant, setIsYourPlant] = useState<boolean>(true);
   const { callApi } = useApi();
+  const { forceReloadPlants } = usePlants();
 
   useEffect(() => {
     if (!plant || !userId) {
@@ -162,6 +165,7 @@ export function PlantDetails() {
     if (updatedPlantResult.success) {
       setPlant(updatedPlantResult.data);
       setIsFormEditable(false);
+      forceReloadPlants();
       showAlert("Successfully updated plant", "success");
     } else {
       if (!plant) {
