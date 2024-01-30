@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Plant, PlantImage } from "../../types/interfaces";
+import React from "react";
+import { Plant } from "../../types/interfaces";
 import { Card, Col, Row, Spinner } from "react-bootstrap";
 import noimagePlaceholder from "../../assets/200x200_image_placeholder.png";
 import loadingImagePlaceholder from "../../assets/200x200_loading_image.png";
 import { NavigateFunction } from "react-router-dom";
-import { useApi } from "../../utils/api";
-import { useAlert } from "../../context/Alerts";
-import { BASE_API_URL } from "../../constants";
+import { usePlants } from "../../context/Plants";
 
 interface PlantGridProps {
   isLoading: boolean;
@@ -21,47 +19,7 @@ export function PlantGrid({
   handlePlantClick,
   navigate,
 }: PlantGridProps) {
-  const [plantGridIsLoading, setPlantGridIsLoading] = useState<boolean>(false);
-  const [plantImages, setPlantImages] = useState<Record<string, string>>({});
-  const { callApi } = useApi();
-  const { showAlert } = useAlert();
-
-  // TODO: make it cancel this (or any API call) if navigating away
-  useEffect(() => {
-    // Check if image data for all plants already exists
-    if (!plants || plants.length === 0) {
-      return; // No need to fetch data
-    }
-    setPlantGridIsLoading(true);
-    const plantIds = plants.map((plant) => plant.plant_id);
-    console.log(plantIds);
-    callApi(BASE_API_URL + "/images/plants/most_recent/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(plantIds),
-    }).then(async (response) => {
-      console.log(response);
-      if (!response.ok) {
-        showAlert("Error loading plant images", "danger");
-        return;
-      }
-      const imageData = await response.json();
-      const imageMap: Record<string, string> = {};
-      plantIds.forEach((id) => {
-        const foundImage = imageData.find(
-          (img: PlantImage) => img.plant_id === id,
-        );
-        imageMap[id] = foundImage
-          ? foundImage.signed_thumbnail_photo_url
-          : noimagePlaceholder;
-      });
-      setPlantImages(imageMap);
-      setPlantGridIsLoading(false);
-      showAlert("Loaded plant images", "success");
-    });
-  }, [plants, callApi, showAlert]);
+  const { plantGridIsLoading, plantImages } = usePlants();
 
   return (
     <Row xs={2} md={3} lg={4} className="g-4">
