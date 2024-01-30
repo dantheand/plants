@@ -4,6 +4,7 @@ import { Plant, PlantImage } from "../types/interfaces";
 import { useAlert } from "./Alerts";
 import { useApi } from "../utils/api";
 import noimagePlaceholder from "../assets/200x200_image_placeholder.png";
+import { useAuth } from "./Auth";
 
 interface PlantContextType {
   plants: Plant[];
@@ -47,6 +48,7 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
 
   const { showAlert } = useAlert();
   const { callApi } = useApi();
+  const { isAuthenticated } = useAuth();
 
   // Method to fetch plants from API
   const fetchPlants = async (queryID: string, forced: boolean = false) => {
@@ -85,6 +87,10 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
 
   // Fetch plant thumbnails for the grid
   useEffect(() => {
+    // Prevents API error on logout
+    if (!isAuthenticated) {
+      return;
+    }
     // Check if image data for all plants already exists
     if (!plants || plants.length === 0) {
       return; // No need to fetch data
@@ -116,13 +122,15 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
       });
       setPlantImages(imageMap);
       setPlantGridIsLoading(false);
-      showAlert("Loaded plant images", "success");
     });
-  }, [plants, callApi, showAlert]);
+  }, [plants, callApi, showAlert, isAuthenticated]);
 
   // TODO: convert this to force reload YOUR plants
   const forceReloadPlants = async () => {
-    fetchPlants(lastQueryID || "", true);
+    if (!lastQueryID) {
+      return;
+    }
+    fetchPlants(lastQueryID, true);
   };
 
   // TODO: centralize all the plant create, update, delete methods here
