@@ -7,6 +7,7 @@ import { useAlert } from "../context/Alerts";
 
 import { PlantForm } from "../components/plantForm/PlantForm";
 import { useApi } from "../utils/api";
+import { usePlants } from "../context/Plants";
 
 interface CreatePlantProps {
   callApi: (url: string, options?: RequestInit) => Promise<Response>;
@@ -51,6 +52,7 @@ export function PlantCreate() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const { callApi } = useApi();
+  const { forceReloadPlants } = usePlants();
 
   const handleSubmitNewPlant = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -66,6 +68,7 @@ export function PlantCreate() {
       showAlert("Successfully created plant", "success");
       // Navigate to the new plant's page
       navigate(`/plants/${createdPlantResult.data.plant_id}`);
+      forceReloadPlants();
     } else {
       showAlert(`Error creating plant: ${createdPlantResult.error}`, "danger");
     }

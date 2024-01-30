@@ -9,6 +9,7 @@ import { DeleteButtonWConfirmation } from "../DeleteButtonWConfirmation";
 import { PlantFormHeader } from "./PlantFormHeader";
 import { ParentIdInput } from "./ParentIdInput";
 import { useApi } from "../../utils/api";
+import { usePlants } from "../../context/Plants";
 
 interface PlantFormProps {
   plant: NewPlant;
@@ -39,6 +40,7 @@ export const PlantForm = ({
   const { showAlert } = useAlert();
   const navigate = useNavigate();
   const { callApi } = useApi();
+  const { forceReloadPlants } = usePlants();
 
   type PlantField = keyof Plant;
   const handleInputChange =
@@ -50,6 +52,7 @@ export const PlantForm = ({
     const response = await deletePlant(callApi, plant.plant_id);
     if (response.success) {
       showAlert(`Successfully deleted plant ${plant?.human_id}`, "success");
+      forceReloadPlants();
       navigate("/plants/user/me");
     } else {
       showAlert(`Error deleting plant: ${response.error}`, "danger");

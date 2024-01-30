@@ -9,6 +9,7 @@ interface PlantContextType {
   isLoading: boolean;
   fetchPlants: (queryID: string) => Promise<void>;
   nextPlantId: number;
+  forceReloadPlants: () => void;
 }
 
 export const PlantContext = createContext<PlantContextType>(
@@ -41,9 +42,11 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
   const { callApi } = useApi();
 
   // Method to fetch plants from API
-  const fetchPlants = async (queryID: string) => {
-    if (queryID === lastQueryID || !queryID) {
-      return;
+  const fetchPlants = async (queryID: string, forced: boolean = false) => {
+    if (!forced) {
+      if (queryID === lastQueryID || !queryID) {
+        return;
+      }
     }
     setLastQueryID(queryID);
 
@@ -73,9 +76,16 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
       });
   };
 
+  // TODO: convert this to force reload YOUR plants
+  const forceReloadPlants = async () => {
+    fetchPlants(lastQueryID || "", true);
+  };
+
+  // TODO: centralize all the plant create, update, delete methods here
+
   return (
     <PlantContext.Provider
-      value={{ plants, isLoading, fetchPlants, nextPlantId }}
+      value={{ plants, isLoading, fetchPlants, nextPlantId, forceReloadPlants }}
     >
       {children}
     </PlantContext.Provider>

@@ -17,6 +17,7 @@ import { PlantForm } from "../components/plantForm/PlantForm";
 import { PlantFormPlaceholder } from "../components/plantForm/PlantFormPlaceholder";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
+import { usePlants } from "../context/Plants";
 
 const updatePlant = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
@@ -130,6 +131,7 @@ export function PlantDetails() {
   const { userId } = useAuth();
   const [isYourPlant, setIsYourPlant] = useState<boolean>(true);
   const { callApi } = useApi();
+  const { forceReloadPlants } = usePlants();
 
   useEffect(() => {
     if (!plant || !userId) {
@@ -162,6 +164,7 @@ export function PlantDetails() {
     if (updatedPlantResult.success) {
       setPlant(updatedPlantResult.data);
       setIsFormEditable(false);
+      forceReloadPlants();
       showAlert("Successfully updated plant", "success");
     } else {
       if (!plant) {
