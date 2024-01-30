@@ -1,5 +1,6 @@
 import os
 
+import aioboto3
 import boto3
 import pytest
 from google.oauth2 import id_token
@@ -128,12 +129,24 @@ class MockDB(BaseMockDB):
         table.delete()
 
 
-@pytest.fixture
-def fake_s3():
-    with mock_s3():
-        client = boto3.client("s3", region_name=AWS_REGION)
-        client.create_bucket(Bucket=S3_BUCKET_NAME, CreateBucketConfiguration={"LocationConstraint": AWS_REGION})
-        yield client
+class AsyncMockDB(BaseMockDB):
+    def __init__(self):
+        super().__init__()
+        self.session = aioboto3.Session()
+
+    async def create_table(self):
+        async with self.session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
+            await dynamodb.create_table(**self.get_table_schema())
+
+    async def insert_mock_data(self, db_item: DbModelType):
+        async with self.session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
+            table = await dynamodb.Table(self.table_name)
+            await table.put_item(Item=db_item.dynamodb_dump())
+
+    async def delete_table(self):
+        async with self.session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
+            table = await dynamodb.Table(self.table_name)
+            await table.delete()
 
 
 @pytest.fixture
@@ -145,6 +158,25 @@ def mock_db():
         yield mock_db
 
         mock_db.delete_table()
+
+
+@pytest.fixture
+async def async_mock_db():
+    with mock_dynamodb():
+        mock_db = AsyncMockDB()
+        await mock_db.create_table()
+
+        yield mock_db
+
+        await mock_db.delete_table()
+
+
+@pytest.fixture
+def fake_s3():
+    with mock_s3():
+        client = boto3.client("s3", region_name=AWS_REGION)
+        client.create_bucket(Bucket=S3_BUCKET_NAME, CreateBucketConfiguration={"LocationConstraint": AWS_REGION})
+        yield client
 
 
 @pytest.fixture
