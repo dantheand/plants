@@ -83,23 +83,22 @@ def get_app():
     return app
 
 
-class MockDB:
+class BaseMockDB:
     def __init__(self):
         self.table_name = TABLE_NAME
-        self.dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 
-    def create_table(self):
-        self.dynamodb.create_table(
-            TableName=self.table_name,
-            KeySchema=[
+    def get_table_schema(self):
+        return {
+            "TableName": self.table_name,
+            "KeySchema": [
                 {"AttributeName": "PK", "KeyType": "HASH"},
                 {"AttributeName": "SK", "KeyType": "RANGE"},
             ],
-            AttributeDefinitions=[
+            "AttributeDefinitions": [
                 {"AttributeName": "PK", "AttributeType": "S"},
                 {"AttributeName": "SK", "AttributeType": "S"},
             ],
-            GlobalSecondaryIndexes=[
+            "GlobalSecondaryIndexes": [
                 {
                     "IndexName": "SK-PK-index",
                     "KeySchema": [
@@ -109,8 +108,17 @@ class MockDB:
                     "Projection": {"ProjectionType": "ALL"},
                 },
             ],
-            ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
-        )
+            "ProvisionedThroughput": {"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
+        }
+
+
+class MockDB(BaseMockDB):
+    def __init__(self):
+        super().__init__()
+        self.dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
+
+    def create_table(self):
+        self.dynamodb.create_table(**self.get_table_schema())
 
     def insert_mock_data(self, db_item: DbModelType):
         self.dynamodb.Table(self.table_name).put_item(Item=db_item.dynamodb_dump())
