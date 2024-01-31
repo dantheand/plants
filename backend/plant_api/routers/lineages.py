@@ -57,6 +57,11 @@ def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[Pl
     # Assign each plant to a level based on its generation
     for plant in plants:
         levels[plant.generation].append(plant)
+
+    # Sort by human_id within each level
+    for level in levels:
+        level.sort(key=lambda plant: plant.id)
+
     return levels
 
 
