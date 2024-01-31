@@ -26,10 +26,6 @@ class PlantLineageNode(BaseModel):
     parents: Optional[list[int]] = None  # list of PlantLinearNode.id values
 
 
-class PlantLineageGraph(BaseModel):
-    levels: list[list[PlantLineageNode]]
-
-
 def assign_generations(plants: list[PlantLineageNode]) -> None:
     plant_dict = {plant.id: plant for plant in plants}
 
@@ -64,14 +60,18 @@ def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[Pl
     return levels
 
 
-@router.get("/user/{user_id}")
+@router.get(
+    "/user/{user_id}",
+    response_model=list[list[PlantLineageNode]],
+    response_model_exclude_none=True,
+)
 async def get_plant_lineage_graph(user_id: str):
     # Construct a graph of plants based on their lineages
     plants = read_all_plants_for_user(user_id)
     plant_nodes = [PlantLineageNode(id=plant.human_id, parents=plant.parent_id) for plant in plants]
     assign_generations(plant_nodes)
     levels = assign_levels_to_generations(plant_nodes)
-    # Manually serialize plant nodes to exclude 'generation'
+    # Manually serialize plant nodes to exclude 'generation' and unset 'parents'
     serialized_levels = [
         [plant.model_dump(exclude_none=True, exclude={"generation"}) for plant in level] for level in levels
     ]

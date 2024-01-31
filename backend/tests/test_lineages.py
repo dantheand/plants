@@ -1,5 +1,4 @@
 from plant_api.routers.lineages import (
-    PlantLineageGraph,
     PlantLineageNode,
     assign_generations,
     assign_levels_to_generations,
@@ -80,7 +79,6 @@ class TestPlantLineages:
 
         response = client_mock_session().get(f"/lineages/user/{default_enabled_user_in_db.google_id}")
         assert response.status_code == 200
-        print(response.json())
         parsed_response = TypeAdapter(list[list[PlantLineageNode]]).validate_python(response.json())
         assert len(parsed_response) == 2
         assert len(parsed_response[0]) == 1
