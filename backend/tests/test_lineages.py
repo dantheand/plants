@@ -73,8 +73,6 @@ class TestPlantLineages:
         # Create a set of related plants
         plant_1 = plant_record_factory(parent_id=None)
         plant_2 = plant_record_factory(parent_id=[plant_1.human_id])
-        print(plant_1)
-        print(plant_2)
 
         # Add the plants to the mock db
         mock_db.insert_mock_data(plant_1)
@@ -82,12 +80,12 @@ class TestPlantLineages:
 
         response = client_mock_session().get(f"/lineages/user/{default_enabled_user_in_db.google_id}")
         assert response.status_code == 200
-        parsed_response = TypeAdapter(PlantLineageGraph).validate_python(response.json())
-        print(parsed_response)
-        assert len(parsed_response.levels) == 2
-        assert len(parsed_response.levels[0]) == 1
-        assert len(parsed_response.levels[1]) == 1
-        assert parsed_response.levels[0][0].id == plant_1.human_id
-        assert parsed_response.levels[1][0].id == plant_2.human_id
-        assert parsed_response.levels[0][0].parents is None
-        assert parsed_response.levels[1][0].parents == [plant_1.human_id]
+        print(response.json())
+        parsed_response = TypeAdapter(list[list[PlantLineageNode]]).validate_python(response.json())
+        assert len(parsed_response) == 2
+        assert len(parsed_response[0]) == 1
+        assert len(parsed_response[1]) == 1
+        assert parsed_response[0][0].id == plant_1.human_id
+        assert parsed_response[1][0].id == plant_2.human_id
+        assert parsed_response[0][0].parents is None
+        assert parsed_response[1][0].parents == [plant_1.human_id]

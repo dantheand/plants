@@ -42,10 +42,10 @@ function App() {
                     element={<PlantCreate />}
                   />
                   <Route path="/users" element={<UserList />} />
+                  <Route path="/testing" element={<TestBox />} />
                 </Route>
                 {/* Redirect to login by default */}
                 <Route path="*" element={<Navigate to="/login" replace />} />
-                <Route path="/testing" element={<TestBox />} />
               </Routes>
             </GlobalLayout>
           </PlantProvider>
