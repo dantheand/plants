@@ -1,6 +1,6 @@
 from plant_api.routers.lineages import (
     PlantLineageNode,
-    assign_generations,
+    assign_generations_and_source_parents,
     assign_levels_to_generations,
 )
 from tests.lib import plant_record_factory
@@ -15,7 +15,7 @@ class TestGenerationAssignment:
         child_plant = PlantLineageNode(id=1, parents=[root_plant.id])
         grandchild_plant = PlantLineageNode(id=2, parents=[child_plant.id])
 
-        assign_generations([root_plant, child_plant, grandchild_plant])
+        assign_generations_and_source_parents([root_plant, child_plant, grandchild_plant])
         assert root_plant.generation == 0
         assert child_plant.generation == 1
         assert grandchild_plant.generation == 2
@@ -27,7 +27,7 @@ class TestGenerationAssignment:
         child_plant = PlantLineageNode(id=2, parents=[root_plant_1.id, root_plant_2.id])
         grandchild_plant = PlantLineageNode(id=3, parents=[child_plant.id])
 
-        assign_generations([root_plant_1, root_plant_2, child_plant, grandchild_plant])
+        assign_generations_and_source_parents([root_plant_1, root_plant_2, child_plant, grandchild_plant])
         assert root_plant_1.generation == 0
         assert root_plant_2.generation == 0
         assert child_plant.generation == 1
@@ -38,7 +38,7 @@ class TestGenerationAssignment:
         root_plant_1 = PlantLineageNode(id=0)
         root_plant_2 = PlantLineageNode(id=1)
 
-        assign_generations([root_plant_1, root_plant_2])
+        assign_generations_and_source_parents([root_plant_1, root_plant_2])
         assert root_plant_1.generation == 0
         assert root_plant_2.generation == 0
 
@@ -48,7 +48,7 @@ class TestGenerationAssignment:
         child_plant = PlantLineageNode(id=1, parents=[root_plant.id])
         grandchild_plant = PlantLineageNode(id=2, parents=[child_plant.id, root_plant.id])
 
-        assign_generations([root_plant, child_plant, grandchild_plant])
+        assign_generations_and_source_parents([root_plant, child_plant, grandchild_plant])
         assert root_plant.generation == 0
         assert child_plant.generation == 1
         assert grandchild_plant.generation == 2
