@@ -1,6 +1,5 @@
 import logging
 from typing import Optional
-from uuid import UUID
 
 from plant_api.routers.common import BaseRouter
 from plant_api.dependencies import get_current_user_session
@@ -26,6 +25,7 @@ class PlantLineageNode(BaseModel):
     parents: Optional[list[int]] = None  # list of PlantLinearNode.id values
 
 
+# TODO: create nodes for "sources" and "sinks" that aren't plants
 def assign_generations(plants: list[PlantLineageNode]) -> None:
     plant_dict = {plant.id: plant for plant in plants}
 
