@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 from uuid import UUID
 
+import aioboto3
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import HTTPException
