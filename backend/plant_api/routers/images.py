@@ -109,6 +109,7 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return images
 
 
+# TODO: write tests for this route
 @router.post("/plants/most_recent", response_model=list[Optional[ImageItem]])
 async def get_plants_most_recent_image(
     plant_ids: list[UUID], user=Depends(get_current_user_session)
