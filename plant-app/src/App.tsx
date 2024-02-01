@@ -43,7 +43,6 @@ function App() {
                     element={<PlantCreate />}
                   />
                   <Route path="/users" element={<UserList />} />
-                  <Route path="/lineages" element={<TangledTree />} />
                   <Route
                     path="/lineages/user/:userId"
                     element={<TangledTree />}

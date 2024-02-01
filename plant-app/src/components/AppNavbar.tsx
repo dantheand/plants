@@ -36,7 +36,7 @@ export const AppNavbar = () => {
             Plants
           </Nav.Link>
           <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
-          <Nav.Link onClick={() => handleNavigate("/lineages")}>
+          <Nav.Link onClick={() => handleNavigate("/lineages/user/me")}>
             Lineages
           </Nav.Link>
         </Nav>
