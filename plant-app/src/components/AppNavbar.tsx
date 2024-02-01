@@ -6,12 +6,10 @@ import { useNavigate } from "react-router-dom";
 import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 import { useAuth } from "../context/Auth";
-import { useAlert } from "../context/Alerts";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { showAlert } = useAlert();
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -38,10 +36,7 @@ export const AppNavbar = () => {
             Plants
           </Nav.Link>
           <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
-          <Nav.Link
-            // onClick={() => handleNavigate("/lineages")}
-            onClick={() => showAlert('Coming "soon"', "secondary")}
-          >
+          <Nav.Link onClick={() => handleNavigate("/lineages")}>
             Lineages
           </Nav.Link>
         </Nav>
