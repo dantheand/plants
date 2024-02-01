@@ -5,7 +5,6 @@ const color = d3.scaleOrdinal(d3.schemeDark2);
 const background_color = "white";
 
 export const renderChart = (data, options = {}) => {
-  console.log("data", data);
   options.color ||= (d, i) => color(i);
 
   const tangleLayout = constructTangleLayout(_.cloneDeep(data), options);
