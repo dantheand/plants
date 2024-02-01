@@ -3,18 +3,20 @@
 import * as d3 from "d3";
 import _ from "lodash";
 import { useMemo } from "react";
+import { useAlert } from "../context/Alerts";
 
 const color = d3.scaleOrdinal(d3.schemeDark2);
 const background_color = "white";
 
 export const TangledTreeVisualization = ({ data }) => {
+  const { showAlert } = useAlert();
   const tangleLayout = useMemo(
     () => constructTangleLayout(_.cloneDeep(data), { color }),
     [data],
   );
 
   const handleClick = (node) => {
-    console.log(`Node ${node.id} clicked`);
+    showAlert(`Node ${node.id} clicked`, "info");
   };
 
   return (
