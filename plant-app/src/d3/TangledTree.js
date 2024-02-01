@@ -1,3 +1,5 @@
+// This code was adapted from https://observablehq.com/@nitaku/tangled-tree-visualization-ii
+
 import * as d3 from "d3";
 import _ from "lodash";
 
@@ -9,6 +11,7 @@ export const renderChart = (data, options = {}) => {
 
   const tangleLayout = constructTangleLayout(_.cloneDeep(data), options);
 
+  // Returns a string representing the SVG of the chart
   return `<svg width="${tangleLayout.layout.width}" height="${
     tangleLayout.layout.height
   }" style="background-color: ${background_color}">
