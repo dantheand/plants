@@ -29,7 +29,6 @@ export const useApi = () => {
         if (!response.ok) {
           return response;
         }
-        console.log(response);
         return response;
       } catch (error) {
         return Promise.reject(error);

@@ -33,7 +33,6 @@ from PIL.Image import Image
 from fastapi import Form
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 router = BaseRouter(

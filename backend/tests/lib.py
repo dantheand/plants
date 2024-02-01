@@ -28,6 +28,7 @@ UNSPECIFIED = object()
 def plant_record_factory(
     human_name: Any = UNSPECIFIED,
     human_id: Any = UNSPECIFIED,
+    parent_id: Any = UNSPECIFIED,
     species: Any = UNSPECIFIED,
     location: Any = UNSPECIFIED,
     source: Any = UNSPECIFIED,
@@ -43,6 +44,7 @@ def plant_record_factory(
         human_id=human_id if human_id is not UNSPECIFIED else fake.random_int(min=1, max=100000),
         species=species if species is not UNSPECIFIED else fake.word(),
         location=location if location is not UNSPECIFIED else fake.word(),
+        parent_id=parent_id if parent_id is not UNSPECIFIED else [fake.random_int(min=1, max=100000)],
         source=source if source is not UNSPECIFIED else fake.word(),
         source_date=source_date if source_date is not UNSPECIFIED else fake.date(),
         sink=sink if sink is not UNSPECIFIED else fake.word(),

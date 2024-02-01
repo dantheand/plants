@@ -2,6 +2,7 @@ import React from "react";
 import { PlantDetails } from "./views/PlantDetails";
 import { UserList } from "./views/UserList";
 import { TestBox } from "./views/TestBox";
+import { TangledTree } from "./views/Lineages";
 import {
   BrowserRouter as Router,
   Routes,
@@ -42,10 +43,14 @@ function App() {
                     element={<PlantCreate />}
                   />
                   <Route path="/users" element={<UserList />} />
+                  <Route
+                    path="/lineages/user/:userId"
+                    element={<TangledTree />}
+                  />
+                  <Route path="/testing" element={<TestBox />} />
                 </Route>
                 {/* Redirect to login by default */}
                 <Route path="*" element={<Navigate to="/login" replace />} />
-                <Route path="/testing" element={<TestBox />} />
               </Routes>
             </GlobalLayout>
           </PlantProvider>

@@ -34,7 +34,19 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
-        Observe Plants
+        Plants
+      </Button>
+      <Button
+        variant="primary"
+        className={"mx-3"}
+        onClick={() => {
+          if (user.google_id !== userId) {
+            showAlert("Creep mode engaged.", "success");
+          }
+          navigate(`/lineages/user/${user.google_id}`);
+        }}
+      >
+        Lineages
       </Button>
     </ListGroup.Item>
   );
@@ -45,6 +57,7 @@ export const PlaceholderCard: React.FC = () => (
     <Placeholder as="h5" animation="glow">
       <Placeholder style={{ width: 300 }} />
     </Placeholder>
+    <p></p>
     <Placeholder as="p" animation="glow">
       <Placeholder style={{ width: 100 }} />{" "}
       <Placeholder style={{ width: 40 }} />
@@ -53,7 +66,12 @@ export const PlaceholderCard: React.FC = () => (
       <Placeholder style={{ width: 100 }} />{" "}
       <Placeholder style={{ width: 40 }} />
     </Placeholder>
-    <Placeholder.Button variant="primary" style={{ width: 110 }} />
+    <Placeholder.Button variant="primary" style={{ width: 80 }} />
+    <Placeholder.Button
+      variant="primary"
+      className={"mx-3"}
+      style={{ width: 80 }}
+    />
   </ListGroup.Item>
 );
 
