@@ -76,6 +76,12 @@ export const renderChart = (data, options = {}) => {
       "d",
       `M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`,
     );
+    // Add click event listener to this node
+    pathNodeBackground.addEventListener("click", () => {
+      console.log(`Node ${n.id} clicked`);
+      // You can replace this console.log with any custom logic you want to execute on click,
+      // for example, opening a modal, displaying more information, etc.
+    });
     svg.appendChild(pathNodeBackground);
 
     // Node foreground
