@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import { BASE_API_URL } from "../constants";
@@ -38,7 +38,7 @@ export const TangledTree = () => {
   const pathSpecifiedId = params.userId;
   const [queryID, setQueryID] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
-  const [svgContent, setSvgContent] = useState(""); // State to store the SVG content
+  const svgContainerRef = useRef<HTMLDivElement>(null);
 
   const { userId } = useAuth();
   const { callApi } = useApi();
@@ -61,14 +61,18 @@ export const TangledTree = () => {
 
     const fetchDataAndRenderChart = async () => {
       const data = await getLineageData(callApi, queryID); // Await the async function
-      if (data) {
-        // TODO: this is a bad way of creating an svg, we should be manipulating the DOM directly with d3
-        //    but for now we'll just use the existing d3 code to generate the svg and set it as a string
-        const svgString = renderChart(data, {});
-        setSvgContent(svgString);
+      console.log("checking whether to paint");
+      console.log(data);
+      console.log(svgContainerRef.current);
+      if (data && svgContainerRef.current) {
+        console.log("creating svg");
+        svgContainerRef.current.innerHTML = ""; // Clear the container before appending new SVG
+        const svgElement = renderChart(data, {});
+        console.log(svgElement);
+        svgContainerRef.current.appendChild(svgElement); // Append the SVG element to the container
         setIsLoading(false);
       } else {
-        setIsLoading(false); // Finish loading if there's no data
+        setIsLoading(false);
       }
     };
 
@@ -77,23 +81,19 @@ export const TangledTree = () => {
     } else {
       setIsLoading(false); // Ensure loading is stopped if there's no queryID
     }
-  }, [callApi, queryID]);
+  }, [callApi, queryID, svgContainerRef]);
 
   return (
     <BaseLayout>
       <Card className="top-level-card">
         <Card.Header as="h4">Lineages</Card.Header>
         <Card.Body>
-          {isLoading ? (
+          {isLoading && (
             <div className="text-center">
               <Spinner animation="border" className="my-5" />
             </div>
-          ) : (
-            <div
-              style={{ overflow: "auto" }}
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-            />
           )}
+          <div style={{ overflow: "auto" }} ref={svgContainerRef} />
         </Card.Body>
       </Card>
     </BaseLayout>

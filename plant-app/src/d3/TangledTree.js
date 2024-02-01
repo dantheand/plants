@@ -10,12 +10,17 @@ export const renderChart = (data, options = {}) => {
   options.color ||= (d, i) => color(i);
 
   const tangleLayout = constructTangleLayout(_.cloneDeep(data), options);
+  const svgNamespace = "http://www.w3.org/2000/svg";
 
-  // Returns a string representing the SVG of the chart
-  return `<svg width="${tangleLayout.layout.width}" height="${
-    tangleLayout.layout.height
-  }" style="background-color: ${background_color}">
-  <style>
+  // Create the SVG element
+  const svg = document.createElementNS(svgNamespace, "svg");
+  svg.setAttribute("width", tangleLayout.layout.width);
+  svg.setAttribute("height", tangleLayout.layout.height);
+  svg.style.backgroundColor = background_color;
+
+  // Add styles
+  const style = document.createElement("style");
+  style.textContent = `
     text {
       font-family: sans-serif;
       font-size: 10px;
@@ -26,47 +31,86 @@ export const renderChart = (data, options = {}) => {
     .link {
       fill: none;
     }
-  </style>
+  `;
+  svg.appendChild(style);
 
-  ${tangleLayout.bundles.map((b, i) => {
+  // Add links
+  tangleLayout.bundles.forEach((b, i) => {
     let d = b.links
       .map(
-        (l) => `
-      M${l.xt} ${l.yt}
-      L${l.xb - l.c1} ${l.yt}
-      A${l.c1} ${l.c1} 90 0 1 ${l.xb} ${l.yt + l.c1}
-      L${l.xb} ${l.ys - l.c2}
-      A${l.c2} ${l.c2} 90 0 0 ${l.xb + l.c2} ${l.ys}
-      L${l.xs} ${l.ys}`,
+        (l) => `M${l.xt} ${l.yt}
+             L${l.xb - l.c1} ${l.yt}
+             A${l.c1} ${l.c1} 90 0 1 ${l.xb} ${l.yt + l.c1}
+             L${l.xb} ${l.ys - l.c2}
+             A${l.c2} ${l.c2} 90 0 0 ${l.xb + l.c2} ${l.ys}
+             L${l.xs} ${l.ys}`,
       )
       .join("");
-    return `
-      <path class="link" d="${d}" stroke="${background_color}" stroke-width="5"/>
-      <path class="link" d="${d}" stroke="${options.color(b, i)}" stroke-width="2"/>
-    `;
-  })}
 
-  ${tangleLayout.nodes.map(
-    (n) => `
-    <path class="selectable node" data-id="${
-      n.id
-    }" stroke="black" stroke-width="8" d="M${n.x} ${n.y - n.height / 2} L${
-      n.x
-    } ${n.y + n.height / 2}"/>
-    <path class="node" stroke="white" stroke-width="4" d="M${n.x} ${
-      n.y - n.height / 2
-    } L${n.x} ${n.y + n.height / 2}"/>
+    // Background link
+    const pathBackground = document.createElementNS(svgNamespace, "path");
+    pathBackground.setAttribute("class", "link");
+    pathBackground.setAttribute("d", d);
+    pathBackground.setAttribute("stroke", background_color);
+    pathBackground.setAttribute("stroke-width", "5");
+    svg.appendChild(pathBackground);
 
-    <text class="selectable" data-id="${n.id}" x="${n.x + 4}" y="${
-      n.y - n.height / 2 - 4
-    }" stroke="${background_color}" stroke-width="2">${n.id}</text>
-    <text x="${n.x + 4}" y="${
-      n.y - n.height / 2 - 4
-    }" style="pointer-events: none;">${n.id}</text>
-  `,
-  )}
+    // Foreground link
+    const pathForeground = document.createElementNS(svgNamespace, "path");
+    pathForeground.setAttribute("class", "link");
+    pathForeground.setAttribute("d", d);
+    pathForeground.setAttribute("stroke", options.color(b, i));
+    pathForeground.setAttribute("stroke-width", "2");
+    svg.appendChild(pathForeground);
+  });
 
-  </svg>`;
+  // Add nodes
+  tangleLayout.nodes.forEach((n) => {
+    // Selectable node background
+    const pathNodeBackground = document.createElementNS(svgNamespace, "path");
+    pathNodeBackground.setAttribute("class", "selectable node");
+    pathNodeBackground.setAttribute("data-id", n.id);
+    pathNodeBackground.setAttribute("stroke", "black");
+    pathNodeBackground.setAttribute("stroke-width", "8");
+    pathNodeBackground.setAttribute(
+      "d",
+      `M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`,
+    );
+    svg.appendChild(pathNodeBackground);
+
+    // Node foreground
+    const pathNodeForeground = document.createElementNS(svgNamespace, "path");
+    pathNodeForeground.setAttribute("class", "node");
+    pathNodeForeground.setAttribute("stroke", "white");
+    pathNodeForeground.setAttribute("stroke-width", "4");
+    pathNodeForeground.setAttribute(
+      "d",
+      `M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`,
+    );
+    svg.appendChild(pathNodeForeground);
+
+    // Node text shadow
+    const textShadow = document.createElementNS(svgNamespace, "text");
+    textShadow.setAttribute("class", "selectable");
+    textShadow.setAttribute("data-id", n.id);
+    textShadow.setAttribute("x", n.x + 4);
+    textShadow.setAttribute("y", n.y - n.height / 2 - 4);
+    textShadow.setAttribute("stroke", background_color);
+    textShadow.setAttribute("stroke-width", "2");
+    textShadow.textContent = n.id;
+    svg.appendChild(textShadow);
+
+    // Node text
+    const textNode = document.createElementNS(svgNamespace, "text");
+    textNode.setAttribute("x", n.x + 4);
+    textNode.setAttribute("y", n.y - n.height / 2 - 4);
+    textNode.style.pointerEvents = "none";
+    textNode.textContent = n.id;
+    svg.appendChild(textNode);
+  });
+
+  // Return the SVG element instead of a string
+  return svg;
 };
 
 const constructTangleLayout = (levels, options = {}) => {
