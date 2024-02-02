@@ -2,13 +2,14 @@
 
 import * as d3 from "d3";
 import _ from "lodash";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useAlert } from "../context/Alerts";
 
 const color = d3.scaleOrdinal(d3.schemeDark2);
 const background_color = "white";
 
 export const TangledTreeVisualization = ({ data }) => {
+  const svgRef = useRef(null);
   const { showAlert } = useAlert();
   const tangleLayout = useMemo(
     () => constructTangleLayout(_.cloneDeep(data), { color }),
@@ -18,13 +19,33 @@ export const TangledTreeVisualization = ({ data }) => {
   const handleClick = (node) => {
     showAlert(`Node ${node.id} clicked`, "info");
   };
+  useEffect(() => {
+    const svgElement = d3.select(svgRef.current);
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.4, 5])
+      .on("zoom", (event) => {
+        svgElement
+          .select("g.zoom-container")
+          .attr("transform", event.transform);
+      });
+
+    svgElement.call(zoom);
+
+    return () => {
+      // Remove zoom behavior to effectively disable zooming
+      svgElement.on(".zoom", null);
+    };
+  }, [data]); // Re-apply zoom behavior when data changes
 
   return (
     <svg
-      width={tangleLayout.layout.width}
+      ref={svgRef}
+      width="100%" // Adjust width to fill the container
       height={tangleLayout.layout.height}
-      style={{ backgroundColor: background_color }}
+      style={{ backgroundColor: background_color, overflow: "hidden" }} // Ensure SVG does not overflow its container
     >
+      {/*TODO: factor this out into a stylesheet*/}
       <style>
         {`
           text {
@@ -39,64 +60,68 @@ export const TangledTreeVisualization = ({ data }) => {
           }
         `}
       </style>
-      {tangleLayout.bundles.map((b, i) => {
-        let d = b.links
-          .map(
-            (l) => `M${l.xt} ${l.yt}
+      <g className="zoom-container">
+        {" "}
+        {/* Encapsulate all SVG contents in a group for zooming */}
+        {tangleLayout.bundles.map((b, i) => {
+          let d = b.links
+            .map(
+              (l) => `M${l.xt} ${l.yt}
                  L${l.xb - l.c1} ${l.yt}
                  A${l.c1} ${l.c1} 90 0 1 ${l.xb} ${l.yt + l.c1}
                  L${l.xb} ${l.ys - l.c2}
                  A${l.c2} ${l.c2} 90 0 0 ${l.xb + l.c2} ${l.ys}
                  L${l.xs} ${l.ys}`,
-          )
-          .join(" ");
+            )
+            .join(" ");
 
-        return (
-          <g key={i}>
+          return (
+            <g key={i}>
+              <path
+                className="link"
+                d={d}
+                stroke={background_color}
+                strokeWidth="5"
+              />
+              <path className="link" d={d} stroke={color(i)} strokeWidth="2" />
+            </g>
+          );
+        })}
+        {tangleLayout.nodes.map((n, i) => (
+          <g key={n.id} onClick={() => handleClick(n)} cursor="pointer">
             <path
-              className="link"
-              d={d}
-              stroke={background_color}
-              strokeWidth="5"
+              className="selectable node"
+              data-id={n.id}
+              stroke="black"
+              strokeWidth="8"
+              d={`M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`}
             />
-            <path className="link" d={d} stroke={color(i)} strokeWidth="2" />
+            <path
+              className="node"
+              stroke="white"
+              strokeWidth="4"
+              d={`M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`}
+            />
+            <text
+              className="selectable"
+              data-id={n.id}
+              x={n.x + 4}
+              y={n.y - n.height / 2 - 4}
+              stroke={background_color}
+              strokeWidth="2"
+            >
+              {n.id}
+            </text>
+            <text
+              x={n.x + 4}
+              y={n.y - n.height / 2 - 4}
+              style={{ pointerEvents: "none" }}
+            >
+              {n.id}
+            </text>
           </g>
-        );
-      })}
-      {tangleLayout.nodes.map((n, i) => (
-        <g key={n.id} onClick={() => handleClick(n)} cursor="pointer">
-          <path
-            className="selectable node"
-            data-id={n.id}
-            stroke="black"
-            strokeWidth="8"
-            d={`M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`}
-          />
-          <path
-            className="node"
-            stroke="white"
-            strokeWidth="4"
-            d={`M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`}
-          />
-          <text
-            className="selectable"
-            data-id={n.id}
-            x={n.x + 4}
-            y={n.y - n.height / 2 - 4}
-            stroke={background_color}
-            strokeWidth="2"
-          >
-            {n.id}
-          </text>
-          <text
-            x={n.x + 4}
-            y={n.y - n.height / 2 - 4}
-            style={{ pointerEvents: "none" }}
-          >
-            {n.id}
-          </text>
-        </g>
-      ))}
+        ))}
+      </g>
     </svg>
   );
 };
