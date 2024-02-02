@@ -77,18 +77,21 @@ export const TangledTreeVisualization = ({ data }) => {
 
           return (
             <g key={i}>
+              {/*White stroke that provides buffer for links */}
               <path
                 className="link"
                 d={d}
                 stroke={background_color}
                 strokeWidth="5"
               />
+              {/*Actual link*/}
               <path className="link" d={d} stroke={color(i)} strokeWidth="2" />
             </g>
           );
         })}
         {tangleLayout.nodes.map((n, i) => (
           <g key={n.id} onClick={() => handleClick(n)} cursor="pointer">
+            {/*Outer circle of node*/}
             <path
               className="selectable node"
               data-id={n.id}
@@ -96,12 +99,14 @@ export const TangledTreeVisualization = ({ data }) => {
               strokeWidth="8"
               d={`M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`}
             />
+            {/*Inner white circle of node*/}
             <path
               className="node"
               stroke="white"
               strokeWidth="4"
               d={`M${n.x} ${n.y - n.height / 2} L${n.x} ${n.y + n.height / 2}`}
             />
+            {/*White background outline for text*/}
             <text
               className="selectable"
               data-id={n.id}
@@ -112,6 +117,7 @@ export const TangledTreeVisualization = ({ data }) => {
             >
               {n.id}
             </text>
+            {/*Actual text*/}
             <text
               x={n.x + 4}
               y={n.y - n.height / 2 - 4}
