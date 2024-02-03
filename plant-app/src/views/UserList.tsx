@@ -9,6 +9,7 @@ import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
+import { FaProjectDiagram, FaSeedling } from "react-icons/fa";
 
 type UserCardProps = {
   user: User;
@@ -25,8 +26,10 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
       <p></p>
       <p>Current Plants: {user.n_active_plants}</p>
       <p>Total Plants: {user.n_total_plants}</p>
+
       <Button
-        variant="primary"
+        variant="success"
+        className={"mb-2"}
         onClick={() => {
           if (user.google_id !== userId) {
             showAlert("Creep mode engaged.", "success");
@@ -34,11 +37,11 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
-        Plants
+        <FaSeedling className={"me-2"} /> Plants
       </Button>
       <Button
         variant="primary"
-        className={"mx-3"}
+        className={"mx-3 mb-2"}
         onClick={() => {
           if (user.google_id !== userId) {
             showAlert("Creep mode engaged.", "success");
@@ -46,7 +49,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
           navigate(`/lineages/user/${user.google_id}`);
         }}
       >
-        Lineages
+        <FaProjectDiagram className={"me-2"} /> Lineages
       </Button>
     </ListGroup.Item>
   );
@@ -66,11 +69,15 @@ export const PlaceholderCard: React.FC = () => (
       <Placeholder style={{ width: 100 }} />{" "}
       <Placeholder style={{ width: 40 }} />
     </Placeholder>
-    <Placeholder.Button variant="primary" style={{ width: 80 }} />
+    <Placeholder.Button
+      variant="success"
+      className={"mb-2"}
+      style={{ width: 100 }}
+    />
     <Placeholder.Button
       variant="primary"
-      className={"mx-3"}
-      style={{ width: 80 }}
+      className={"mx-3 mb-2"}
+      style={{ width: 110 }}
     />
   </ListGroup.Item>
 );

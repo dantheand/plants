@@ -1,7 +1,7 @@
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import React, { JSX, useEffect, useState } from "react";
 import { USE_GRID_VIEW } from "../constants";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Spinner } from "react-bootstrap";
 
 import { FaPlus, FaList, FaTh } from "react-icons/fa";
 
@@ -13,6 +13,7 @@ import { FloatingActionButton } from "../components/FloatingActionButton";
 import { useAuth } from "../context/Auth";
 import useLocalStorageState from "use-local-storage-state";
 import { usePlants } from "../context/Plants";
+import { NoPlantsPlaceholder } from "../components/plantList/NoPlantsPlaceholder";
 
 const handlePlantClick = (plantID: string, navigate: NavigateFunction) => {
   navigate(`/plants/${plantID}`);
@@ -75,20 +76,29 @@ export function PlantList(): JSX.Element {
           </Button>
         </Card.Header>
         <Card.Body>
-          {isGridView ? (
-            <PlantGrid
-              isLoading={isLoading}
-              plants={plants}
-              handlePlantClick={handlePlantClick}
-              navigate={navigate}
-            />
+          {isLoading ? (
+            <div className="text-center">
+              <Spinner animation="border" />{" "}
+              {/* Show loading spinner while fetching data */}
+            </div>
+          ) : plants.length > 0 ? (
+            isGridView ? (
+              <PlantGrid
+                isLoading={isLoading}
+                plants={plants}
+                handlePlantClick={handlePlantClick}
+                navigate={navigate}
+              />
+            ) : (
+              <PlantListTable
+                plants={plants}
+                isLoading={isLoading}
+                handlePlantClick={handlePlantClick}
+                navigate={navigate}
+              />
+            )
           ) : (
-            <PlantListTable
-              plants={plants}
-              isLoading={isLoading}
-              handlePlantClick={handlePlantClick}
-              navigate={navigate}
-            />
+            <NoPlantsPlaceholder />
           )}
         </Card.Body>
       </Card>

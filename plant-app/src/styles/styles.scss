@@ -58,31 +58,55 @@ html, body, #root {
 }
 
 /*Navbar*/
+
+.navbar-custom {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+
 .nav-link-disabled {
   color: grey !important;
   pointer-events: none;
   cursor: default;
 }
 
-.logout-btn{
+.nav-link {
+  border-bottom: 2px solid transparent; /* Transparent border for a smooth transition */
+  transition: border-bottom 0.3s ease-in-out; /* Transition for the border style */
+}
+
+.nav-link.active {
+    border-bottom: 2px solid $secondary; /* Bottom border */
+}
+
+.nav-icon {
+  font-size: 1.3rem;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.logout-btn {
+  margin-top: 0.8rem;
   font-size: 1.2rem;
 }
 
-
-.no-images-icon {
+.no-item-icon {
   font-size: 5rem;
   color: #6c757d;
   margin-bottom: 1rem;
 }
 
-.no-images-text {
-  color: #495057;
-  margin-bottom: 0.5rem;
-}
 
-.no-images-message {
+.no-item-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; // Centers vertically in the flex container
+  align-items: center; // Centers horizontally
+  height: 100%; // Takes up the full viewport height, adjust as needed
+  text-align: center; // Ensures the text within the <p> tag is centered as well
+
   padding: 2rem 0;
-  text-align: center;
 }
 
 
