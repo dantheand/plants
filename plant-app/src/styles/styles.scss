@@ -4,6 +4,10 @@ html {
   overflow-y: scroll;
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
 
 .cursor-on-hover {
   cursor: pointer;

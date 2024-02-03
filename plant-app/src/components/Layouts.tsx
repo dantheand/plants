@@ -16,7 +16,7 @@ export const GlobalLayout = ({ children }: { children: ReactNode }) => {
     location.pathname === "/logout";
 
   return (
-    <div>
+    <div style={{ height: "100vh" }}>
       {!isLoginPage && <AppNavbar />}
       <AlertComponent />
       {children}
@@ -26,5 +26,9 @@ export const GlobalLayout = ({ children }: { children: ReactNode }) => {
 };
 
 export const BaseLayout = ({ children }: { children: ReactNode }) => {
-  return <Container className="my-2">{children}</Container>;
+  return (
+    <Container className="my-2" style={{ height: "80vh" }}>
+      {children}
+    </Container>
+  );
 };

@@ -3,7 +3,7 @@ import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import { BASE_API_URL } from "../constants";
 import { TangledTreeVisualization } from "../d3/TangledTree";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { BaseLayout } from "../components/Layouts";
 import { Card, Spinner, Toast, ToastContainer } from "react-bootstrap";
 
@@ -35,8 +35,12 @@ const getLineageData = async (
 
 interface NodeData {
   id: string;
+  node_name: string;
   generation: number;
-  parents?: string[];
+  plant_id?: string;
+  source?: string;
+  source_date?: string;
+  sink?: string;
 }
 
 export const TangledTree = () => {
@@ -91,7 +95,7 @@ export const TangledTree = () => {
 
   return (
     <BaseLayout>
-      <Card className="top-level-card">
+      <Card className="top-level-card" style={{ height: "100%" }}>
         <Card.Header as="h4">Lineages</Card.Header>
         <Card.Body>
           {isLoading ? (
@@ -107,22 +111,52 @@ export const TangledTree = () => {
         </Card.Body>
       </Card>
       <ToastContainer position={"bottom-center"} className={"mb-3"}>
-        <Toast
-          show={showNodeToast}
-          onClose={toggleShowToast}
-          // Solid background instead of slightly transparent
-          style={{ backgroundColor: "#ffffff" }}
-        >
-          <Toast.Header>
-            <strong className="me-auto">
-              {selectedNode && selectedNode.id}
-            </strong>
-          </Toast.Header>
-          <Toast.Body>
-            Generation: {selectedNode && selectedNode.generation}
-          </Toast.Body>
-        </Toast>
+        {selectedNode && (
+          <NodeDataToast
+            data={selectedNode}
+            show={showNodeToast}
+            onClose={toggleShowToast}
+          />
+        )}
       </ToastContainer>
     </BaseLayout>
+  );
+};
+
+interface NodeToastProps {
+  data: NodeData;
+  show: boolean;
+  onClose: () => void;
+}
+
+const NodeDataToast: React.FC<NodeToastProps> = ({ data, show, onClose }) => {
+  const navigate = useNavigate();
+  return (
+    <Toast show={show} onClose={onClose} style={{ backgroundColor: "#ffffff" }}>
+      <Toast.Header>
+        <strong className="me-auto">{data.node_name}</strong>
+      </Toast.Header>
+      <Toast.Body>
+        <p>ID: {data.id}</p>
+        <p>Generation: {data.generation}</p>
+        {data.plant_id && (
+          <p>
+            Plant ID:{" "}
+            <a
+              href={`/plants/${data.plant_id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`/plants/${data.plant_id}`);
+              }}
+            >
+              {data.plant_id}
+            </a>
+          </p>
+        )}
+        {data.source && <p>Source: {data.source}</p>}
+        {data.source_date && <p>Source Date: {data.source_date}</p>}
+        {data.sink && <p>Sink: {data.sink}</p>}
+      </Toast.Body>
+    </Toast>
   );
 };

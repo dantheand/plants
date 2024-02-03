@@ -40,7 +40,7 @@ export const TangledTreeVisualization = ({ data, clickNode }) => {
     <svg
       ref={svgRef}
       width="100%" // Adjust width to fill the container
-      height={tangleLayout.layout.height}
+      height={"100%"}
       style={{ backgroundColor: background_color, overflow: "hidden" }} // Ensure SVG does not overflow its container
     >
       {/*TODO: factor this out into a stylesheet*/}
