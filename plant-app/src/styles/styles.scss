@@ -69,10 +69,25 @@ html, body, #root {
   cursor: default;
 }
 
-.logout-btn{
-  font-size: 1.2rem;
+.nav-link {
+  border-bottom: 2px solid transparent; /* Transparent border for a smooth transition */
+  transition: border-bottom 0.3s ease-in-out; /* Transition for the border style */
 }
 
+.nav-link.active {
+    border-bottom: 2px solid $secondary; /* Bottom border */
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.logout-btn {
+  margin-top: 0.8rem;
+  font-size: 1.2rem;
+}
 
 .no-item-icon {
   font-size: 5rem;

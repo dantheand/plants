@@ -2,18 +2,23 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import plantBrandIcon from "../assets/plantopticon2_small.png";
 import { APP_BRAND_NAME } from "../constants";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 import { useAuth } from "../context/Auth";
+import { FaProjectDiagram, FaSeedling, FaUsers } from "react-icons/fa";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-
+  const location = useLocation(); // Use the hook here
   const handleNavigate = (path: string) => {
     navigate(path);
   };
+
+  // Function to determine if the link is active
+  const isActive = (path: string): boolean =>
+    location.pathname.startsWith(path);
 
   return (
     <Navbar className="justify-content-between navbar-custom">
@@ -28,15 +33,29 @@ export const AppNavbar = () => {
             height="45"
             alt="Plantopticon Icon"
           />
-          <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
+          <span className="d-none d-lg-inline pt-3"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
         <Nav className="me-auto mt-3">
-          <Nav.Link onClick={() => handleNavigate(`plants/user/me`)}>
-            Plants
+          <Nav.Link
+            className={isActive(`/plants`) ? "active" : ""}
+            onClick={() => handleNavigate(`plants/user/me`)}
+          >
+            <FaSeedling className={"nav-icon"} />
+            <span className="d-none d-lg-inline ml-2"> Plants</span>
           </Nav.Link>
-          <Nav.Link onClick={() => handleNavigate("/users")}>Users</Nav.Link>
-          <Nav.Link onClick={() => handleNavigate("/lineages/user/me")}>
-            Lineages
+          <Nav.Link
+            className={isActive(`/users`) ? "active" : ""}
+            onClick={() => handleNavigate("/users")}
+          >
+            <FaUsers className={"nav-icon"} />
+            <span className="d-none d-lg-inline"> Users</span>
+          </Nav.Link>
+          <Nav.Link
+            className={isActive(`/lineages`) ? "active" : ""}
+            onClick={() => handleNavigate("/lineages/user/me")}
+          >
+            <FaProjectDiagram className={"nav-icon"} />
+            <span className="d-none d-lg-inline"> Lineages</span>
           </Nav.Link>
         </Nav>
         <Nav className="ms-auto">
