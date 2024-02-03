@@ -5,6 +5,7 @@ import { useAlert } from "./Alerts";
 import { useApi } from "../utils/api";
 import noimagePlaceholder from "../assets/200x200_image_placeholder.png";
 import { useAuth } from "./Auth";
+import { SHOW_IMAGES } from "../featureFlags";
 
 interface CreatePlantProps {
   plant: NewPlant;
@@ -96,41 +97,43 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
 
   // Fetch plant thumbnails for the grid whenever plants change
   useEffect(() => {
-    // Prevents API error on logout
-    if (!isAuthenticated) {
-      return;
-    }
-    // No need to fetch images if there are no plants
-    if (!plants || plants.length === 0) {
-      return;
-    }
-    setPlantGridIsLoading(true);
-    const plantIds = plants.map((plant) => plant.plant_id);
-    callApi(BASE_API_URL + "/images/plants/most_recent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(plantIds),
-    }).then(async (response) => {
-      console.log(response);
-      if (!response.ok) {
-        showAlert("Error loading plant images", "danger");
+    if (SHOW_IMAGES) {
+      // Prevents API error on logout
+      if (!isAuthenticated) {
         return;
       }
-      const imageData = await response.json();
-      const imageMap: Record<string, string> = {};
-      plantIds.forEach((id) => {
-        const foundImage = imageData.find(
-          (img: PlantImage) => img.plant_id === id,
-        );
-        imageMap[id] = foundImage
-          ? foundImage.signed_thumbnail_photo_url
-          : noimagePlaceholder;
+      // No need to fetch images if there are no plants
+      if (!plants || plants.length === 0) {
+        return;
+      }
+      setPlantGridIsLoading(true);
+      const plantIds = plants.map((plant) => plant.plant_id);
+      callApi(BASE_API_URL + "/images/plants/most_recent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(plantIds),
+      }).then(async (response) => {
+        console.log(response);
+        if (!response.ok) {
+          showAlert("Error loading plant images", "danger");
+          return;
+        }
+        const imageData = await response.json();
+        const imageMap: Record<string, string> = {};
+        plantIds.forEach((id) => {
+          const foundImage = imageData.find(
+            (img: PlantImage) => img.plant_id === id,
+          );
+          imageMap[id] = foundImage
+            ? foundImage.signed_thumbnail_photo_url
+            : noimagePlaceholder;
+        });
+        setPlantImages(imageMap);
+        setPlantGridIsLoading(false);
       });
-      setPlantImages(imageMap);
-      setPlantGridIsLoading(false);
-    });
+    }
   }, [plants, callApi, showAlert, isAuthenticated]);
 
   // TODO: convert this to force reload YOUR plants (this is an edge case where someone CRUDs a plant after visiting
