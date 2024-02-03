@@ -22,7 +22,7 @@ export const AppNavbar = () => {
 
   return (
     <Navbar className="justify-content-between navbar-custom">
-      <Container className={"m-0"}>
+      <Container>
         <Navbar.Brand
           className="cursor-on-hover pb-0 mb-1"
           onClick={() => handleNavigate("/plants/user/me")}
