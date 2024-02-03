@@ -11,9 +11,7 @@ import {
   FaHashtag,
   FaSeedling,
   FaShoppingBag,
-  FaShoppingBasket,
   FaSitemap,
-  FaWarehouse,
 } from "react-icons/fa";
 
 const getLineageData = async (
