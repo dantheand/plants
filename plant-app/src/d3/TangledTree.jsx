@@ -3,21 +3,19 @@
 import * as d3 from "d3";
 import _ from "lodash";
 import { useEffect, useMemo, useRef } from "react";
-import { useAlert } from "../context/Alerts";
 
 const color = d3.scaleOrdinal(d3.schemeDark2);
 const background_color = "white";
 
-export const TangledTreeVisualization = ({ data }) => {
+export const TangledTreeVisualization = ({ data, clickNode }) => {
   const svgRef = useRef(null);
-  const { showAlert } = useAlert();
   const tangleLayout = useMemo(
     () => constructTangleLayout(_.cloneDeep(data), { color }),
     [data],
   );
 
   const handleClick = (node) => {
-    showAlert(`Node ${node.id} clicked`, "info");
+    clickNode(node);
   };
   useEffect(() => {
     const svgElement = d3.select(svgRef.current);

@@ -5,7 +5,7 @@ import { BASE_API_URL } from "../constants";
 import { TangledTreeVisualization } from "../d3/TangledTree";
 import { useParams } from "react-router-dom";
 import { BaseLayout } from "../components/Layouts";
-import { Card, Spinner } from "react-bootstrap";
+import { Card, Spinner, Toast, ToastContainer } from "react-bootstrap";
 
 const getLineageData = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
@@ -33,12 +33,25 @@ const getLineageData = async (
   }
 };
 
+interface NodeData {
+  id: string;
+}
+
 export const TangledTree = () => {
   const params = useParams<string>();
   const pathSpecifiedId = params.userId;
   const [queryID, setQueryID] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
   const [data, setData] = useState(null); // State to store fetched data
+  const [showNodeToast, setShowNodeToast] = useState(false); // State to control Toast visibilityk
+  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null); // State to store clicked node info
+
+  const handleNodeClick = (nodeData: NodeData) => {
+    setSelectedNode(nodeData); // Customize as needed
+    setShowNodeToast(true); // Show the toast
+  };
+
+  const toggleShowToast = () => setShowNodeToast(!showNodeToast);
 
   const { userId } = useAuth();
   const { callApi } = useApi();
@@ -85,12 +98,27 @@ export const TangledTree = () => {
             </div>
           ) : data ? (
             // Render the visualization component with the fetched data
-            <TangledTreeVisualization data={data} />
+            <TangledTreeVisualization data={data} clickNode={handleNodeClick} />
           ) : (
             <div>No data available</div>
           )}
         </Card.Body>
       </Card>
+      <ToastContainer position={"bottom-center"} className={"mb-3"}>
+        <Toast
+          show={showNodeToast}
+          onClose={toggleShowToast}
+          // Solid background instead of slightly transparent
+          style={{ backgroundColor: "#ffffff" }}
+        >
+          <Toast.Header>
+            <strong className="me-auto">
+              {selectedNode && selectedNode.id}
+            </strong>
+          </Toast.Header>
+          <Toast.Body>Node info here</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </BaseLayout>
   );
 };
