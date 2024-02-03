@@ -17,13 +17,12 @@ export const AppNavbar = () => {
 
   return (
     <Navbar className="justify-content-between navbar-custom">
-      <Container>
+      <Container className={"m-0"}>
         <Navbar.Brand
-          className="cursor-on-hover"
+          className="cursor-on-hover pb-0 mb-1"
           onClick={() => handleNavigate("/plants/user/me")}
         >
           <img
-            className="mb-3"
             src={plantBrandIcon}
             width="45"
             height="45"
@@ -31,7 +30,7 @@ export const AppNavbar = () => {
           />
           <span className="d-none d-lg-inline"> {APP_BRAND_NAME}</span>
         </Navbar.Brand>
-        <Nav className="me-auto">
+        <Nav className="me-auto mt-3">
           <Nav.Link onClick={() => handleNavigate(`plants/user/me`)}>
             Plants
           </Nav.Link>
