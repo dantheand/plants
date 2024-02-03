@@ -240,3 +240,17 @@ html, body, #root {
   align-self: flex-start;
 }
 
+// Lineages
+
+.lineage-toast{
+  background-color: #ffffff !important;
+}
+
+.lineage-toast-header, .lineage-toast-body{
+  border-left:5px solid #4B6049 !important;
+}
+
+.lineage-toast-header{
+  background-color: #f8f5f0 !important;
+  border-bottom: 1px solid #4B6049 !important;
+}

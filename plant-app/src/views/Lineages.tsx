@@ -6,6 +6,15 @@ import { TangledTreeVisualization } from "../d3/TangledTree";
 import { useNavigate, useParams } from "react-router-dom";
 import { BaseLayout } from "../components/Layouts";
 import { Card, Spinner, Toast, ToastContainer } from "react-bootstrap";
+import {
+  FaCalendarAlt,
+  FaHashtag,
+  FaSeedling,
+  FaShoppingBag,
+  FaShoppingBasket,
+  FaSitemap,
+  FaWarehouse,
+} from "react-icons/fa";
 
 const getLineageData = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
@@ -133,67 +142,51 @@ const NodeDataToast: React.FC<NodeToastProps> = ({ data, show, onClose }) => {
   const navigate = useNavigate();
 
   return (
-    <Toast
-      show={show}
-      onClose={onClose}
-      style={{ backgroundColor: "#f8f9fa" }}
-      className="text-dark"
-    >
-      <Toast.Header closeButton={false}>
+    <Toast show={show} onClose={onClose} className={"lineage-toast"}>
+      <Toast.Header closeButton={true} className="lineage-toast-header">
         <strong className="me-auto">{data.node_name}</strong>
-        <button
-          type="button"
-          className="btn-close"
-          aria-label="Close"
-          onClick={onClose}
-        ></button>
       </Toast.Header>
-      <Toast.Body>
-        <dl className="row mb-0">
-          <dt className="col-sm-3">ID:</dt>
-          <dd className="col-sm-9">{data.id}</dd>
-
-          <dt className="col-sm-3">Generation:</dt>
-          <dd className="col-sm-9">{data.generation}</dd>
-
+      <Toast.Body className="lineage-toast-body">
+        <ul className="list-unstyled mb-0">
+          {/*Only show ID if its a plant (otherwise ID is just the name of the source/sink */}
           {data.plant_id && (
-            <>
-              <dt className="col-sm-3">Plant ID:</dt>
-              <dd className="col-sm-9">
-                <a
-                  href="#/"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate(`/plants/${data.plant_id}`);
-                  }}
-                >
-                  {data.plant_id}
-                </a>
-              </dd>
-            </>
+            <li>
+              <FaHashtag /> <strong>ID:</strong> {data.id}
+            </li>
           )}
-
+          <li>
+            <FaSitemap /> <strong>Generation:</strong> {data.generation}
+          </li>
+          {data.plant_id && (
+            <li>
+              <FaSeedling /> <strong>Plant Details: </strong>
+              <a
+                href="#/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/plants/${data.plant_id}`);
+                }}
+              >
+                {"link"}
+              </a>
+            </li>
+          )}
           {data.source && (
-            <>
-              <dt className="col-sm-3">Source:</dt>
-              <dd className="col-sm-9">{data.source}</dd>
-            </>
+            <li>
+              <FaShoppingBag /> <strong>Source:</strong> {data.source}
+            </li>
           )}
-
           {data.source_date && (
-            <>
-              <dt className="col-sm-3">Source Date:</dt>
-              <dd className="col-sm-9">{data.source_date}</dd>
-            </>
+            <li>
+              <FaCalendarAlt /> <strong>Source Date:</strong> {data.source_date}
+            </li>
           )}
-
           {data.sink && (
-            <>
-              <dt className="col-sm-3">Sink:</dt>
-              <dd className="col-sm-9">{data.sink}</dd>
-            </>
+            <li>
+              <strong>Sink:</strong> {data.sink}
+            </li>
           )}
-        </dl>
+        </ul>
       </Toast.Body>
     </Toast>
   );
