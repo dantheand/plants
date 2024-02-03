@@ -16,7 +16,7 @@ export const AppNavbar = () => {
   };
 
   return (
-    <Navbar className="justify-content-between">
+    <Navbar className="justify-content-between navbar-custom">
       <Container>
         <Navbar.Brand
           className="cursor-on-hover"

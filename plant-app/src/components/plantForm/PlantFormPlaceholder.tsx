@@ -22,7 +22,7 @@ export const PlantFormPlaceholder = () => {
           <EditableInputPlaceholder label="Plant Name" isRequired={true} />
           <EditableInputPlaceholder label="Species" />
           <EditableInputPlaceholder label="Location" />
-          <EditableInputPlaceholder label="Plant Parent ID(s)" />
+          <EditableInputPlaceholder label="Parent Plant ID(s)" />
           <EditableInputPlaceholder label="Source" isRequired={true} />
           <EditableInputPlaceholder label="Source Date" isRequired={true} />
           <EditableInputPlaceholder label="Sink" />

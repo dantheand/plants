@@ -58,6 +58,11 @@ html, body, #root {
 }
 
 /*Navbar*/
+.navbar-custom {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .nav-link-disabled {
   color: grey !important;
   pointer-events: none;

@@ -118,7 +118,7 @@ export const PlantForm = ({
               value={plantInForm.parent_id}
               OnChange={handleInputChange("parent_id")}
               isEditable={isFormEditable}
-              placeholder={"Specify multiple parents with commas e.g. 1, 2, 3"}
+              placeholder={"e.g. 1, 2, 3"}
             />
           ) : (
             <ParentIdInput
