@@ -215,7 +215,7 @@ html, body, #root {
 
 .card-hoverable .card-img-overlay {
   transition: background 0.3s ease, color 0.3s ease;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.3);
   color: white;
   display: flex;
   flex-direction: column;
@@ -231,13 +231,17 @@ html, body, #root {
 }
 
 .custom-card-img {
-  height: 200px;
+  height: 175px;
   object-fit: cover;
 }
 
 .card-top-content,
 .card-bottom-content {
   align-self: flex-start;
+}
+
+.image-card-title {
+  font-size: 1.0rem !important;
 }
 
 // Lineages

@@ -22,7 +22,7 @@ export function PlantGrid({
   const { plantGridIsLoading, plantImages } = usePlants();
 
   return (
-    <Row xs={2} md={3} lg={4} className="g-4">
+    <Row xs={2} md={3} lg={4} xl={5} className="g-4">
       {isLoading || !plants ? (
         // TODO: make this placeholder look like cards
         <Spinner />
@@ -52,7 +52,9 @@ export function PlantGrid({
               )}
               <Card.ImgOverlay>
                 <div className="card-top-content">
-                  <Card.Title>{plant.human_name}</Card.Title>
+                  <Card.Title className={"image-card-title"}>
+                    {plant.human_name}
+                  </Card.Title>
                 </div>
                 <div className="card-bottom-content">{plant.human_id}</div>
               </Card.ImgOverlay>
