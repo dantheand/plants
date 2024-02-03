@@ -43,3 +43,13 @@ export interface JwtPayload {
   google_id: string;
   exp: number;
 }
+
+export interface NodeData {
+  id: string;
+  node_name: string;
+  generation: number;
+  plant_id?: string;
+  source?: string;
+  source_date?: string;
+  sink?: string;
+}

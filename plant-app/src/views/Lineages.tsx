@@ -2,17 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import { BASE_API_URL } from "../constants";
-import { TangledTreeVisualization } from "../d3/TangledTree";
-import { useNavigate, useParams } from "react-router-dom";
+import { TangledTreeVisualization } from "../components/lineages/TangledTree";
+import { useParams } from "react-router-dom";
 import { BaseLayout } from "../components/Layouts";
-import { Card, Spinner, Toast, ToastContainer } from "react-bootstrap";
-import {
-  FaCalendarAlt,
-  FaHashtag,
-  FaSeedling,
-  FaShoppingBag,
-  FaSitemap,
-} from "react-icons/fa";
+import { Card, Spinner, ToastContainer } from "react-bootstrap";
+import { NodeToast } from "../components/lineages/NodeToast";
+import { NodeData } from "../types/interfaces";
 
 const getLineageData = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
@@ -39,16 +34,6 @@ const getLineageData = async (
     return null; // Return null in case of error
   }
 };
-
-interface NodeData {
-  id: string;
-  node_name: string;
-  generation: number;
-  plant_id?: string;
-  source?: string;
-  source_date?: string;
-  sink?: string;
-}
 
 export const TangledTree = () => {
   const params = useParams<string>();
@@ -119,7 +104,7 @@ export const TangledTree = () => {
       </Card>
       <ToastContainer position={"bottom-center"} className={"mb-3"}>
         {selectedNode && (
-          <NodeDataToast
+          <NodeToast
             data={selectedNode}
             show={showNodeToast}
             onClose={toggleShowToast}
@@ -127,65 +112,5 @@ export const TangledTree = () => {
         )}
       </ToastContainer>
     </BaseLayout>
-  );
-};
-
-interface NodeToastProps {
-  data: NodeData;
-  show: boolean;
-  onClose: () => void;
-}
-
-const NodeDataToast: React.FC<NodeToastProps> = ({ data, show, onClose }) => {
-  const navigate = useNavigate();
-
-  return (
-    <Toast show={show} onClose={onClose} className={"lineage-toast"}>
-      <Toast.Header closeButton={true} className="lineage-toast-header">
-        <strong className="me-auto">{data.node_name}</strong>
-      </Toast.Header>
-      <Toast.Body className="lineage-toast-body">
-        <ul className="list-unstyled mb-0">
-          {/*Only show ID if its a plant (otherwise ID is just the name of the source/sink */}
-          {data.plant_id && (
-            <li>
-              <FaHashtag /> <strong>ID:</strong> {data.id}
-            </li>
-          )}
-          <li>
-            <FaSitemap /> <strong>Generation:</strong> {data.generation}
-          </li>
-          {data.plant_id && (
-            <li>
-              <FaSeedling /> <strong>Plant Details: </strong>
-              <a
-                href="#/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/plants/${data.plant_id}`);
-                }}
-              >
-                {"link"}
-              </a>
-            </li>
-          )}
-          {data.source && (
-            <li>
-              <FaShoppingBag /> <strong>Source:</strong> {data.source}
-            </li>
-          )}
-          {data.source_date && (
-            <li>
-              <FaCalendarAlt /> <strong>Source Date:</strong> {data.source_date}
-            </li>
-          )}
-          {data.sink && (
-            <li>
-              <strong>Sink:</strong> {data.sink}
-            </li>
-          )}
-        </ul>
-      </Toast.Body>
-    </Toast>
   );
 };
