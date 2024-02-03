@@ -8,6 +8,8 @@ import { BaseLayout } from "../components/Layouts";
 import { Card, Spinner, ToastContainer } from "react-bootstrap";
 import { NodeToast } from "../components/lineages/NodeToast";
 import { NodeData } from "../types/interfaces";
+import { FaProjectDiagram } from "react-icons/fa";
+import { NoImagesPlaceholder } from "../components/lineages/NoLineageDataPlaceholder";
 
 const getLineageData = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
@@ -98,7 +100,7 @@ export const TangledTree = () => {
             // Render the visualization component with the fetched data
             <TangledTreeVisualization data={data} clickNode={handleNodeClick} />
           ) : (
-            <div>No data available</div>
+            <NoImagesPlaceholder />
           )}
         </Card.Body>
       </Card>
