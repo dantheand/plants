@@ -8,7 +8,6 @@ import { BaseLayout } from "../components/Layouts";
 import { Card, Spinner, ToastContainer } from "react-bootstrap";
 import { NodeToast } from "../components/lineages/NodeToast";
 import { NodeData } from "../types/interfaces";
-import { FaProjectDiagram } from "react-icons/fa";
 import { NoImagesPlaceholder } from "../components/lineages/NoLineageDataPlaceholder";
 
 const getLineageData = async (

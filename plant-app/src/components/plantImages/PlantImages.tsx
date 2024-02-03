@@ -112,7 +112,7 @@ export function PlantImages({
 
   return (
     <Card className="top-level-card">
-      <Card.Header as="h4">Images</Card.Header>
+      <Card.Header as="h4">Observations</Card.Header>
       <Card.Body>
         {imagesIsLoading ? (
           <PlantImagesLoadingPlaceholder />

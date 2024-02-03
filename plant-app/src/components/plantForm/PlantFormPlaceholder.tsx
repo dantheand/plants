@@ -1,6 +1,7 @@
-import { Card, Placeholder } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import React from "react";
 import { PlantFormHeader } from "./PlantFormHeader";
+import { EditableInputPlaceholder } from "./EditableInput";
 
 export const PlantFormPlaceholder = () => {
   return (
@@ -13,11 +14,21 @@ export const PlantFormPlaceholder = () => {
         isYourPlant={false}
       />
       <Card.Body>
-        {[...Array(8)].map((_, idx) => (
-          <Placeholder key={idx} as="p" animation="glow">
-            <Placeholder xs={12} />
-          </Placeholder>
-        ))}
+        <>
+          <EditableInputPlaceholder
+            label="Unique ID Number"
+            isRequired={true}
+          />
+          <EditableInputPlaceholder label="Plant Name" isRequired={true} />
+          <EditableInputPlaceholder label="Species" />
+          <EditableInputPlaceholder label="Location" />
+          <EditableInputPlaceholder label="Plant Parent ID(s)" />
+          <EditableInputPlaceholder label="Source" isRequired={true} />
+          <EditableInputPlaceholder label="Source Date" isRequired={true} />
+          <EditableInputPlaceholder label="Sink" />
+          <EditableInputPlaceholder label="Sink Date" />
+          <EditableInputPlaceholder label="Notes" />
+        </>
       </Card.Body>
     </Card>
   );

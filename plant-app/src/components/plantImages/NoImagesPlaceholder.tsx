@@ -1,4 +1,4 @@
-import { FaImages, FaSeedling } from "react-icons/fa";
+import { FaImages } from "react-icons/fa";
 import React from "react";
 
 export function NoImagesPlaceholder() {
