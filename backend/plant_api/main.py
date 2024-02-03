@@ -19,7 +19,7 @@ app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=get_jwt_secret())
 
 if get_deployment_env() == LOCAL_DEPLOYMENT_ENV:
-    origins = ["http://localhost", "http://localhost:3000"]
+    origins = ["http://localhost", "http://localhost:3000", "http://localhost:3001"]
 elif get_deployment_env() == AWS_DEPLOYMENT_ENV:
     origins = [
         "https://master.d1g3nlvs6mpirt.amplifyapp.com",
