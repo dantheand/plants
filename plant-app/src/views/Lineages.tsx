@@ -35,6 +35,8 @@ const getLineageData = async (
 
 interface NodeData {
   id: string;
+  generation: number;
+  parents?: string[];
 }
 
 export const TangledTree = () => {
@@ -116,7 +118,9 @@ export const TangledTree = () => {
               {selectedNode && selectedNode.id}
             </strong>
           </Toast.Header>
-          <Toast.Body>Node info here</Toast.Body>
+          <Toast.Body>
+            Generation: {selectedNode && selectedNode.generation}
+          </Toast.Body>
         </Toast>
       </ToastContainer>
     </BaseLayout>
