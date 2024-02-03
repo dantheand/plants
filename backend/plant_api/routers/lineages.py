@@ -1,5 +1,5 @@
 import logging
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date
 from typing import Optional, Sequence
 from uuid import UUID
@@ -25,7 +25,7 @@ router = BaseRouter(
 
 class PlantLineageNode(BaseModel):
     id: int | str  # this is the human_id or a source/sink name
-    node_name: str
+    node_name: str = "fake_name"
     plant_id: Optional[str] = None
 
     source: Optional[str] = None
@@ -121,8 +121,15 @@ def assign_generations_and_source_parents(nodes: list[PlantLineageNode]) -> None
             node.generation = max_generation + 1
 
 
+def get_parent_counts(nodes: list[PlantLineageNode]) -> dict:
+    """Returns a dictionary mapping parent IDs to the count of their occurrences as a parent."""
+    all_parents = [parent for node in nodes for parent in (node.parents or [])]
+    return Counter(all_parents)
+
+
 def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[PlantLineageNode]]:
     """Groups plants into levels based on their generation"""
+
     for plant in plants:
         if plant.generation is None:
             raise ValueError("Generation must be assigned to all plants before assigning levels.")
@@ -134,9 +141,19 @@ def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[Pl
     for plant in plants:
         levels[plant.generation].append(plant)
 
-    # Sort by id within each level if the ID is a number, otherwise sort by name
+    # Sort within levels
+    parent_counts = get_parent_counts(plants)
     for level in levels:
-        level.sort(key=lambda plant: (isinstance(plant.id, int), plant.id))
+        level.sort(
+            key=lambda node: (
+                # Primary sort key: Negative count of plants per parent_id to have larger groups first
+                parent_counts[min(node.parents)] if node.parents else 0,
+                # Secondary sort key: Parent_id (min for plants with multiple parents)
+                min(node.parents) if node.parents else "0",
+                # Tertiary sort key: Plant's own id
+                node.id,
+            )
+        )
 
     return levels
 
