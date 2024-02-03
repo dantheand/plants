@@ -16,7 +16,7 @@ export const AppNavbar = () => {
     navigate(path);
   };
 
-  // Function to determine if the link is active
+  // Function to determine if the path is active to highlight the navbar link
   const isActive = (path: string): boolean =>
     location.pathname.startsWith(path);
 
@@ -24,16 +24,25 @@ export const AppNavbar = () => {
     <Navbar className="justify-content-between navbar-custom">
       <Container>
         <Navbar.Brand
-          className="cursor-on-hover pb-0 mb-1"
+          className="cursor-on-hover"
           onClick={() => handleNavigate("/plants/user/me")}
+          style={{ display: "flex", alignItems: "center" }}
         >
           <img
             src={plantBrandIcon}
             width="45"
             height="45"
             alt="Plantopticon Icon"
+            style={{ marginBottom: "0px" }} // Keeps image aligned
           />
-          <span className="d-none d-lg-inline pt-3"> {APP_BRAND_NAME}</span>
+          {/* Need to wrap the text in a div and apply styles to move it down */}
+          <div
+            style={{ marginLeft: "0.5rem", position: "relative", top: "6px" }}
+          >
+            <span className="d-none d-lg-inline text-secondary-emphasis">
+              {APP_BRAND_NAME}
+            </span>
+          </div>
         </Navbar.Brand>
         <Nav className="me-auto mt-3">
           <Nav.Link
