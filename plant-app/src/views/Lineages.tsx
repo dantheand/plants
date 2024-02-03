@@ -131,31 +131,69 @@ interface NodeToastProps {
 
 const NodeDataToast: React.FC<NodeToastProps> = ({ data, show, onClose }) => {
   const navigate = useNavigate();
+
   return (
-    <Toast show={show} onClose={onClose} style={{ backgroundColor: "#ffffff" }}>
-      <Toast.Header>
+    <Toast
+      show={show}
+      onClose={onClose}
+      style={{ backgroundColor: "#f8f9fa" }}
+      className="text-dark"
+    >
+      <Toast.Header closeButton={false}>
         <strong className="me-auto">{data.node_name}</strong>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={onClose}
+        ></button>
       </Toast.Header>
       <Toast.Body>
-        <p>ID: {data.id}</p>
-        <p>Generation: {data.generation}</p>
-        {data.plant_id && (
-          <p>
-            Plant ID:{" "}
-            <a
-              href={`/plants/${data.plant_id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(`/plants/${data.plant_id}`);
-              }}
-            >
-              {data.plant_id}
-            </a>
-          </p>
-        )}
-        {data.source && <p>Source: {data.source}</p>}
-        {data.source_date && <p>Source Date: {data.source_date}</p>}
-        {data.sink && <p>Sink: {data.sink}</p>}
+        <dl className="row mb-0">
+          <dt className="col-sm-3">ID:</dt>
+          <dd className="col-sm-9">{data.id}</dd>
+
+          <dt className="col-sm-3">Generation:</dt>
+          <dd className="col-sm-9">{data.generation}</dd>
+
+          {data.plant_id && (
+            <>
+              <dt className="col-sm-3">Plant ID:</dt>
+              <dd className="col-sm-9">
+                <a
+                  href="#/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/plants/${data.plant_id}`);
+                  }}
+                >
+                  {data.plant_id}
+                </a>
+              </dd>
+            </>
+          )}
+
+          {data.source && (
+            <>
+              <dt className="col-sm-3">Source:</dt>
+              <dd className="col-sm-9">{data.source}</dd>
+            </>
+          )}
+
+          {data.source_date && (
+            <>
+              <dt className="col-sm-3">Source Date:</dt>
+              <dd className="col-sm-9">{data.source_date}</dd>
+            </>
+          )}
+
+          {data.sink && (
+            <>
+              <dt className="col-sm-3">Sink:</dt>
+              <dd className="col-sm-9">{data.sink}</dd>
+            </>
+          )}
+        </dl>
       </Toast.Body>
     </Toast>
   );
