@@ -4,6 +4,10 @@ html {
   overflow-y: scroll;
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
 
 .cursor-on-hover {
   cursor: pointer;
@@ -211,7 +215,7 @@ html {
 
 .card-hoverable .card-img-overlay {
   transition: background 0.3s ease, color 0.3s ease;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.3);
   color: white;
   display: flex;
   flex-direction: column;
@@ -227,7 +231,7 @@ html {
 }
 
 .custom-card-img {
-  height: 200px;
+  height: 175px;
   object-fit: cover;
 }
 
@@ -236,3 +240,21 @@ html {
   align-self: flex-start;
 }
 
+.image-card-title {
+  font-size: 1.0rem !important;
+}
+
+// Lineages
+
+.lineage-toast{
+  background-color: #ffffff !important;
+}
+
+.lineage-toast-header, .lineage-toast-body{
+  border-left:5px solid #4B6049 !important;
+}
+
+.lineage-toast-header{
+  background-color: #f8f5f0 !important;
+  border-bottom: 1px solid #4B6049 !important;
+}

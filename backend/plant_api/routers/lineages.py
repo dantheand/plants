@@ -1,6 +1,8 @@
 import logging
-from collections import defaultdict
+from collections import Counter, defaultdict
+from datetime import date
 from typing import Optional, Sequence
+from uuid import UUID
 
 from plant_api.routers.common import BaseRouter
 from plant_api.dependencies import get_current_user_session
@@ -23,8 +25,13 @@ router = BaseRouter(
 
 class PlantLineageNode(BaseModel):
     id: int | str  # this is the human_id or a source/sink name
+    node_name: str = "fake_name"
+    plant_id: Optional[str] = None
+
     source: Optional[str] = None
+    source_date: Optional[date] = None
     sink: Optional[str] = None
+    # Graph building properties
     generation: int = -1  # -1 is placeholder generation value
     parents: Optional[Sequence[int | str]] = None
 
@@ -38,7 +45,7 @@ def create_nodes_for_sources(plants: list[PlantItem]) -> list[PlantLineageNode]:
             source_ids.append(plant.source)
     # Dedeplicate sources and create a new plant node for each source
     source_ids = list(set(source_ids))
-    return [PlantLineageNode(id=source_id) for source_id in source_ids]
+    return [PlantLineageNode(id=source_id, node_name=source_id) for source_id in source_ids]
 
 
 def create_nodes_for_sinks(plants: list[PlantItem]) -> list[PlantLineageNode]:
@@ -51,12 +58,22 @@ def create_nodes_for_sinks(plants: list[PlantItem]) -> list[PlantLineageNode]:
     for plant in plants:
         if plant.sink is not None:
             sinks[plant.sink].append(plant.human_id)
-    return [PlantLineageNode(id=sink, parents=sinks[sink]) for sink in sinks]
+    return [PlantLineageNode(id=sink, node_name=sink, parents=sinks[sink]) for sink in sinks]
 
 
 def create_nodes_for_plants(plants: list[PlantItem]) -> list[PlantLineageNode]:
     """Creates a new node for each plant in the list of plants"""
-    return [PlantLineageNode(id=plant.human_id, source=plant.source, parents=plant.parent_id) for plant in plants]
+    return [
+        PlantLineageNode(
+            id=plant.human_id,
+            plant_id=plant.plant_id,
+            node_name=plant.human_name,
+            source=plant.source,
+            source_date=plant.source_date,
+            parents=plant.parent_id,
+        )
+        for plant in plants
+    ]
 
 
 def assign_generations_and_source_parents(nodes: list[PlantLineageNode]) -> None:
@@ -104,8 +121,15 @@ def assign_generations_and_source_parents(nodes: list[PlantLineageNode]) -> None
             node.generation = max_generation + 1
 
 
+def get_parent_counts(nodes: list[PlantLineageNode]) -> dict:
+    """Returns a dictionary mapping parent IDs to the count of their occurrences as a parent."""
+    all_parents = [parent for node in nodes for parent in (node.parents or [])]
+    return Counter(all_parents)
+
+
 def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[PlantLineageNode]]:
     """Groups plants into levels based on their generation"""
+
     for plant in plants:
         if plant.generation is None:
             raise ValueError("Generation must be assigned to all plants before assigning levels.")
@@ -117,9 +141,19 @@ def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[Pl
     for plant in plants:
         levels[plant.generation].append(plant)
 
-    # Sort by id within each level if the ID is a number, otherwise sort by name
+    # Sort within levels
+    parent_counts = get_parent_counts(plants)
     for level in levels:
-        level.sort(key=lambda plant: (isinstance(plant.id, int), plant.id))
+        level.sort(
+            key=lambda node: (
+                # Primary sort key: Negative count of plants per parent_id to have larger groups first
+                parent_counts[min(node.parents)] if node.parents else 0,
+                # Secondary sort key: Parent_id (min for plants with multiple parents)
+                min(node.parents) if node.parents else "0",
+                # Tertiary sort key: Plant's own id
+                node.id,
+            )
+        )
 
     return levels
 
@@ -127,6 +161,7 @@ def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[Pl
 @router.get(
     "/user/{user_id}",
     response_model=list[list[PlantLineageNode]],
+    # Exclude none to prevent empty parents
     response_model_exclude_none=True,
 )
 async def get_plant_lineage_graph(user_id: str):
@@ -139,9 +174,5 @@ async def get_plant_lineage_graph(user_id: str):
     all_plant_nodes = plant_nodes + source_nodes + sink_nodes
     assign_generations_and_source_parents(all_plant_nodes)
     levels = assign_levels_to_generations(all_plant_nodes)
-    # Only include id and parents since that's what the plotting code expects
-    serialized_levels = [
-        [plant.model_dump(exclude_none=True, include={"id", "parents"}) for plant in level] for level in levels
-    ]
 
-    return serialized_levels
+    return levels

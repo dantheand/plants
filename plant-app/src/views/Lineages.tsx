@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import { BASE_API_URL } from "../constants";
-import { renderChart } from "../d3/TangledTree";
+import { TangledTreeVisualization } from "../components/lineages/TangledTree";
 import { useParams } from "react-router-dom";
 import { BaseLayout } from "../components/Layouts";
-import { Card, Spinner } from "react-bootstrap";
+import { Card, Spinner, ToastContainer } from "react-bootstrap";
+import { NodeToast } from "../components/lineages/NodeToast";
+import { NodeData } from "../types/interfaces";
 
 const getLineageData = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
@@ -38,7 +40,16 @@ export const TangledTree = () => {
   const pathSpecifiedId = params.userId;
   const [queryID, setQueryID] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
-  const [svgContent, setSvgContent] = useState(""); // State to store the SVG content
+  const [data, setData] = useState(null); // State to store fetched data
+  const [showNodeToast, setShowNodeToast] = useState(false); // State to control Toast visibilityk
+  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null); // State to store clicked node info
+
+  const handleNodeClick = (nodeData: NodeData) => {
+    setSelectedNode(nodeData); // Customize as needed
+    setShowNodeToast(true); // Show the toast
+  };
+
+  const toggleShowToast = () => setShowNodeToast(!showNodeToast);
 
   const { userId } = useAuth();
   const { callApi } = useApi();
@@ -57,45 +68,49 @@ export const TangledTree = () => {
   }, [pathSpecifiedId, userId]);
 
   useEffect(() => {
-    setIsLoading(true); // Start loading
+    if (!queryID) {
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
 
-    const fetchDataAndRenderChart = async () => {
-      const data = await getLineageData(callApi, queryID); // Await the async function
-      if (data) {
-        // TODO: this is a bad way of creating an svg, we should be manipulating the DOM directly with d3
-        //    but for now we'll just use the existing d3 code to generate the svg and set it as a string
-        const svgString = renderChart(data, {});
-        setSvgContent(svgString);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false); // Finish loading if there's no data
+    const fetchData = async () => {
+      const fetchedData = await getLineageData(callApi, queryID);
+      if (fetchedData) {
+        setData(fetchedData); // Store the fetched data in state
       }
+      setIsLoading(false);
     };
 
-    if (queryID) {
-      fetchDataAndRenderChart();
-    } else {
-      setIsLoading(false); // Ensure loading is stopped if there's no queryID
-    }
+    fetchData();
   }, [callApi, queryID]);
 
   return (
     <BaseLayout>
-      <Card className="top-level-card">
+      <Card className="top-level-card" style={{ height: "100%" }}>
         <Card.Header as="h4">Lineages</Card.Header>
         <Card.Body>
           {isLoading ? (
             <div className="text-center">
               <Spinner animation="border" className="my-5" />
             </div>
+          ) : data ? (
+            // Render the visualization component with the fetched data
+            <TangledTreeVisualization data={data} clickNode={handleNodeClick} />
           ) : (
-            <div
-              style={{ overflow: "auto" }}
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-            />
+            <div>No data available</div>
           )}
         </Card.Body>
       </Card>
+      <ToastContainer position={"bottom-center"} className={"mb-3"}>
+        {selectedNode && (
+          <NodeToast
+            data={selectedNode}
+            show={showNodeToast}
+            onClose={toggleShowToast}
+          />
+        )}
+      </ToastContainer>
     </BaseLayout>
   );
 };
