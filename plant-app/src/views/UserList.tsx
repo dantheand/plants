@@ -22,7 +22,9 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 
   return (
     <ListGroup.Item as="li" className="mb-2">
-      <h5>{user.email}</h5>
+      <h5>
+        {user.given_name} {user.last_initial}.
+      </h5>
       <p></p>
       <p>Current Plants: {user.n_active_plants}</p>
       <p>Total Plants: {user.n_total_plants}</p>
@@ -114,7 +116,7 @@ export function UserList(): JSX.Element {
   return (
     <BaseLayout>
       <Card className="top-level-card">
-        <Card.Header as="h4">All Users</Card.Header>
+        <Card.Header as="h4">Current Users</Card.Header>
         <Card.Body>
           <ListGroup as="ol" variant="flush">
             {isLoading

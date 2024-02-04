@@ -25,9 +25,10 @@ export interface Plant {
 export type NewPlant = Partial<Plant>;
 
 export interface User {
-  email: string;
   google_id: string;
   disabled: boolean;
+  given_name: string;
+  last_initial: string;
   n_total_plants: number;
   n_active_plants: number;
 }
