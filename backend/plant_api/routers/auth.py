@@ -52,6 +52,7 @@ async def auth(request: Request):
         if nonce != id_info["nonce"]:
             LOGGER.error("Invalid nonce: %s", nonce)
             raise CREDENTIALS_EXCEPTION
+
         payload = GoogleOauthPayload(**id_info)
 
         # Check to see if the user exists in the DB
@@ -81,7 +82,6 @@ async def logout():
     return {"message": "Logged out"}
 
 
-# TODO: pull in firstname last name
 def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
     """Adds a new user to the DB"""
     user_item = UserItem(
@@ -89,6 +89,9 @@ def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
         SK=f"{ItemKeys.USER.value}#{google_oauth_payload.sub}",
         email=google_oauth_payload.email,
         google_id=google_oauth_payload.sub,
+        given_name=google_oauth_payload.given_name,
+        family_name=google_oauth_payload.family_name,
+        picture=google_oauth_payload.picture,
         entity_type=EntityType.USER,
         disabled=True,
     )

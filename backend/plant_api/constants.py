@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -33,6 +34,9 @@ def get_jwt_secret() -> str:
 class GoogleOauthPayload(BaseModel):
     email: str
     sub: str = Field(..., description="Google's unique identifier for the user.")
+    given_name: str = Field(..., description="The user's first name.")
+    family_name: str = Field(..., description="The user's last name.")
+    picture: Optional[str] = None
 
 
 class JwtPayload(BaseModel):

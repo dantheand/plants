@@ -17,8 +17,12 @@ TEST_FIXTURE_DIR = "./tests/fixture_data/"
 TEST_JWT_SECRET = "test_secret_d151f3b184e25d3318551697d9d62cb7a6ed86035bc60ace38b5bb510802ba37"
 
 fake = Faker()
-DEFAULT_TEST_USER = User(email="test@testing.com", google_id="123", disabled=False)
-OTHER_TEST_USER = User(email="other@testing.com", google_id="321", disabled=False)
+DEFAULT_TEST_USER = User(
+    email="test@testing.com", google_id="123", given_name="Bob", family_name="Ross", last_initial="R", disabled=False
+)
+OTHER_TEST_USER = User(
+    email="other@testing.com", google_id="321", given_name="Betsy", family_name="Ross", last_initial="R", disabled=False
+)
 
 
 # Define a sentinel object for distinguishing unspecified arguments

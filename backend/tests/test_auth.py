@@ -18,7 +18,12 @@ from plant_api.utils.secrets import get_aws_secret
 
 
 def create_current_access_token() -> str:
-    payload = GoogleOauthPayload(email=DEFAULT_TEST_USER.email, sub=DEFAULT_TEST_USER.google_id)
+    payload = GoogleOauthPayload(
+        email=DEFAULT_TEST_USER.email,
+        sub=DEFAULT_TEST_USER.google_id,
+        given_name=DEFAULT_TEST_USER.given_name,
+        family_name=DEFAULT_TEST_USER.family_name,
+    )
     current_access_token = create_access_token_for_user(payload)
     return current_access_token
 
