@@ -46,20 +46,32 @@ class DynamoDBMixin(BaseModel):
 
 
 # TODO: try to consolidate User and UserItem
-# TODO: add first name and last name
 class User(BaseModel):
-    email: str
+    email: Optional[str] = None
     google_id: str
+    given_name: str
+    family_name: Optional[str] = None
+    last_initial: str
     disabled: Optional[bool] = None
     n_total_plants: Optional[int] = None
     n_active_plants: Optional[int] = None
 
+    @model_validator(mode="before")
+    def set_last_initial(cls, values):
+        family_name = values.get("family_name")
+        if family_name:
+            # Set the last initial to the first character of the family name
+            values["last_initial"] = family_name[0]
+        return values
 
-# TODO: add first name and last name
+
 class UserItem(DynamoDBMixin):
     PK: str = Field(..., pattern=USER_KEY_PATTERN)
     SK: str = Field(..., pattern=USER_KEY_PATTERN)
     email: str
+    given_name: str
+    family_name: str
+    picture: Optional[str] = None
     entity_type: str = Field(EntityType.USER)
     disabled: Optional[bool] = True
     google_id: str

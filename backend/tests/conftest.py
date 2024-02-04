@@ -1,6 +1,5 @@
 import os
 
-import aioboto3
 import boto3
 import pytest
 from google.oauth2 import id_token
@@ -180,7 +179,13 @@ def client_no_session():
 def mock_google_oauth(monkeypatch):
     def mock_verify_oauth2_token(token, request, audience):
         # Return a mock response that imitates Google's response
-        return {"sub": DEFAULT_TEST_USER.google_id, "email": DEFAULT_TEST_USER.email, "nonce": "mock_nonce"}
+        return {
+            "sub": DEFAULT_TEST_USER.google_id,
+            "email": DEFAULT_TEST_USER.email,
+            "given_name": DEFAULT_TEST_USER.given_name,
+            "family_name": DEFAULT_TEST_USER.family_name,
+            "nonce": "mock_nonce",
+        }
 
     monkeypatch.setattr(id_token, "verify_oauth2_token", mock_verify_oauth2_token)
 
@@ -191,6 +196,8 @@ def default_enabled_user_in_db(mock_db):
         PK=f"USER#{DEFAULT_TEST_USER.google_id}",
         SK=f"USER#{DEFAULT_TEST_USER.google_id}",
         email=DEFAULT_TEST_USER.email,
+        given_name=DEFAULT_TEST_USER.given_name,
+        family_name=DEFAULT_TEST_USER.family_name,
         disabled=False,
     )
     mock_db.insert_mock_data(user)
@@ -203,6 +210,8 @@ def default_disabled_user_in_db(mock_db):
         PK=f"USER#{DEFAULT_TEST_USER.google_id}",
         SK=f"USER#{DEFAULT_TEST_USER.google_id}",
         email=DEFAULT_TEST_USER.email,
+        given_name=DEFAULT_TEST_USER.given_name,
+        family_name=DEFAULT_TEST_USER.family_name,
         disabled=True,
     )
     mock_db.insert_mock_data(user)
@@ -214,7 +223,9 @@ def other_enabled_user_in_db(mock_db):
     user = UserItem(
         PK=f"USER#{OTHER_TEST_USER.google_id}",
         SK=f"USER#{OTHER_TEST_USER.google_id}",
-        email=DEFAULT_TEST_USER.email,
+        email=OTHER_TEST_USER.email,
+        given_name=OTHER_TEST_USER.given_name,
+        family_name=OTHER_TEST_USER.family_name,
         disabled=False,
     )
     mock_db.insert_mock_data(user)

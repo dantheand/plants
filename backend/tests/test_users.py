@@ -87,6 +87,15 @@ class TestGetUsers:
         assert parsed_user.n_total_plants == 2
         assert parsed_user.n_active_plants == 1
 
+    def test_get_user_returns_deanon_data(self, default_enabled_user_in_db, client_mock_session):
+        """(Relatively deanon)"""
+        response = client_mock_session().get("/users")
+        parsed_response = TypeAdapter(list[User]).validate_python(response.json())
+
+        assert parsed_response[0].email is None
+        assert parsed_response[0].family_name is None
+        assert parsed_response[0].last_initial == DEFAULT_TEST_USER.family_name[0]
+
 
 class TestReadUserDB:
     def test_read_user(self, default_enabled_user_in_db):
