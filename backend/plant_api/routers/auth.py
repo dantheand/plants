@@ -53,7 +53,6 @@ async def auth(request: Request):
             LOGGER.error("Invalid nonce: %s", nonce)
             raise CREDENTIALS_EXCEPTION
 
-        print(id_info)
         payload = GoogleOauthPayload(**id_info)
 
         # Check to see if the user exists in the DB
