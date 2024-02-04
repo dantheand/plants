@@ -113,7 +113,7 @@ export const PlantForm = ({
           />
           {isFormEditable ? (
             <EditableInput
-              label="Plant Parent ID(s)"
+              label="Parent Plant ID(s)"
               type="text"
               value={plantInForm.parent_id}
               OnChange={handleInputChange("parent_id")}
@@ -122,7 +122,7 @@ export const PlantForm = ({
             />
           ) : (
             <ParentIdInput
-              label="Plant Parent ID(s)"
+              label="Parent Plant ID(s)"
               value={plant.parent_id}
               plant={plant}
               setPlantIsLoading={setPlantIsLoading}

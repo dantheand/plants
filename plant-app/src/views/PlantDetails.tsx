@@ -130,7 +130,7 @@ export function PlantDetails() {
   const [isFormEditable, setIsFormEditable] = useState<boolean>(false);
   const { showAlert } = useAlert();
   const { userId } = useAuth();
-  const [isYourPlant, setIsYourPlant] = useState<boolean>(true);
+  const [isYourPlant, setIsYourPlant] = useState<boolean | null>(null);
   const { callApi } = useApi();
   const { forceReloadPlants } = usePlants();
 
@@ -140,6 +140,9 @@ export function PlantDetails() {
     }
     if (plant.user_id !== userId) {
       setIsYourPlant(false);
+    }
+    if (plant.user_id === userId) {
+      setIsYourPlant(true);
     }
   }, [plant, userId]);
 
@@ -198,16 +201,21 @@ export function PlantDetails() {
 
   return (
     <BaseLayout>
-      <PlantForm
-        plant={plant}
-        handleSubmit={handleSubmit}
-        plantInForm={plantInForm}
-        setPlantInForm={setPlantInForm}
-        isFormEditable={isFormEditable}
-        setIsFormEditable={setIsFormEditable}
-        setPlantIsLoading={setPlantIsLoading}
-        isYourPlant={isYourPlant}
-      />
+      {isYourPlant !== null ? (
+        <PlantForm
+          plant={plant}
+          handleSubmit={handleSubmit}
+          plantInForm={plantInForm}
+          setPlantInForm={setPlantInForm}
+          isFormEditable={isFormEditable}
+          setIsFormEditable={setIsFormEditable}
+          setPlantIsLoading={setPlantIsLoading}
+          isYourPlant={isYourPlant}
+        />
+      ) : (
+        // Loading state or null state until isYourPlant is determined
+        <PlantFormPlaceholder />
+      )}
       <PlantImages plant_id={plantId} isYourPlant={isYourPlant} />
     </BaseLayout>
   );

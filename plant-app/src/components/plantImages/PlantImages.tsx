@@ -29,7 +29,7 @@ export function PlantImages({
   isYourPlant,
 }: {
   plant_id: string | undefined;
-  isYourPlant: boolean;
+  isYourPlant: boolean | null;
 }) {
   const { showAlert } = useAlert();
   const { callApi } = useApi();
@@ -126,7 +126,7 @@ export function PlantImages({
         )}
       </Card.Body>
 
-      {selectedImage && (
+      {isYourPlant != null && selectedImage && (
         <ImageDisplayModal
           show={showImageModal}
           onHide={handleCloseImageModal}
@@ -151,7 +151,8 @@ export function PlantImages({
           onUploadSuccess={onUploadSuccess}
         />
       )}
-      {isYourPlant && (
+
+      {isYourPlant !== null && isYourPlant && (
         <FloatingActionButton
           icon={<FaCamera size="2em" />}
           handleOnClick={handleShowUploadModal}
