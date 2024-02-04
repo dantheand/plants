@@ -60,15 +60,15 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 export const PlaceholderCard: React.FC = () => (
   <ListGroup.Item as="li" className="mb-2">
     <Placeholder as="h5" animation="glow">
-      <Placeholder style={{ width: 300 }} />
+      <Placeholder style={{ width: 90 }} />
     </Placeholder>
     <p></p>
     <Placeholder as="p" animation="glow">
-      <Placeholder style={{ width: 100 }} />{" "}
+      <Placeholder style={{ width: 105 }} />{" "}
       <Placeholder style={{ width: 40 }} />
     </Placeholder>
     <Placeholder as="p" animation="glow">
-      <Placeholder style={{ width: 100 }} />{" "}
+      <Placeholder style={{ width: 90 }} />{" "}
       <Placeholder style={{ width: 40 }} />
     </Placeholder>
     <Placeholder.Button
