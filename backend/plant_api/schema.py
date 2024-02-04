@@ -45,13 +45,21 @@ class DynamoDBMixin(BaseModel):
         return data
 
 
-# TODO: try to consolidate User and UserItem
-class User(BaseModel):
-    email: Optional[str] = None
+class DeAnonUser(BaseModel):
     google_id: str
     given_name: str
-    family_name: Optional[str] = None
     last_initial: str
+    n_total_plants: int
+    n_active_plants: int
+
+
+# TODO: try to consolidate User and UserItem
+class User(BaseModel):
+    email: str
+    google_id: str
+    given_name: str
+    family_name: str
+    last_initial: Optional[str] = None
     disabled: Optional[bool] = None
     n_total_plants: Optional[int] = None
     n_active_plants: Optional[int] = None

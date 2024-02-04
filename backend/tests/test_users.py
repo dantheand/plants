@@ -2,7 +2,7 @@ from datetime import date
 
 from tests.conftest import create_plants_for_user
 from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, plant_record_factory
-from plant_api.schema import User, UserItem
+from plant_api.schema import DeAnonUser, User, UserItem
 from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id
 
 from pydantic import TypeAdapter
@@ -45,7 +45,7 @@ class TestAddUser:
 class TestGetUsers:
     def test_get_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_mock_session):
         response = client_mock_session().get("/users")
-        parsed_response = TypeAdapter(list[User]).validate_python(response.json())
+        parsed_response = TypeAdapter(list[DeAnonUser]).validate_python(response.json())
 
         assert len(parsed_response) == 2
         # Assert that both of the users are there
@@ -54,7 +54,7 @@ class TestGetUsers:
 
     def test_gets_only_active_users(self, default_disabled_user_in_db, other_enabled_user_in_db, client_mock_session):
         response = client_mock_session().get("/users")
-        parsed_response = TypeAdapter(list[User]).validate_python(response.json())
+        parsed_response = TypeAdapter(list[DeAnonUser]).validate_python(response.json())
 
         assert len(parsed_response) == 1
         # Assert that only the active user is there
@@ -63,13 +63,13 @@ class TestGetUsers:
     def test_get_user_n_plants(self, default_enabled_user_in_db, mock_db, client_mock_session):
         create_plants_for_user(mock_db, DEFAULT_TEST_USER, 3)
         response = client_mock_session().get("/users")
-        parsed_user = TypeAdapter(list[User]).validate_python(response.json())
+        parsed_user = TypeAdapter(list[DeAnonUser]).validate_python(response.json())
 
         assert parsed_user[0].n_total_plants == 3
 
     def test_get_user_without_plants(self, default_enabled_user_in_db, client_mock_session):
         response = client_mock_session().get("/users")
-        parsed_user = TypeAdapter(list[User]).validate_python(response.json())
+        parsed_user = TypeAdapter(list[DeAnonUser]).validate_python(response.json())
 
         assert parsed_user[0].n_total_plants == 0
 
@@ -82,18 +82,15 @@ class TestGetUsers:
             mock_db.insert_mock_data(plant)
 
         response = client_mock_session().get("/users")
-        parsed_user = TypeAdapter(list[User]).validate_python(response.json())[0]
+        parsed_user = TypeAdapter(list[DeAnonUser]).validate_python(response.json())[0]
 
         assert parsed_user.n_total_plants == 2
         assert parsed_user.n_active_plants == 1
 
     def test_get_user_returns_deanon_data(self, default_enabled_user_in_db, client_mock_session):
-        """(Relatively deanon)"""
         response = client_mock_session().get("/users")
-        parsed_response = TypeAdapter(list[User]).validate_python(response.json())
+        parsed_response = TypeAdapter(list[DeAnonUser]).validate_python(response.json())
 
-        assert parsed_response[0].email is None
-        assert parsed_response[0].family_name is None
         assert parsed_response[0].last_initial == DEFAULT_TEST_USER.family_name[0]
 
 

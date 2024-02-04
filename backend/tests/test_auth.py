@@ -33,7 +33,6 @@ def create_current_session_token(user: User) -> str:
         JwtPayload(
             email=user.email,
             google_id=user.google_id,
-            family_name=user.family_name,
             exp=datetime.utcnow() + timedelta(days=1),
             jti=str(uuid.uuid4()),
         ).model_dump(),
