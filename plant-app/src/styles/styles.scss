@@ -59,11 +59,23 @@ html, body, #root {
 
 /*Navbar*/
 
+.navbar-brand{
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+.navbar-brand-text{
+  margin-right: 20px;
+}
+
 .navbar-custom {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
 
+.small-nav-link-container{
+  margin-top: 25px;
+}
 
 .nav-link-disabled {
   color: grey !important;
@@ -74,16 +86,21 @@ html, body, #root {
 .nav-link {
   border-bottom: 2px solid transparent; /* Transparent border for a smooth transition */
   transition: border-bottom 0.3s ease-in-out; /* Transition for the border style */
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .nav-link.active {
-    border-bottom: 2px solid $secondary; /* Bottom border */
+  border-bottom: 2px solid $secondary; /* Bottom border */
 }
 
 .nav-icon {
   font-size: 1.3rem;
   margin-left: 10px;
   margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .logout-btn {

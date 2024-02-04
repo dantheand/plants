@@ -38,38 +38,39 @@ export const AppNavbar = () => {
           <div
             style={{ marginLeft: "0.5rem", position: "relative", top: "6px" }}
           >
-            <span className="d-none d-lg-inline text-secondary-emphasis">
+            <span className="d-none d-lg-inline text-secondary-emphasis navbar-brand-text">
               {APP_BRAND_NAME}
             </span>
           </div>
         </Navbar.Brand>
-        {/* Adjusted section */}
-        <div className="d-flex justify-content-around w-100 d-lg-none">
+        {/*TODO: deduplicate the small screen and large screen links code*/}
+        {/*On smaller screens, evenly distribute navbar links*/}
+        <div className="d-flex justify-content-around w-100 d-lg-none small-nav-link-container">
           {/* Navbar links for smaller screens */}
           <Nav.Link
             className={isActive("/plants") ? "active" : ""}
             onClick={() => handleNavigate("plants/user/me")}
           >
-            <FaSeedling />
+            <FaSeedling className="nav-icon" />
           </Nav.Link>
           <Nav.Link
             className={isActive("/users") ? "active" : ""}
             onClick={() => handleNavigate("/users")}
           >
-            <FaUsers />
+            <FaUsers className="nav-icon" />
           </Nav.Link>
           <Nav.Link
             className={isActive("/lineages") ? "active" : ""}
             onClick={() => handleNavigate("/lineages/user/me")}
           >
-            <FaProjectDiagram />
+            <FaProjectDiagram className="nav-icon" />
           </Nav.Link>
-          {/* Logout button */}
+          {/* Logout button for smaller screens */}
           <Nav.Link className="hoverable-icon" onClick={logout}>
-            <FaRightFromBracket />
+            <FaRightFromBracket className="nav-icon text-danger" />
           </Nav.Link>
         </div>
-        {/* For larger screens */}
+        {/* On larger screens, left justify and spell out labels */}
         <Nav className="me-auto mt-3 d-none d-lg-flex">
           <Nav.Link
             className={isActive("/plants") ? "active" : ""}
@@ -96,7 +97,7 @@ export const AppNavbar = () => {
         {/* Logout button for larger screens, adjust as necessary */}
         <Nav className="ms-auto d-none d-lg-flex">
           <Nav.Link className="hoverable-icon" onClick={logout}>
-            <FaRightFromBracket className="logout-btn" />
+            <FaRightFromBracket className="logout-btn text-danger" />
           </Nav.Link>
         </Nav>
       </Container>
