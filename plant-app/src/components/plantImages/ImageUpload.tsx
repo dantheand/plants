@@ -4,6 +4,7 @@ import { useAlert } from "../../context/Alerts";
 import { BASE_API_URL } from "../../constants";
 import resizeImageWithPica from "../../utils/images";
 import { useApi } from "../../utils/api";
+import { usePlants } from "../../context/Plants";
 
 interface ImageUploadProps {
   plant_id: string;
@@ -23,6 +24,7 @@ const ImageUpload = ({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const { showAlert } = useAlert();
   const { callApi } = useApi();
+  const { forceReloadPlants } = usePlants();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -74,7 +76,9 @@ const ImageUpload = ({
       if (response.ok) {
         closeModal();
         onUploadSuccess();
+        forceReloadPlants();
         showAlert(`Image uploaded successfully!`, "success");
+
         // TODO: figure out why this error handling isn't working (can upload a .png and get a 500 error)
       } else {
         console.error(`Upload failed with status: ${response.status}`);
