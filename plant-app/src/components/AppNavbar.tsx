@@ -67,7 +67,7 @@ export const AppNavbar = () => {
           </Nav.Link>
           {/* Logout button for smaller screens */}
           <Nav.Link className="hoverable-icon" onClick={logout}>
-            <FaRightFromBracket className="nav-icon text-danger" />
+            <FaRightFromBracket className="nav-icon" />
           </Nav.Link>
         </div>
         {/* On larger screens, left justify and spell out labels */}
@@ -97,7 +97,7 @@ export const AppNavbar = () => {
         {/* Logout button for larger screens, adjust as necessary */}
         <Nav className="ms-auto d-none d-lg-flex">
           <Nav.Link className="hoverable-icon" onClick={logout}>
-            <FaRightFromBracket className="logout-btn text-danger" />
+            <FaRightFromBracket className="logout-btn" />
           </Nav.Link>
         </Nav>
       </Container>

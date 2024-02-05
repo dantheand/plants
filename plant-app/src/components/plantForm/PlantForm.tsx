@@ -169,6 +169,13 @@ export const PlantForm = ({
             OnChange={handleInputChange("notes")}
             isEditable={isFormEditable}
           />
+          {isFormNewPlant && (
+            <div
+              className={"m-4 p-2 text-center bg-light border rounded w-auto"}
+            >
+              Save plant to upload images.
+            </div>
+          )}
         </Card.Body>
         {!isFormNewPlant && isYourPlant && (
           <Card.Footer className="mt-2">
