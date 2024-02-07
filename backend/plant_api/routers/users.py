@@ -27,6 +27,11 @@ async def get_users():
     return [DeAnonUser(**user.model_dump()) for user in users]
 
 
+@router.get("/me", response_model=User)
+async def get_me(user: Annotated[User, Depends(get_current_user_session)]):
+    return user
+
+
 class VisibilitySettings(BaseModel):
     is_public: bool
 

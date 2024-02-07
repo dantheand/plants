@@ -43,6 +43,12 @@ class TestAddUser:
 
 
 class TestGetUsers:
+    def test_get_me(self, default_enabled_user_in_db, other_enabled_user_in_db, client_mock_session):
+        response = client_mock_session().get("/users/me")
+        parsed_response = TypeAdapter(User).validate_python(response.json())
+
+        assert parsed_response.google_id == DEFAULT_TEST_USER.google_id
+
     def test_get_users(self, default_enabled_user_in_db, other_enabled_user_in_db, client_mock_session):
         response = client_mock_session().get("/users")
         parsed_response = TypeAdapter(list[DeAnonUser]).validate_python(response.json())
