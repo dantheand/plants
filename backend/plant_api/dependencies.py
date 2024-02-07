@@ -62,4 +62,5 @@ def get_current_user_session(session_token: Annotated[str, Depends(oauth2_google
         family_name=user_item.family_name,
         given_name=user_item.given_name,
         disabled=user_item.disabled,
+        is_public_profile=user_item.is_public_profile,
     )
