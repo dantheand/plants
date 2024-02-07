@@ -111,9 +111,6 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
         disabled={!user.is_public_profile}
         className={"mb-2"}
         onClick={() => {
-          if (user.google_id !== userId) {
-            showAlert("Creep mode engaged.", "success");
-          }
           navigate(`/plants/user/${user.google_id}`);
         }}
       >
@@ -124,9 +121,6 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
         disabled={!user.is_public_profile}
         className={"mx-3 mb-2"}
         onClick={() => {
-          if (user.google_id !== userId) {
-            showAlert("Creep mode engaged.", "success");
-          }
           navigate(`/lineages/user/${user.google_id}`);
         }}
       >

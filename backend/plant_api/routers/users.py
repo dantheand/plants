@@ -1,10 +1,12 @@
+from typing import Annotated
+
 from plant_api.routers.common import BaseRouter
 
 from plant_api.dependencies import get_current_user_session
 from fastapi import Depends
 
 from plant_api.utils.db import get_all_active_users, get_n_plants_for_user
-from plant_api.schema import DeAnonUser
+from plant_api.schema import DeAnonUser, User
 
 router = BaseRouter(
     prefix="/users",
@@ -22,3 +24,8 @@ async def get_users():
         user.n_total_plants = total_plants
         user.n_active_plants = active_plants
     return [DeAnonUser(**user.model_dump()) for user in users]
+
+
+@router.post("/set_profile_publicity")
+def set_profile_publicity(user: Annotated[User, Depends(get_current_user_session)]):
+    pass
