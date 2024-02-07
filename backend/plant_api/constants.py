@@ -21,6 +21,10 @@ CREDENTIALS_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
 )
+ACCESS_NOT_ALLOWED_EXCEPTION = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="Access to this data not allowed for this user.",
+)
 JWT_KEY_IN_SECRETS_MANAGER = "jwt_signing_key"
 DEPLOYMENT_ENV_VAR = "DEPLOYMENT_ENV"
 LOCAL_DEPLOYMENT_ENV = "local"

@@ -6,6 +6,7 @@ from uuid import UUID
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import Depends, HTTPException, status
 
+from plant_api.constants import ACCESS_NOT_ALLOWED_EXCEPTION
 from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import get_db_table, query_by_plant_id
@@ -13,6 +14,8 @@ from plant_api.schema import ImageItem, PlantCreate, PlantItem, PlantUpdate, Use
 from plant_api.routers.images import delete_image_from_s3
 
 from pydantic import TypeAdapter
+
+from plant_api.routers.users import is_user_access_allowed
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +38,9 @@ def read_all_plants_for_user(user_id: str) -> list[PlantItem]:
 
 
 @router.get("/user/{user_id}/{human_id}", response_model=PlantItem)
-def get_plant_by_human_id(user_id: str, human_id: int):
+def get_plant_by_human_id(user_id: str, human_id: int, user: Annotated[User, Depends(get_current_user_session)]):
+    if not is_user_access_allowed(user, user_id):
+        raise ACCESS_NOT_ALLOWED_EXCEPTION
     all_user_plants = read_all_plants_for_user(user_id)
     for plant in all_user_plants:
         if plant.human_id == human_id:
@@ -43,15 +48,19 @@ def get_plant_by_human_id(user_id: str, human_id: int):
 
 
 @router.get("/user/{user_id}", response_model=list[PlantItem])
-async def all_plants(user_id: str):
-    return read_all_plants_for_user(user_id)
+async def all_plants(user_id: str, user: Annotated[User, Depends(get_current_user_session)]):
+    if is_user_access_allowed(user, user_id):
+        return read_all_plants_for_user(user_id)
+    raise ACCESS_NOT_ALLOWED_EXCEPTION
 
 
 @router.get("/{plant_id}", response_model=PlantItem)
-def get_plant(plant_id: UUID):
+def get_plant(plant_id: UUID, user: Annotated[User, Depends(get_current_user_session)]):
     table = get_db_table()
     response = query_by_plant_id(table, plant_id)
-    return response
+    if is_user_access_allowed(user, response.user_id):
+        return response
+    raise ACCESS_NOT_ALLOWED_EXCEPTION
 
 
 @router.post("/create", response_model=PlantItem, status_code=status.HTTP_201_CREATED)
