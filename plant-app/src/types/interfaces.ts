@@ -31,6 +31,7 @@ export interface User {
   last_initial: string;
   n_total_plants: number;
   n_active_plants: number;
+  is_public_profile: boolean;
 }
 
 export interface ApiResponse<T> {
