@@ -34,11 +34,11 @@ export function Settings(): JSX.Element {
                   </Accordion.Header>
                   <Accordion.Body>
                     <p>
-                      Activating the Surveillance State Mode subjects your
-                      botanical sanctum to the all-seeing eye of the collective
-                      — where every sprout and lineage is cataloged for public
+                      Activating Surveillance State Mode subjects your botanical
+                      sanctum to the all-seeing eye of the collective — where
+                      every sprout and lineage is cataloged for public
                       admiration and scrutiny. Deactivate it to retreat from the
-                      Observers' prying eyes.
+                      prying eyes of your fellow observers.
                     </p>
                     <p>
                       <strong>Activated:</strong> Your images, plants, and
