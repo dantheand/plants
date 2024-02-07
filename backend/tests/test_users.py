@@ -3,7 +3,7 @@ from datetime import date
 from tests.conftest import create_plants_for_user
 from tests.lib import DEFAULT_TEST_USER, OTHER_TEST_USER, plant_record_factory
 from plant_api.schema import DeAnonUser, User, UserItem
-from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id
+from plant_api.utils.db import get_all_users, get_db_table, get_user_by_google_id, is_user_access_allowed
 
 from pydantic import TypeAdapter
 
@@ -108,6 +108,17 @@ class TestUserUpdate:
 
         user = get_user_by_google_id(DEFAULT_TEST_USER.google_id)
         assert user.is_public_profile is False
+
+
+class TestRestrictedAccess:
+    def test_access_allowed_for_self(self, default_enabled_user_in_db):
+        assert is_user_access_allowed(default_enabled_user_in_db, default_enabled_user_in_db.google_id) is True
+
+    def test_access_allowed_for_public_user(self, default_enabled_user_in_db, other_enabled_user_in_db):
+        assert is_user_access_allowed(default_enabled_user_in_db, other_enabled_user_in_db.google_id) is True
+
+    def test_access_not_allowed_for_private_user(self, default_enabled_user_in_db, other_private_user_in_db):
+        assert is_user_access_allowed(default_enabled_user_in_db, other_private_user_in_db.google_id) is False
 
 
 class TestReadUserDB:

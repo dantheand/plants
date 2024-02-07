@@ -1,10 +1,10 @@
 from typing import List, Optional, Tuple
 from uuid import UUID
 
-import aioboto3
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import HTTPException
+from logging import getLogger
 
 from plant_api.constants import AWS_REGION, TABLE_NAME
 from plant_api.schema import ImageItem, PlantItem, User
@@ -13,6 +13,8 @@ from plant_api.schema import ItemKeys, UserItem
 from pydantic import TypeAdapter
 
 from plant_api.schema import User
+
+logger = getLogger(__name__)
 
 
 def get_db_connection():
@@ -103,7 +105,7 @@ def get_n_plants_for_user(user: User) -> Tuple[int, int]:
     return total_plants, unsunk_plants
 
 
-## TODO: add get number of images for user and add to user return
+# TODO: add get number of images for user and add to user return
 def is_user_access_allowed(requesting_user: User, target_user_id: str) -> bool:
     """Check if the requesting_user is allowed to access the target_user's data.
 
@@ -116,6 +118,7 @@ def is_user_access_allowed(requesting_user: User, target_user_id: str) -> bool:
     if requesting_user.google_id == target_user_id:
         return True
     target_user = get_user_by_google_id(target_user_id)
+    logger.info(f"target_user: {target_user}")
     if target_user.is_public_profile:
         return True
     return False
