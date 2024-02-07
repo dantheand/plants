@@ -49,7 +49,7 @@ class DeAnonUser(BaseModel):
     google_id: str
     given_name: str
     last_initial: str
-    public_profile: bool
+    is_public_profile: bool
     n_total_plants: int
     n_active_plants: int
 
@@ -62,7 +62,7 @@ class User(BaseModel):
     family_name: str
     last_initial: Optional[str] = None
     disabled: Optional[bool] = None
-    public_profile: Optional[bool] = None
+    is_public_profile: Optional[bool] = None
     n_total_plants: Optional[int] = None
     n_active_plants: Optional[int] = None
 
@@ -83,7 +83,7 @@ class UserItem(DynamoDBMixin):
     family_name: str
     picture: Optional[str] = None
     entity_type: str = Field(EntityType.USER)
-    public_profile: Optional[bool] = True
+    is_public_profile: Optional[bool] = True
     disabled: Optional[bool] = True
     google_id: str
 

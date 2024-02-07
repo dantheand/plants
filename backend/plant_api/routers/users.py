@@ -36,6 +36,6 @@ def is_user_access_allowed(requesting_user: User, target_user_id: str) -> bool:
     if requesting_user.google_id == target_user_id:
         return True
     target_user = get_user_by_google_id(target_user_id)
-    if target_user.is_public:
+    if target_user.is_public_profile:
         return True
     return False
