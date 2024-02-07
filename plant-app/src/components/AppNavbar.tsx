@@ -11,7 +11,6 @@ import {
   FaCog,
   FaProjectDiagram,
   FaSeedling,
-  FaUserCog,
   FaUsers,
 } from "react-icons/fa";
 
@@ -73,7 +72,11 @@ export const AppNavbar = () => {
             <FaProjectDiagram className="nav-icon" />
           </Nav.Link>
           {/* Logout button for smaller screens */}
-          <DropDownMenu logout={logout} lg_screen={false} />
+          <DropDownMenu
+            logout={logout}
+            lg_screen={false}
+            handleNavigate={handleNavigate}
+          />
         </div>
         {/* On larger screens, left justify and spell out labels */}
         <Nav className="me-auto mt-3 d-none d-lg-flex">
@@ -100,7 +103,11 @@ export const AppNavbar = () => {
           </Nav.Link>
         </Nav>
         <Nav className="ms-auto d-none d-lg-flex">
-          <DropDownMenu logout={logout} lg_screen={true} />
+          <DropDownMenu
+            logout={logout}
+            lg_screen={true}
+            handleNavigate={handleNavigate}
+          />
         </Nav>
       </Container>
     </Navbar>
@@ -110,9 +117,11 @@ export const AppNavbar = () => {
 const DropDownMenu = ({
   logout,
   lg_screen,
+  handleNavigate,
 }: {
   logout: () => void;
   lg_screen: boolean;
+  handleNavigate: (path: string) => void;
 }) => {
   return (
     <NavDropdown
@@ -121,7 +130,7 @@ const DropDownMenu = ({
       className={`navbar-dropdown ${lg_screen ? "large-menu" : ""}`}
       align={"end"}
     >
-      <NavDropdown.Item onClick={() => console.log("Navigate to settings")}>
+      <NavDropdown.Item onClick={() => handleNavigate("/settings")}>
         <FaCog size={15} className={"mx-2"} /> Settings
       </NavDropdown.Item>
       <NavDropdown.Item onClick={logout}>
