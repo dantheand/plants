@@ -1,6 +1,6 @@
 import { BaseLayout } from "../components/Layouts";
 import { Accordion, Card, Form, Spinner } from "react-bootstrap";
-import React, { JSX, useEffect, useState } from "react";
+import React, { JSX, useCallback, useEffect, useState } from "react";
 import { APP_BRAND_NAME, BASE_API_URL } from "../constants";
 import { useApi } from "../utils/api";
 import { useAlert } from "../context/Alerts";
@@ -11,7 +11,7 @@ export function Settings(): JSX.Element {
   const { callApi } = useApi();
   const { showAlert } = useAlert();
 
-  const fetchProfileVisibility = async () => {
+  const fetchProfileVisibility = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await callApi(BASE_API_URL + "/users/me");
@@ -23,7 +23,11 @@ export function Settings(): JSX.Element {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [callApi, showAlert]); // Add callApi and showAlert as dependencies
+
+  useEffect(() => {
+    fetchProfileVisibility();
+  }, [fetchProfileVisibility]);
 
   const handleProfileVisibilityChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -40,15 +44,11 @@ export function Settings(): JSX.Element {
         },
       );
       if (!response.ok) throw new Error("Failed to update settings");
-      showAlert("Profile visibility updated successfully!", "success");
+      showAlert("Profile settings updated!", "success");
     } catch (error) {
       showAlert("Failed to update profile settings", "danger");
     }
   };
-
-  useEffect(() => {
-    fetchProfileVisibility();
-  }, []);
 
   return (
     <BaseLayout>
