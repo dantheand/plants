@@ -77,6 +77,9 @@ html, body, #root {
   margin-top: 25px;
 }
 
+.navbar-dropdown {
+  z-index: 1002;
+}
 
 .nav-link {
   border-bottom: 2px solid transparent; /* Transparent border for a smooth transition */
@@ -99,9 +102,8 @@ html, body, #root {
   margin-bottom: 10px;
 }
 
-.logout-btn {
-  margin-top: 0.8rem;
-  font-size: 1.2rem;
+.large-menu {
+  margin-top: 1rem;
 }
 
 .no-item-icon {
