@@ -7,7 +7,6 @@ import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import { FaProjectDiagram, FaSeedling } from "react-icons/fa";
 
@@ -93,8 +92,6 @@ type UserCardProps = {
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const navigate = useNavigate();
-  const { showAlert } = useAlert();
-  const { userId } = useAuth();
 
   return (
     <ListGroup.Item as="li" className="mb-2">

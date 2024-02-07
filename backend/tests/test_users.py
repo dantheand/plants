@@ -94,6 +94,16 @@ class TestGetUsers:
         assert parsed_response[0].last_initial == DEFAULT_TEST_USER.family_name[0]
 
 
+class TestUserUpdate:
+    def test_change_user_visibility(self, default_enabled_user_in_db, client_mock_session):
+        assert default_enabled_user_in_db.is_public_profile is True
+        response = client_mock_session().post("/users/settings/visibility", json={"is_public": False})
+        assert response.json() == {"visibility": False}
+
+        user = get_user_by_google_id(DEFAULT_TEST_USER.google_id)
+        assert user.is_public_profile is False
+
+
 class TestReadUserDB:
     def test_read_user(self, default_enabled_user_in_db):
         user = get_user_by_google_id(DEFAULT_TEST_USER.google_id)

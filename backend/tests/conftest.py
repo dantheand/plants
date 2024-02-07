@@ -198,6 +198,7 @@ def default_enabled_user_in_db(mock_db):
         email=DEFAULT_TEST_USER.email,
         given_name=DEFAULT_TEST_USER.given_name,
         family_name=DEFAULT_TEST_USER.family_name,
+        is_public_profile=True,
         disabled=False,
     )
     mock_db.insert_mock_data(user)
