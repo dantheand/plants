@@ -1,9 +1,9 @@
 import logging
 from collections import Counter, defaultdict
 from datetime import date
-from typing import Optional, Sequence
-from uuid import UUID
+from typing import Annotated, Optional, Sequence
 
+from plant_api.constants import ACCESS_NOT_ALLOWED_EXCEPTION
 from plant_api.routers.common import BaseRouter
 from plant_api.dependencies import get_current_user_session
 from pydantic import BaseModel
@@ -11,7 +11,8 @@ from pydantic import BaseModel
 from fastapi import Depends
 
 from plant_api.routers.plants import read_all_plants_for_user
-from plant_api.schema import PlantItem
+from plant_api.schema import PlantItem, User
+from plant_api.utils.db import is_user_access_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -164,8 +165,11 @@ def assign_levels_to_generations(plants: list[PlantLineageNode]) -> list[list[Pl
     # Exclude none to prevent empty parents
     response_model_exclude_none=True,
 )
-async def get_plant_lineage_graph(user_id: str):
+async def get_plant_lineage_graph(user_id: str, user: Annotated[User, Depends(get_current_user_session)]):
     # Construct a graph of plants based on their lineages
+    if not is_user_access_allowed(user, user_id):
+        raise ACCESS_NOT_ALLOWED_EXCEPTION
+
     plants = read_all_plants_for_user(user_id)
     plant_nodes = create_nodes_for_plants(plants)
     source_nodes = create_nodes_for_sources(plants)
