@@ -1,13 +1,5 @@
 import { BaseLayout } from "../components/Layouts";
-import {
-  Accordion,
-  Alert,
-  ButtonGroup,
-  Card,
-  Form,
-  ListGroup,
-  ToggleButton,
-} from "react-bootstrap";
+import { Accordion, Card, Form } from "react-bootstrap";
 import React, { JSX, useState } from "react";
 import { APP_BRAND_NAME } from "../constants";
 
@@ -42,12 +34,11 @@ export function Settings(): JSX.Element {
                   </Accordion.Header>
                   <Accordion.Body>
                     <p>
-                      Activating the Surveillance State subjects your botanical
-                      haven to the all-seeing eye of the collective — where
-                      every sprout and lineage is cataloged for public
-                      admiration and scrutiny. Deactivate to cloak your garden
-                      in secrecy, known only to you, a silent rebellion against
-                      the ever-watchful gaze.
+                      Activating the Surveillance State Mode subjects your
+                      botanical sanctum to the all-seeing eye of the collective
+                      — where every sprout and lineage is cataloged for public
+                      admiration and scrutiny. Deactivate it to retreat from the
+                      Observers' prying eyes.
                     </p>
                     <p>
                       <strong>Activated:</strong> Your images, plants, and
