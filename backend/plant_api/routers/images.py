@@ -32,7 +32,7 @@ from PIL.Image import Image
 
 from fastapi import Form
 
-from plant_api.routers.users import is_user_access_allowed
+from plant_api.utils.db import is_user_access_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +109,7 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return images
 
 
+# TODO: protect this route from non-public profile access (currently protected by obscurity of UUIDs)
 # TODO: write tests for this route
 @router.post("/plants/most_recent", response_model=list[Optional[ImageItem]])
 async def get_plants_most_recent_image(
@@ -130,10 +131,11 @@ async def get_plants_most_recent_image(
     return [image for image in images if image]
 
 
+# TODO: protect this route from non-public profile access (currently protected by obscurity of UUIDs)
 # TODO: cleanup routes: /images/plant/<plant_id>
 #   /images/image/<image_id>
 @router.get("/{image_id}", response_model=ImageItem)
-async def get_image(image_id: UUID):
+async def get_image(image_id: UUID, user=Depends(get_current_user_session)):
     table = get_db_table()
     image_response = query_by_image_id(table, image_id)
     return image_response

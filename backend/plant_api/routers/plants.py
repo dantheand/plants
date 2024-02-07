@@ -15,7 +15,7 @@ from plant_api.routers.images import delete_image_from_s3
 
 from pydantic import TypeAdapter
 
-from plant_api.routers.users import is_user_access_allowed
+from plant_api.utils.db import is_user_access_allowed
 
 LOGGER = logging.getLogger(__name__)
 
