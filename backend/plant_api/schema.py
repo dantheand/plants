@@ -52,6 +52,7 @@ class DeAnonUser(BaseModel):
     given_name: str
     last_initial: str
     is_public_profile: bool
+    created_at: datetime
     n_total_plants: int
     n_active_plants: int
 
@@ -64,6 +65,7 @@ class User(BaseModel):
     family_name: str
     last_initial: Optional[str] = None
     disabled: Optional[bool] = None
+    created_at: datetime
     is_public_profile: Optional[bool] = None
     n_total_plants: Optional[int] = None
     n_active_plants: Optional[int] = None
@@ -88,6 +90,7 @@ class UserItem(DynamoDBMixin):
     is_public_profile: Optional[bool] = True
     disabled: Optional[bool] = True
     google_id: str
+    created_at: datetime
 
     @model_validator(mode="before")
     def extract_google_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:

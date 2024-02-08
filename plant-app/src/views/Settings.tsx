@@ -65,23 +65,21 @@ export function Settings(): JSX.Element {
                 <Form.Check
                   type="switch"
                   id="custom-switch"
-                  label="Surveillance State Mode"
+                  label="Allow Collective Surveillance"
                   checked={isProfilePublic ?? false}
                   onChange={handleProfileVisibilityChange}
                   disabled={isLoading}
                 />
                 <Accordion className="mt-3">
                   <Accordion.Item eventKey="0">
-                    <Accordion.Header>
-                      Surveillance State Information
-                    </Accordion.Header>
+                    <Accordion.Header>More Details</Accordion.Header>
                     <Accordion.Body>
                       <p>
-                        Activating Surveillance State Mode subjects your
-                        botanical sanctum to the all-seeing eye of the
-                        collective — where every sprout and lineage is cataloged
-                        for public admiration and scrutiny. Deactivate it to
-                        retreat from the prying eyes of your fellow observers.
+                        Collective Surveillance mode exposes your botanical
+                        subjects to the all-seeing eye of the collective — where
+                        every sprout and lineage is cataloged for public
+                        admiration and scrutiny. Deactivate it to hide your
+                        plants from the prying eyes of your fellow observers.
                       </p>
                       <p>
                         <strong>Activated:</strong> Your images, plants, and

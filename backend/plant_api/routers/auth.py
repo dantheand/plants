@@ -94,6 +94,7 @@ def add_new_user_to_db(google_oauth_payload: GoogleOauthPayload):
         picture=google_oauth_payload.picture,
         entity_type=EntityType.USER,
         disabled=True,
+        created_at=datetime.utcnow(),
     )
     _ = get_db_table().put_item(Item=user_item.dynamodb_dump())
 
