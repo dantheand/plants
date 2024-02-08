@@ -29,7 +29,6 @@ def query_by_plant_id(table, plant_id: UUID) -> PlantItem:
     """Uses secondary index to query for a plant by its plant_id since plant IDs are in the SK field"""
     idx_pk_value = f"PLANT#{plant_id}"
     response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(idx_pk_value))
-    print(response)
     if not response["Items"]:
         raise HTTPException(status_code=404, detail=f"Could not find plant with ID {plant_id}.")
     return PlantItem(**response["Items"][0])
@@ -38,7 +37,6 @@ def query_by_plant_id(table, plant_id: UUID) -> PlantItem:
 def get_user_id_from_images_plant(image: ImageItem) -> str:
     table = get_db_table()
     plant_id = image.plant_id
-    print(plant_id)
     return query_by_plant_id(table, UUID(plant_id)).user_id
 
 
