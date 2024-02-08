@@ -137,7 +137,7 @@ async def get_plants_most_recent_image(
 @router.get("/{image_id}", response_model=ImageItem)
 async def get_image(image_id: UUID, user=Depends(get_current_user_session)):
     table = get_db_table()
-    image_response = query_by_image_id(table, image_id, user)
+    image_response = query_by_image_id(table, image_id)
     return image_response
 
 
@@ -204,7 +204,7 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user_session)):
     table = get_db_table()
 
     # Check if image exists
-    image_response = query_by_image_id(table, image_id, user)
+    image_response = query_by_image_id(table, image_id)
     if not image_response:
         raise HTTPException(status_code=404, detail="Could not find image for plant.")
 
@@ -226,7 +226,7 @@ async def delete_image(image_id: UUID, user=Depends(get_current_user_session)):
 @router.patch("/{image_id}", response_model=ImageItem)
 async def update_image(image_id: UUID, new_data: ImageItem, user=Depends(get_current_user_session)):
     table = get_db_table()
-    stored_item = query_by_image_id(table, image_id, user)
+    stored_item = query_by_image_id(table, image_id)
 
     # Check to make sure attached plant exists and belongs to user
     plant_response = query_by_plant_id(table, UUID(stored_item.PK.split("#")[1]))

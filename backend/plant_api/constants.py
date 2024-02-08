@@ -30,6 +30,8 @@ DEPLOYMENT_ENV_VAR = "DEPLOYMENT_ENV"
 LOCAL_DEPLOYMENT_ENV = "local"
 AWS_DEPLOYMENT_ENV = "aws"
 
+UNSET = "unset"
+
 
 def get_jwt_secret() -> str:
     return get_aws_secret(JWT_KEY_IN_SECRETS_MANAGER)

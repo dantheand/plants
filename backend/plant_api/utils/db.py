@@ -40,7 +40,7 @@ def get_user_id_from_images_plant(image: ImageItem) -> str:
     return query_by_plant_id(table, UUID(plant_id)).user_id
 
 
-def query_by_image_id(table, image_id: UUID, requesting_user: User) -> ImageItem:
+def query_by_image_id(table, image_id: UUID) -> ImageItem:
     """Uses secondary index to query for a plant by its plant_id since plant IDs are in the SK field"""
     idx_pk_value = f"IMAGE#{image_id}"
     response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(idx_pk_value))
@@ -116,7 +116,8 @@ def is_user_access_allowed(requesting_user: User, target_user_id: str) -> bool:
     if requesting_user.google_id == target_user_id:
         return True
     target_user = get_user_by_google_id(target_user_id)
-    logger.info(f"target_user: {target_user}")
+    if not target_user:
+        return False
     if target_user.is_public_profile:
         return True
     return False

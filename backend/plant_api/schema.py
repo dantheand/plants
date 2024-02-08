@@ -4,6 +4,8 @@ from typing import Any, Dict, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
 
+from plant_api.constants import UNSET
+
 
 class ItemKeys(str, Enum):
     USER = "USER"
@@ -147,7 +149,7 @@ class PlantItem(PlantCreate):
     SK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
-    user_id: Optional[str] = None
+    user_id: str = UNSET
 
     @model_validator(mode="before")
     def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
