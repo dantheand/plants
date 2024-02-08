@@ -10,7 +10,7 @@ import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../utils/api";
-import { FaHourglassHalf, FaProjectDiagram, FaSeedling } from "react-icons/fa";
+import { FaProjectDiagram, FaSeedling } from "react-icons/fa";
 
 export const PlaceholderCard: React.FC = () => (
   <ListGroup.Item as="li" className="mb-2">
