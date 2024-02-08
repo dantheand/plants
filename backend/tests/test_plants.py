@@ -23,25 +23,10 @@ class TestPlantRead:
         assert len(parsed_response) == 10
         assert all(isinstance(item, PlantItem) for item in parsed_response)
 
-    def test_get_other_users_plant_list(self, client_mock_session, mock_db, default_user_plant):
-        plant = default_user_plant
-
-        test_client = client_mock_session(OTHER_TEST_USER)
-        response = test_client.get(f"{PLANT_ROUTE}/user/{plant.user_id}")
-        assert response.status_code == 200
-
     def test_read_your_plant(self, client_mock_session, mock_db, default_user_plant):
         plant = default_user_plant
 
         test_client = client_mock_session(DEFAULT_TEST_USER)
-        response = test_client.get(f"{PLANT_ROUTE}/{plant.plant_id}")
-        assert PlantItem(**response.json()).SK == f"PLANT#{plant.plant_id}"
-        assert response.status_code == 200
-
-    def test_read_other_users_plant_ok(self, client_mock_session, mock_db, default_user_plant):
-        plant = default_user_plant
-
-        test_client = client_mock_session(OTHER_TEST_USER)
         response = test_client.get(f"{PLANT_ROUTE}/{plant.plant_id}")
         assert PlantItem(**response.json()).SK == f"PLANT#{plant.plant_id}"
         assert response.status_code == 200
@@ -59,6 +44,41 @@ class TestPlantRead:
         response = test_client.get(f"{PLANT_ROUTE}/user/{plant.user_id}/{plant.human_id}")
         assert PlantItem(**response.json()).SK == f"PLANT#{plant.plant_id}"
         assert response.status_code == 200
+
+
+class TestPlantReadPrivacy:
+    def test_get_public_users_plant_list(self, client_mock_session, default_enabled_user_in_db, default_user_plant):
+        plant = default_user_plant
+
+        test_client = client_mock_session(OTHER_TEST_USER)
+        response = test_client.get(f"{PLANT_ROUTE}/user/{plant.user_id}")
+        assert response.status_code == 200
+
+    def test_get_private_users_plant_list(self, client_mock_session, default_private_user_in_db, default_user_plant):
+        plant = default_user_plant
+
+        test_client = client_mock_session(OTHER_TEST_USER)
+        response = test_client.get(f"{PLANT_ROUTE}/user/{plant.user_id}")
+        assert response.status_code == 403
+
+    def test_read_public_users_plant_ok(
+        self, client_mock_session, mock_db, default_enabled_user_in_db, default_user_plant
+    ):
+        plant = default_user_plant
+
+        test_client = client_mock_session(OTHER_TEST_USER)
+        response = test_client.get(f"{PLANT_ROUTE}/{plant.plant_id}")
+        assert PlantItem(**response.json()).SK == f"PLANT#{plant.plant_id}"
+        assert response.status_code == 200
+
+    def test_read_private_users_plant_fails(
+        self, client_mock_session, mock_db, default_private_user_in_db, default_user_plant
+    ):
+        plant = default_user_plant
+
+        test_client = client_mock_session(OTHER_TEST_USER)
+        response = test_client.get(f"{PLANT_ROUTE}/{plant.plant_id}")
+        assert response.status_code == 403
 
 
 class TestPlantCreate:

@@ -191,6 +191,14 @@ def mock_google_oauth(monkeypatch):
 
 
 @pytest.fixture
+def mock_is_user_access_allowed(monkeypatch):
+    def mock_is_user_access_allowed(*args, **kwargs):
+        return True  # or False, depending on your test needs
+
+    monkeypatch.setattr("plant_api.utils.db.is_user_access_allowed", mock_is_user_access_allowed)
+
+
+@pytest.fixture
 def default_enabled_user_in_db(mock_db):
     user = UserItem(
         PK=f"USER#{DEFAULT_TEST_USER.google_id}",
@@ -199,6 +207,21 @@ def default_enabled_user_in_db(mock_db):
         given_name=DEFAULT_TEST_USER.given_name,
         family_name=DEFAULT_TEST_USER.family_name,
         is_public_profile=True,
+        disabled=False,
+    )
+    mock_db.insert_mock_data(user)
+    return user
+
+
+@pytest.fixture
+def default_private_user_in_db(mock_db):
+    user = UserItem(
+        PK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        SK=f"USER#{DEFAULT_TEST_USER.google_id}",
+        email=DEFAULT_TEST_USER.email,
+        given_name=DEFAULT_TEST_USER.given_name,
+        family_name=DEFAULT_TEST_USER.family_name,
+        is_public_profile=False,
         disabled=False,
     )
     mock_db.insert_mock_data(user)

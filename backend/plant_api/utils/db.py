@@ -29,14 +29,16 @@ def query_by_plant_id(table, plant_id: UUID) -> PlantItem:
     """Uses secondary index to query for a plant by its plant_id since plant IDs are in the SK field"""
     idx_pk_value = f"PLANT#{plant_id}"
     response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(idx_pk_value))
+    print(response)
     if not response["Items"]:
         raise HTTPException(status_code=404, detail=f"Could not find plant with ID {plant_id}.")
     return PlantItem(**response["Items"][0])
 
 
-def get_user_id_from_image(image: ImageItem) -> str:
+def get_user_id_from_images_plant(image: ImageItem) -> str:
     table = get_db_table()
     plant_id = image.plant_id
+    print(plant_id)
     return query_by_plant_id(table, UUID(plant_id)).user_id
 
 
@@ -48,8 +50,6 @@ def query_by_image_id(table, image_id: UUID, requesting_user: User) -> ImageItem
         raise HTTPException(status_code=404, detail=f"Could not find image with ID {image_id}.")
     image = ImageItem(**response["Items"][0])
 
-    if not is_user_access_allowed(requesting_user, get_user_id_from_image(image)):
-        raise HTTPException(status_code=403, detail="Access to this data not allowed for this user.")
     return image
 
 

@@ -9,7 +9,7 @@ from starlette import status
 from tests.conftest import create_and_insert_image_record
 from plant_api.constants import S3_BUCKET_NAME
 from plant_api.routers.images import MAX_THUMB_X_PIXELS, _orient_image
-from plant_api.utils.db import make_image_query_key
+from plant_api.utils.db import make_image_query_key, is_user_access_allowed
 from plant_api.schema import ImageItem
 from tests.lib import (
     check_object_exists_in_s3,
