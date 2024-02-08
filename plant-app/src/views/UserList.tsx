@@ -20,6 +20,10 @@ export const PlaceholderCard: React.FC = () => (
     <p></p>
     <Placeholder as="p" animation="glow">
       <Placeholder style={{ width: 105 }} />{" "}
+      <Placeholder style={{ width: 80 }} />
+    </Placeholder>
+    <Placeholder as="p" animation="glow">
+      <Placeholder style={{ width: 105 }} />{" "}
       <Placeholder style={{ width: 40 }} />
     </Placeholder>
     <Placeholder as="p" animation="glow">

@@ -94,8 +94,6 @@ async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Opti
 
 @router.get("/plants/{plant_id}", response_model=list[ImageItem])
 async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
-    # I loathe to make this query slower by adding another DB call...
-    #    but it's necessary to check if the user has access to the plant
     plant = query_by_plant_id(get_db_table(), plant_id)
     if not is_user_access_allowed(user, plant.user_id):
         raise ACCESS_NOT_ALLOWED_EXCEPTION
