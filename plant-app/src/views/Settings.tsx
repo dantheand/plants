@@ -65,7 +65,7 @@ export function Settings(): JSX.Element {
                 <Form.Check
                   type="switch"
                   id="custom-switch"
-                  label="Allow Collective Surveillance"
+                  label="Share Observations"
                   checked={isProfilePublic ?? false}
                   onChange={handleProfileVisibilityChange}
                   disabled={isLoading}
@@ -75,7 +75,7 @@ export function Settings(): JSX.Element {
                     <Accordion.Header>More Details</Accordion.Header>
                     <Accordion.Body>
                       <p>
-                        Collective Surveillance mode exposes your botanical
+                        Sharing your observations exposes your botanical
                         subjects to the all-seeing eye of the collective — where
                         every sprout and lineage is cataloged for public
                         admiration and scrutiny. Deactivate it to hide your
@@ -90,7 +90,8 @@ export function Settings(): JSX.Element {
                         <strong>Deactivated:</strong> Your images, plants, and
                         lineage information are hidden from other users. People
                         will still be able to see your first name, last initial,
-                        and total number of plants you have.
+                        account creation date, and the total number of plants
+                        you have.
                       </p>
                     </Accordion.Body>
                   </Accordion.Item>
