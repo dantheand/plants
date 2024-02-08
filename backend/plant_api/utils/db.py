@@ -1,16 +1,20 @@
 from typing import List, Optional, Tuple
 from uuid import UUID
 
-import aioboto3
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 from fastapi import HTTPException
+from logging import getLogger
 
 from plant_api.constants import AWS_REGION, TABLE_NAME
 from plant_api.schema import ImageItem, PlantItem, User
 from plant_api.schema import ItemKeys, UserItem
 
 from pydantic import TypeAdapter
+
+from plant_api.schema import User
+
+logger = getLogger(__name__)
 
 
 def get_db_connection():
@@ -30,13 +34,21 @@ def query_by_plant_id(table, plant_id: UUID) -> PlantItem:
     return PlantItem(**response["Items"][0])
 
 
+def get_user_id_from_images_plant(image: ImageItem) -> str:
+    table = get_db_table()
+    plant_id = image.plant_id
+    return query_by_plant_id(table, UUID(plant_id)).user_id
+
+
 def query_by_image_id(table, image_id: UUID) -> ImageItem:
     """Uses secondary index to query for a plant by its plant_id since plant IDs are in the SK field"""
     idx_pk_value = f"IMAGE#{image_id}"
     response = table.query(IndexName="SK-PK-index", KeyConditionExpression=Key("SK").eq(idx_pk_value))
     if not response["Items"]:
         raise HTTPException(status_code=404, detail=f"Could not find image with ID {image_id}.")
-    return ImageItem(**response["Items"][0])
+    image = ImageItem(**response["Items"][0])
+
+    return image
 
 
 def make_image_query_key(plant_id: UUID, image_id: UUID) -> dict:
@@ -91,4 +103,21 @@ def get_n_plants_for_user(user: User) -> Tuple[int, int]:
     return total_plants, unsunk_plants
 
 
-## TODO: add get number of images for user and add to user return
+# TODO: add get number of images for user and add to user return
+def is_user_access_allowed(requesting_user: User, target_user_id: str) -> bool:
+    """Check if the requesting_user is allowed to access the target_user's data.
+
+    This currently just checks if the requesting_user is the same as the target_user
+    If not, then it checks if the target user is a public user.
+    If not, then it returns False.
+
+    In the future, this could have a friends list check.
+    """
+    if requesting_user.google_id == target_user_id:
+        return True
+    target_user = get_user_by_google_id(target_user_id)
+    if not target_user:
+        return False
+    if target_user.is_public_profile:
+        return True
+    return False

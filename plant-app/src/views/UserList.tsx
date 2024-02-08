@@ -2,60 +2,15 @@ import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL } from "../constants";
 import { Button, Card, ListGroup, Placeholder } from "react-bootstrap";
 
+import { formatDistanceToNow } from "date-fns";
+
 import "../styles/styles.scss";
 import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
 import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/Auth";
 import { useApi } from "../utils/api";
 import { FaProjectDiagram, FaSeedling } from "react-icons/fa";
-
-type UserCardProps = {
-  user: User;
-};
-
-export const UserCard: React.FC<UserCardProps> = ({ user }) => {
-  const navigate = useNavigate();
-  const { showAlert } = useAlert();
-  const { userId } = useAuth();
-
-  return (
-    <ListGroup.Item as="li" className="mb-2">
-      <h5>
-        {user.given_name} {user.last_initial}.
-      </h5>
-      <p></p>
-      <p>Current Plants: {user.n_active_plants}</p>
-      <p>Total Plants: {user.n_total_plants}</p>
-
-      <Button
-        variant="success"
-        className={"mb-2"}
-        onClick={() => {
-          if (user.google_id !== userId) {
-            showAlert("Creep mode engaged.", "success");
-          }
-          navigate(`/plants/user/${user.google_id}`);
-        }}
-      >
-        <FaSeedling className={"me-2"} /> Plants
-      </Button>
-      <Button
-        variant="primary"
-        className={"mx-3 mb-2"}
-        onClick={() => {
-          if (user.google_id !== userId) {
-            showAlert("Creep mode engaged.", "success");
-          }
-          navigate(`/lineages/user/${user.google_id}`);
-        }}
-      >
-        <FaProjectDiagram className={"me-2"} /> Lineages
-      </Button>
-    </ListGroup.Item>
-  );
-};
 
 export const PlaceholderCard: React.FC = () => (
   <ListGroup.Item as="li" className="mb-2">
@@ -132,3 +87,46 @@ export function UserList(): JSX.Element {
     </BaseLayout>
   );
 }
+
+type UserCardProps = {
+  user: User;
+};
+
+const UserCard: React.FC<UserCardProps> = ({ user }) => {
+  const navigate = useNavigate();
+  const createdAtDate = new Date(user.created_at);
+  const timeAgo = formatDistanceToNow(createdAtDate, { addSuffix: true });
+
+  return (
+    <ListGroup.Item as="li" className="mb-2">
+      <h5>
+        {user.given_name} {user.last_initial}.
+      </h5>
+      <p></p>
+      <p>Tracking since: {timeAgo}</p>
+      <p>Current Plants: {user.n_active_plants}</p>
+      <p>Total Plants: {user.n_total_plants}</p>
+      <Button
+        variant="success"
+        // Set disabled if the user has a private profile
+        disabled={!user.is_public_profile}
+        className={"mb-2"}
+        onClick={() => {
+          navigate(`/plants/user/${user.google_id}`);
+        }}
+      >
+        <FaSeedling className={"me-2"} /> Plants
+      </Button>
+      <Button
+        variant="primary"
+        disabled={!user.is_public_profile}
+        className={"mx-3 mb-2"}
+        onClick={() => {
+          navigate(`/lineages/user/${user.google_id}`);
+        }}
+      >
+        <FaProjectDiagram className={"me-2"} /> Lineages
+      </Button>
+    </ListGroup.Item>
+  );
+};

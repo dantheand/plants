@@ -12,7 +12,7 @@ from fastapi import Depends, File, HTTPException, UploadFile
 from pydantic import TypeAdapter
 from starlette import status
 
-from plant_api.constants import AWS_REGION, IMAGES_FOLDER, S3_BUCKET_NAME, TABLE_NAME
+from plant_api.constants import ACCESS_NOT_ALLOWED_EXCEPTION, AWS_REGION, IMAGES_FOLDER, S3_BUCKET_NAME, TABLE_NAME
 from plant_api.dependencies import get_current_user_session
 from plant_api.routers.common import BaseRouter
 from plant_api.utils.db import (
@@ -26,11 +26,13 @@ from plant_api.utils.s3 import (
     create_presigned_urls_for_image,
     get_s3_client,
 )
-from plant_api.schema import EntityType, ImageItem
+from plant_api.schema import EntityType, ImageItem, User
 from PIL import Image as img, ImageOps
 from PIL.Image import Image
 
 from fastapi import Form
+
+from plant_api.utils.db import is_user_access_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +68,7 @@ def upload_image_to_s3(image: Image, image_id: UUID, plant_id: UUID, image_suffi
 
 def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
     table = get_db_table()
+
     response = table.query(
         KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
     )
@@ -81,13 +84,6 @@ async def get_async_images_for_plant(session, plant_id: UUID) -> list[ImageItem]
         return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
 
 
-def get_most_recent_image_for_plant(plant_id: UUID) -> Optional[ImageItem]:
-    images = get_images_for_plant(plant_id)
-    # Sort images by timestamp
-    images.sort(key=lambda x: x.timestamp, reverse=True)
-    return images[0] if images else None
-
-
 async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Optional[ImageItem]:
     logger.debug(f"Fetching most recent image for plant {plant_id}")
     images = await get_async_images_for_plant(session, plant_id)
@@ -98,6 +94,11 @@ async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Opti
 
 @router.get("/plants/{plant_id}", response_model=list[ImageItem])
 async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
+    # I loathe to make this query slower by adding another DB call...
+    #    but it's necessary to check if the user has access to the plant
+    plant = query_by_plant_id(get_db_table(), plant_id)
+    if not is_user_access_allowed(user, plant.user_id):
+        raise ACCESS_NOT_ALLOWED_EXCEPTION
     images = get_images_for_plant(plant_id)
     if not images:
         raise HTTPException(status_code=404, detail="Could not find images for plant.")
@@ -108,6 +109,7 @@ async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user
     return images
 
 
+# TODO: protect this route from non-public profile access (currently protected by obscurity of UUIDs)
 # TODO: write tests for this route
 @router.post("/plants/most_recent", response_model=list[Optional[ImageItem]])
 async def get_plants_most_recent_image(
@@ -129,10 +131,11 @@ async def get_plants_most_recent_image(
     return [image for image in images if image]
 
 
+# TODO: protect this route from non-public profile access (currently protected by obscurity of UUIDs)
 # TODO: cleanup routes: /images/plant/<plant_id>
 #   /images/image/<image_id>
 @router.get("/{image_id}", response_model=ImageItem)
-async def get_image(image_id: UUID):
+async def get_image(image_id: UUID, user=Depends(get_current_user_session)):
     table = get_db_table()
     image_response = query_by_image_id(table, image_id)
     return image_response

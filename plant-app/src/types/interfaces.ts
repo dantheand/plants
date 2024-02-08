@@ -29,8 +29,10 @@ export interface User {
   disabled: boolean;
   given_name: string;
   last_initial: string;
+  created_at: string;
   n_total_plants: number;
   n_active_plants: number;
+  is_public_profile: boolean;
 }
 
 export interface ApiResponse<T> {

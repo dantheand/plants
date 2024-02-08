@@ -18,10 +18,22 @@ TEST_JWT_SECRET = "test_secret_d151f3b184e25d3318551697d9d62cb7a6ed86035bc60ace3
 
 fake = Faker()
 DEFAULT_TEST_USER = User(
-    email="test@testing.com", google_id="123", given_name="Bob", family_name="Ross", last_initial="R", disabled=False
+    email="test@testing.com",
+    google_id="123",
+    given_name="Bob",
+    family_name="Ross",
+    last_initial="R",
+    disabled=False,
+    created_at=datetime.now(),
 )
 OTHER_TEST_USER = User(
-    email="other@testing.com", google_id="321", given_name="Betsy", family_name="Ross", last_initial="R", disabled=False
+    email="other@testing.com",
+    google_id="321",
+    given_name="Betsy",
+    family_name="Ross",
+    last_initial="R",
+    disabled=False,
+    created_at=datetime.now(),
 )
 
 

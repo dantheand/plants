@@ -56,10 +56,4 @@ def get_current_user_session(session_token: Annotated[str, Depends(oauth2_google
     if user_item.disabled:
         LOGGER.error("User is disabled!")
         raise CREDENTIALS_EXCEPTION
-    return User(
-        email=user_item.email,
-        google_id=user_item.google_id,
-        family_name=user_item.family_name,
-        given_name=user_item.given_name,
-        disabled=user_item.disabled,
-    )
+    return User(**user_item.model_dump())

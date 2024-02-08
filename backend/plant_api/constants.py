@@ -21,10 +21,16 @@ CREDENTIALS_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
 )
+ACCESS_NOT_ALLOWED_EXCEPTION = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="Access to this data not allowed for this user.",
+)
 JWT_KEY_IN_SECRETS_MANAGER = "jwt_signing_key"
 DEPLOYMENT_ENV_VAR = "DEPLOYMENT_ENV"
 LOCAL_DEPLOYMENT_ENV = "local"
 AWS_DEPLOYMENT_ENV = "aws"
+
+UNSET = "unset"
 
 
 def get_jwt_secret() -> str:
@@ -44,6 +50,3 @@ class JwtPayload(BaseModel):
     google_id: str = Field(..., description="Google's unique identifier for the user.")
     exp: datetime = Field(..., description="Expiration time for the token.")
     jti: str = Field(..., description="Unique identifier for the token.")
-
-
-SESSION_TOKEN_KEY = "session_token"

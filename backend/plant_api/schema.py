@@ -4,6 +4,8 @@ from typing import Any, Dict, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
 
+from plant_api.constants import UNSET
+
 
 class ItemKeys(str, Enum):
     USER = "USER"
@@ -49,6 +51,8 @@ class DeAnonUser(BaseModel):
     google_id: str
     given_name: str
     last_initial: str
+    is_public_profile: bool
+    created_at: datetime
     n_total_plants: int
     n_active_plants: int
 
@@ -61,6 +65,8 @@ class User(BaseModel):
     family_name: str
     last_initial: Optional[str] = None
     disabled: Optional[bool] = None
+    created_at: datetime
+    is_public_profile: Optional[bool] = None
     n_total_plants: Optional[int] = None
     n_active_plants: Optional[int] = None
 
@@ -81,8 +87,10 @@ class UserItem(DynamoDBMixin):
     family_name: str
     picture: Optional[str] = None
     entity_type: str = Field(EntityType.USER)
+    is_public_profile: Optional[bool] = True
     disabled: Optional[bool] = True
     google_id: str
+    created_at: datetime
 
     @model_validator(mode="before")
     def extract_google_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:
@@ -144,7 +152,7 @@ class PlantItem(PlantCreate):
     SK: str = Field(..., pattern=PLANT_KEY_PATTERN)
     entity_type: str = Field(EntityType.PLANT)
     plant_id: Optional[str] = None
-    user_id: Optional[str] = None
+    user_id: str = UNSET
 
     @model_validator(mode="before")
     def extract_plant_id(cls, values: Dict[str, Any]) -> Dict[str, Any]:

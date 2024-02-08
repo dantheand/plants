@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import plantBrandIcon from "../assets/plantopticon2_small.png";
 import { APP_BRAND_NAME } from "../constants";
 import React from "react";
@@ -6,7 +6,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/styles.scss";
 import { FaRightFromBracket } from "react-icons/fa6";
 import { useAuth } from "../context/Auth";
-import { FaProjectDiagram, FaSeedling, FaUsers } from "react-icons/fa";
+import {
+  FaBars,
+  FaCog,
+  FaProjectDiagram,
+  FaSeedling,
+  FaUsers,
+} from "react-icons/fa";
 
 export const AppNavbar = () => {
   const navigate = useNavigate();
@@ -66,9 +72,11 @@ export const AppNavbar = () => {
             <FaProjectDiagram className="nav-icon" />
           </Nav.Link>
           {/* Logout button for smaller screens */}
-          <Nav.Link className="hoverable-icon" onClick={logout}>
-            <FaRightFromBracket className="nav-icon text-danger" />
-          </Nav.Link>
+          <DropDownMenu
+            logout={logout}
+            lg_screen={false}
+            handleNavigate={handleNavigate}
+          />
         </div>
         {/* On larger screens, left justify and spell out labels */}
         <Nav className="me-auto mt-3 d-none d-lg-flex">
@@ -94,13 +102,40 @@ export const AppNavbar = () => {
             <span> Lineages</span>
           </Nav.Link>
         </Nav>
-        {/* Logout button for larger screens, adjust as necessary */}
         <Nav className="ms-auto d-none d-lg-flex">
-          <Nav.Link className="hoverable-icon" onClick={logout}>
-            <FaRightFromBracket className="logout-btn text-danger" />
-          </Nav.Link>
+          <DropDownMenu
+            logout={logout}
+            lg_screen={true}
+            handleNavigate={handleNavigate}
+          />
         </Nav>
       </Container>
     </Navbar>
+  );
+};
+
+const DropDownMenu = ({
+  logout,
+  lg_screen,
+  handleNavigate,
+}: {
+  logout: () => void;
+  lg_screen: boolean;
+  handleNavigate: (path: string) => void;
+}) => {
+  return (
+    <NavDropdown
+      title={<FaBars className="nav-icon" />}
+      id="nav-dropdown"
+      className={`navbar-dropdown ${lg_screen ? "large-menu" : ""}`}
+      align={"end"}
+    >
+      <NavDropdown.Item onClick={() => handleNavigate("/settings")}>
+        <FaCog size={15} className={"mx-2"} /> Settings
+      </NavDropdown.Item>
+      <NavDropdown.Item onClick={logout}>
+        <FaRightFromBracket size={15} className={"mx-2"} /> Logout
+      </NavDropdown.Item>
+    </NavDropdown>
   );
 };

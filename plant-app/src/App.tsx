@@ -19,6 +19,7 @@ import "./styles/styles.scss";
 import { AuthProvider, useAuth } from "./context/Auth";
 import { AlertProvider } from "./context/Alerts";
 import { PlantProvider } from "./context/Plants";
+import { Settings } from "./views/Settings";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useAuth(); // Use the custom hook to access auth state
@@ -47,6 +48,7 @@ function App() {
                     path="/lineages/user/:userId"
                     element={<TangledTree />}
                   />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/testing" element={<TestBox />} />
                 </Route>
                 {/* Redirect to login by default */}

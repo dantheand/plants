@@ -9,7 +9,7 @@ from starlette import status
 from tests.conftest import create_and_insert_image_record
 from plant_api.constants import S3_BUCKET_NAME
 from plant_api.routers.images import MAX_THUMB_X_PIXELS, _orient_image
-from plant_api.utils.db import make_image_query_key
+from plant_api.utils.db import make_image_query_key, is_user_access_allowed
 from plant_api.schema import ImageItem
 from tests.lib import (
     check_object_exists_in_s3,
@@ -43,7 +43,9 @@ class TestImageRead:
         for image in parsed_response:
             assert image.PK == f"PLANT#{plant.plant_id}"
 
-    def test_get_images_for_other_users_plant_ok(self, mock_db, client_mock_session, default_user_plant):
+    def test_get_images_for_other_users_plant_ok(
+        self, mock_db, client_mock_session, default_enabled_user_in_db, default_user_plant
+    ):
         plant = default_user_plant
         for _ in range(10):
             create_and_insert_image_record(mock_db, plant_id=plant.plant_id)
