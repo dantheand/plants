@@ -9,7 +9,7 @@ A plant tracking app meant to make it easy to track your plants' growth and line
 
 ## Development environment setup
 ### Dependencies
-- Python 3.9+
+- Python 3.11+
 - Node v20.10.0
 
 ### AWS stuff
