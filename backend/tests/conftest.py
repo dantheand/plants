@@ -199,6 +199,7 @@ def default_enabled_user_in_db(mock_db):
         given_name=DEFAULT_TEST_USER.given_name,
         family_name=DEFAULT_TEST_USER.family_name,
         is_public_profile=True,
+        created_at=DEFAULT_TEST_USER.created_at,
         disabled=False,
     )
     mock_db.insert_mock_data(user)
@@ -214,6 +215,7 @@ def default_private_user_in_db(mock_db):
         given_name=DEFAULT_TEST_USER.given_name,
         family_name=DEFAULT_TEST_USER.family_name,
         is_public_profile=False,
+        created_at=DEFAULT_TEST_USER.created_at,
         disabled=False,
     )
     mock_db.insert_mock_data(user)
@@ -229,6 +231,7 @@ def other_private_user_in_db(mock_db):
         given_name=OTHER_TEST_USER.given_name,
         family_name=OTHER_TEST_USER.family_name,
         is_public_profile=False,
+        created_at=OTHER_TEST_USER.created_at,
         disabled=False,
     )
     mock_db.insert_mock_data(user)
@@ -243,6 +246,7 @@ def default_disabled_user_in_db(mock_db):
         email=DEFAULT_TEST_USER.email,
         given_name=DEFAULT_TEST_USER.given_name,
         family_name=DEFAULT_TEST_USER.family_name,
+        created_at=DEFAULT_TEST_USER.created_at,
         disabled=True,
     )
     mock_db.insert_mock_data(user)
@@ -258,6 +262,7 @@ def other_enabled_user_in_db(mock_db):
         given_name=OTHER_TEST_USER.given_name,
         family_name=OTHER_TEST_USER.family_name,
         is_public_profile=True,
+        created_at=OTHER_TEST_USER.created_at,
         disabled=False,
     )
     mock_db.insert_mock_data(user)

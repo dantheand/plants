@@ -24,6 +24,7 @@ DEFAULT_TEST_USER = User(
     family_name="Ross",
     last_initial="R",
     disabled=False,
+    created_at=datetime.now(),
 )
 OTHER_TEST_USER = User(
     email="other@testing.com",
@@ -32,6 +33,7 @@ OTHER_TEST_USER = User(
     family_name="Ross",
     last_initial="R",
     disabled=False,
+    created_at=datetime.now(),
 )
 
 
