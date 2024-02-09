@@ -1,5 +1,7 @@
 import asyncio
-import aioboto3
+
+from aiobotocore.session import get_session
+
 import io
 import logging
 from datetime import datetime
@@ -26,15 +28,16 @@ from plant_api.utils.s3 import (
     create_presigned_urls_for_image,
     get_s3_client,
 )
-from plant_api.schema import EntityType, ImageItem, User
+from plant_api.schema import EntityType, ImageItem
 from PIL import Image as img, ImageOps
 from PIL.Image import Image
 
 from fastapi import Form
 
-from plant_api.utils.db import is_user_access_allowed
+from plant_api.utils.db import deserialize_dynamodb_item, is_user_access_allowed
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 router = BaseRouter(
@@ -75,18 +78,22 @@ def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
     return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
 
 
-async def get_async_images_for_plant(session, plant_id: UUID) -> list[ImageItem]:
-    async with session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
-        table = await dynamodb.Table(TABLE_NAME)
-        response = await table.query(
-            KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
-        )
-        return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
+async def get_async_images_for_plant(client, plant_id: UUID) -> list[ImageItem]:
+    response = await client.query(
+        TableName=TABLE_NAME,
+        KeyConditionExpression="PK = :pk and begins_with(SK, :sk)",
+        ExpressionAttributeValues={
+            ":pk": {"S": f"PLANT#{plant_id}"},
+            ":sk": {"S": "IMAGE#"},
+        },
+    )
+    items = [await deserialize_dynamodb_item(item) for item in response["Items"]]
+    return TypeAdapter(list[ImageItem]).validate_python(items)
 
 
-async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Optional[ImageItem]:
+async def get_async_most_recent_image_for_plant(client, plant_id: UUID) -> Optional[ImageItem]:
     logger.debug(f"Fetching most recent image for plant {plant_id}")
-    images = await get_async_images_for_plant(session, plant_id)
+    images = await get_async_images_for_plant(client, plant_id)
     # Sort images by timestamp
     images.sort(key=lambda x: x.timestamp, reverse=True)
     return images[0] if images else None
@@ -94,8 +101,6 @@ async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Opti
 
 @router.get("/plants/{plant_id}", response_model=list[ImageItem])
 async def get_all_images_for_plant(plant_id: UUID, user=Depends(get_current_user_session)) -> list[ImageItem]:
-    # I loathe to make this query slower by adding another DB call...
-    #    but it's necessary to check if the user has access to the plant
     plant = query_by_plant_id(get_db_table(), plant_id)
     if not is_user_access_allowed(user, plant.user_id):
         raise ACCESS_NOT_ALLOWED_EXCEPTION
@@ -117,12 +122,14 @@ async def get_plants_most_recent_image(
 ) -> list[ImageItem]:
     """Returns a list of the most recent image for plant ids provided in the request body"""
 
-    session = aioboto3.Session()
+    aiosession = get_session()
 
     async def fetch_image(plant_id: UUID):
-        image = await get_async_most_recent_image_for_plant(session, plant_id)
+        async with aiosession.create_client("dynamodb", region_name=AWS_REGION) as client:
+            image = await get_async_most_recent_image_for_plant(client, plant_id)
+
         if image:
-            await create_async_presigned_thumbnail_url(session, image)
+            await create_async_presigned_thumbnail_url(aiosession, image)
         return image
 
     # Use asyncio.gather to run fetch_image concurrently for each plant_id
