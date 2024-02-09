@@ -1,4 +1,3 @@
-import aioboto3
 import logging
 import boto3
 from botocore.exceptions import ClientError
@@ -31,7 +30,7 @@ def create_presigned_url(bucket_name: str, object_name: str, expiration_sec=8640
 async def create_async_presigned_url(session, bucket_name: str, object_name: str, expiration_sec=86400):
     """Generate a presigned URL to share an S3 object"""
 
-    async with session.client("s3") as s3:
+    async with session.create_client("s3") as s3:
         try:
             response = await s3.generate_presigned_url(
                 "get_object", Params={"Bucket": bucket_name, "Key": object_name}, ExpiresIn=expiration_sec

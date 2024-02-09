@@ -1,5 +1,8 @@
 import asyncio
-import aioboto3
+import time
+
+from aiobotocore.session import get_session
+
 import io
 import logging
 from datetime import datetime
@@ -35,6 +38,7 @@ from fastapi import Form
 from plant_api.utils.db import is_user_access_allowed
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 router = BaseRouter(
@@ -75,18 +79,43 @@ def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
     return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
 
 
-async def get_async_images_for_plant(session, plant_id: UUID) -> list[ImageItem]:
-    async with session.resource("dynamodb", region_name=AWS_REGION) as dynamodb:
-        table = await dynamodb.Table(TABLE_NAME)
-        response = await table.query(
-            KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
-        )
-        return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
+async def deserialize_dynamodb_item(item: dict) -> dict:
+    """
+    Convert a DynamoDB item to a regular Python dictionary.
+    This function handles only string (S) and number (N) types for simplicity.
+    Extend this function based on your specific needs.
+    """
+    python_item = {}
+    for key, value in item.items():
+        if "S" in value:
+            python_item[key] = value["S"]
+        elif "N" in value:
+            python_item[key] = int(value["N"])  # or float(value['N']) if dealing with floating numbers
+        elif "BOOL" in value:
+            python_item[key] = value["BOOL"]
+        elif "NULL" in value and value["NULL"]:
+            python_item[key] = None
+        # Add more types as needed, such as L (list), M (map), etc.
+
+    return python_item
 
 
-async def get_async_most_recent_image_for_plant(session, plant_id: UUID) -> Optional[ImageItem]:
+async def get_async_images_for_plant(client, plant_id: UUID) -> list[ImageItem]:
+    response = await client.query(
+        TableName=TABLE_NAME,
+        KeyConditionExpression="PK = :pk and begins_with(SK, :sk)",
+        ExpressionAttributeValues={
+            ":pk": {"S": f"PLANT#{plant_id}"},
+            ":sk": {"S": "IMAGE#"},
+        },
+    )
+    items = [await deserialize_dynamodb_item(item) for item in response["Items"]]
+    return TypeAdapter(list[ImageItem]).validate_python(items)
+
+
+async def get_async_most_recent_image_for_plant(client, plant_id: UUID) -> Optional[ImageItem]:
     logger.debug(f"Fetching most recent image for plant {plant_id}")
-    images = await get_async_images_for_plant(session, plant_id)
+    images = await get_async_images_for_plant(client, plant_id)
     # Sort images by timestamp
     images.sort(key=lambda x: x.timestamp, reverse=True)
     return images[0] if images else None
@@ -115,12 +144,14 @@ async def get_plants_most_recent_image(
 ) -> list[ImageItem]:
     """Returns a list of the most recent image for plant ids provided in the request body"""
 
-    session = aioboto3.Session()
+    aiosession = get_session()
 
     async def fetch_image(plant_id: UUID):
-        image = await get_async_most_recent_image_for_plant(session, plant_id)
+        async with aiosession.create_client("dynamodb", region_name=AWS_REGION) as client:
+            image = await get_async_most_recent_image_for_plant(client, plant_id)
+
         if image:
-            await create_async_presigned_thumbnail_url(session, image)
+            await create_async_presigned_thumbnail_url(aiosession, image)
         return image
 
     # Use asyncio.gather to run fetch_image concurrently for each plant_id
