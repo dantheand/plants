@@ -3,7 +3,7 @@ import {
   VerticalTimeline,
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
-import { convertTimestampToDateString } from "../../utils/utils";
+import { timeAgoFromTimestamp } from "../../utils/utils";
 import React from "react";
 
 export function PlantImagesTimeline({
@@ -23,7 +23,7 @@ export function PlantImagesTimeline({
       {plant_images.map((plant_image) => (
         <VerticalTimelineElement
           key={plant_image.timestamp}
-          date={convertTimestampToDateString(plant_image.timestamp)}
+          date={timeAgoFromTimestamp(plant_image.timestamp)}
           className="verticalTimelineElement"
         >
           <div className="timelineElementContent">

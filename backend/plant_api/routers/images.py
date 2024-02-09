@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 from aiobotocore.session import get_session
 

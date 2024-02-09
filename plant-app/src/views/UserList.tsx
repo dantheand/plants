@@ -2,8 +2,6 @@ import React, { JSX, useEffect, useState } from "react";
 import { BASE_API_URL } from "../constants";
 import { Button, Card, ListGroup, Placeholder } from "react-bootstrap";
 
-import { formatDistanceToNow } from "date-fns";
-
 import "../styles/styles.scss";
 import { User } from "../types/interfaces";
 import { useAlert } from "../context/Alerts";
@@ -11,6 +9,7 @@ import { BaseLayout } from "../components/Layouts";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../utils/api";
 import { FaProjectDiagram, FaSeedling } from "react-icons/fa";
+import { timeAgoFromTimestamp } from "../utils/utils";
 
 export const PlaceholderCard: React.FC = () => (
   <ListGroup.Item as="li" className="mb-2">
@@ -98,16 +97,15 @@ type UserCardProps = {
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const navigate = useNavigate();
-  const createdAtDate = new Date(user.created_at);
-  const timeAgo = formatDistanceToNow(createdAtDate, { addSuffix: true });
 
+  console.log("UserCard user:", user);
   return (
     <ListGroup.Item as="li" className="mb-2">
       <h5>
         {user.given_name} {user.last_initial}.
       </h5>
       <p></p>
-      <p>Tracking since: {timeAgo}</p>
+      <p>Tracking since: {timeAgoFromTimestamp(user.created_at)}</p>
       <p>Current Plants: {user.n_active_plants}</p>
       <p>Total Plants: {user.n_total_plants}</p>
       <Button
