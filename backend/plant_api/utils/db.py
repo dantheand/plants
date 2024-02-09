@@ -121,3 +121,24 @@ def is_user_access_allowed(requesting_user: User, target_user_id: str) -> bool:
     if target_user.is_public_profile:
         return True
     return False
+
+
+async def deserialize_dynamodb_item(item: dict) -> dict:
+    """
+    Convert a DynamoDB item to a regular Python dictionary.
+    This function handles only string (S) and number (N) types for simplicity.
+    Extend this function based on your specific needs.
+    """
+    python_item = {}
+    for key, value in item.items():
+        if "S" in value:
+            python_item[key] = value["S"]
+        elif "N" in value:
+            python_item[key] = int(value["N"])  # or float(value['N']) if dealing with floating numbers
+        elif "BOOL" in value:
+            python_item[key] = value["BOOL"]
+        elif "NULL" in value and value["NULL"]:
+            python_item[key] = None
+        # Add more types as needed, such as L (list), M (map), etc.
+
+    return python_item

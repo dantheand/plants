@@ -28,13 +28,13 @@ from plant_api.utils.s3 import (
     create_presigned_urls_for_image,
     get_s3_client,
 )
-from plant_api.schema import EntityType, ImageItem, User
+from plant_api.schema import EntityType, ImageItem
 from PIL import Image as img, ImageOps
 from PIL.Image import Image
 
 from fastapi import Form
 
-from plant_api.utils.db import is_user_access_allowed
+from plant_api.utils.db import deserialize_dynamodb_item, is_user_access_allowed
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -76,27 +76,6 @@ def get_images_for_plant(plant_id: UUID) -> list[ImageItem]:
         KeyConditionExpression=Key("PK").eq(f"PLANT#{plant_id}") & Key("SK").begins_with("IMAGE#"),
     )
     return TypeAdapter(list[ImageItem]).validate_python(response["Items"])
-
-
-async def deserialize_dynamodb_item(item: dict) -> dict:
-    """
-    Convert a DynamoDB item to a regular Python dictionary.
-    This function handles only string (S) and number (N) types for simplicity.
-    Extend this function based on your specific needs.
-    """
-    python_item = {}
-    for key, value in item.items():
-        if "S" in value:
-            python_item[key] = value["S"]
-        elif "N" in value:
-            python_item[key] = int(value["N"])  # or float(value['N']) if dealing with floating numbers
-        elif "BOOL" in value:
-            python_item[key] = value["BOOL"]
-        elif "NULL" in value and value["NULL"]:
-            python_item[key] = None
-        # Add more types as needed, such as L (list), M (map), etc.
-
-    return python_item
 
 
 async def get_async_images_for_plant(client, plant_id: UUID) -> list[ImageItem]:
