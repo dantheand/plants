@@ -22,7 +22,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (googleOauthResponse: CredentialResponse, nonce: string) => void;
   logout: () => void;
-  userId: string | undefined;
+  userId: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const decodedToken: JwtPayload = jwtDecode(storedJwt);
       return decodedToken.google_id;
     } else {
-      return undefined;
+      return null;
     }
   }, [storedJwt]);
 

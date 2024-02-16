@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plant } from "../../types/interfaces";
 import { Card, Col, Row, Spinner } from "react-bootstrap";
 import noimagePlaceholder from "../../assets/200x200_image_placeholder.png";
@@ -20,11 +20,20 @@ export function PlantGrid({
   navigate,
 }: PlantGridProps) {
   const { plantGridIsLoading, plantImages } = usePlants();
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
+  // We keep track of if an image has been loaded so we can selectively remove the lazy load attribute
+  //    and prevent flickering when navigating back to the grid view.
+  const handleImageLoad = (plantId: string) => {
+    setLoadedImages((prevLoadedImages) => ({
+      ...prevLoadedImages,
+      [plantId]: true,
+    }));
+  };
 
   return (
     <Row xs={2} md={3} lg={4} xl={5} className="g-4">
       {isLoading || !plants ? (
-        // TODO: make this placeholder look like cards
         <Spinner />
       ) : (
         plants.map((plant) => (
@@ -34,7 +43,7 @@ export function PlantGrid({
               className="m-1 clickable-item card-hoverable"
               onClick={() => handlePlantClick(plant.plant_id, navigate)}
             >
-              {plantGridIsLoading ? (
+              {plantGridIsLoading || !plantImages[plant.plant_id] ? (
                 // Render placeholder image if still loading
                 <Card.Img
                   src={loadingImagePlaceholder}
@@ -44,7 +53,8 @@ export function PlantGrid({
               ) : (
                 // Render actual image if loading is complete
                 <Card.Img
-                  loading="lazy"
+                  onLoad={() => handleImageLoad(plant.plant_id)}
+                  loading={!loadedImages[plant.plant_id] ? "lazy" : undefined}
                   src={plantImages[plant.plant_id] || noimagePlaceholder}
                   alt="Plant image"
                   className="custom-card-img"

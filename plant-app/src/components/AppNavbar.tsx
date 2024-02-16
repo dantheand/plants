@@ -55,19 +55,25 @@ export const AppNavbar = () => {
           {/* Navbar links for smaller screens */}
           <Nav.Link
             className={isActive("/plants") ? "active" : ""}
-            onClick={() => handleNavigate("plants/user/me")}
+            onClick={() => {
+              navigate("/plants/user/me");
+            }}
           >
             <FaSeedling className="nav-icon" />
           </Nav.Link>
           <Nav.Link
             className={isActive("/users") ? "active" : ""}
-            onClick={() => handleNavigate("/users")}
+            onClick={() => {
+              navigate("/users");
+            }}
           >
             <FaUsers className="nav-icon" />
           </Nav.Link>
           <Nav.Link
             className={isActive("/lineages") ? "active" : ""}
-            onClick={() => handleNavigate("/lineages/user/me")}
+            onClick={() => {
+              navigate("/lineages/user/me");
+            }}
           >
             <FaProjectDiagram className="nav-icon" />
           </Nav.Link>
@@ -82,21 +88,27 @@ export const AppNavbar = () => {
         <Nav className="me-auto mt-3 d-none d-lg-flex">
           <Nav.Link
             className={isActive("/plants") ? "active" : ""}
-            onClick={() => handleNavigate("plants/user/me")}
+            onClick={() => {
+              navigate("/plants/user/me");
+            }}
           >
             <FaSeedling className="nav-icon" />
             <span> Plants</span>
           </Nav.Link>
           <Nav.Link
             className={isActive("/users") ? "active" : ""}
-            onClick={() => handleNavigate("/users")}
+            onClick={() => {
+              navigate("/users");
+            }}
           >
             <FaUsers className="nav-icon" />
             <span> Users</span>
           </Nav.Link>
           <Nav.Link
             className={isActive("/lineages") ? "active" : ""}
-            onClick={() => handleNavigate("/lineages/user/me")}
+            onClick={() => {
+              navigate("/lineages/user/me");
+            }}
           >
             <FaProjectDiagram className="nav-icon" />
             <span> Lineages</span>
