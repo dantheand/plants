@@ -39,7 +39,7 @@ const getLineageData = async (
 export const TangledTree = () => {
   const params = useParams<string>();
   const pathSpecifiedId = params.userId;
-  const [queryID, setQueryID] = useState<string | undefined>(undefined);
+  const [queryID, setQueryID] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
   const [data, setData] = useState(null); // State to store fetched data
   const [showNodeToast, setShowNodeToast] = useState(false); // State to control Toast visibilityk

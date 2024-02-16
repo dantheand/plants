@@ -23,7 +23,7 @@ export function PlantList(): JSX.Element {
   const params = useParams<string>();
   const pathSpecifiedId = params.userId;
   const [isYourPlants, setIsYourPlants] = useState<boolean>(true);
-  const [queryID, setQueryID] = useState<string | undefined>(undefined);
+  const [queryID, setQueryID] = useState<string | null>(null);
   const [isGridView, setIsGridView] = useLocalStorageState<boolean>(
     USE_GRID_VIEW,
     {
@@ -33,9 +33,9 @@ export function PlantList(): JSX.Element {
 
   const navigate = useNavigate();
   const { userId } = useAuth();
-  const { plants, isLoading, fetchPlants, nextPlantId } = usePlants();
+  const { plants, isLoading, nextPlantId, fetchPlants } = usePlants();
 
-  // Set query ID based on URL path or user ID
+  // Set is your plants based on user ID
   useEffect(() => {
     if (
       pathSpecifiedId === "me" ||
@@ -50,12 +50,8 @@ export function PlantList(): JSX.Element {
     }
   }, [pathSpecifiedId, userId]);
 
-  // Fetch plants from API
+  // Fetch plants if query ID changes
   useEffect(() => {
-    // Don't fetch if the query user ID has not been set yet
-    if (!queryID) {
-      return;
-    }
     fetchPlants(queryID);
   }, [queryID, fetchPlants]);
 

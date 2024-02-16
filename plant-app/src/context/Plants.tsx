@@ -6,6 +6,7 @@ import { useApi } from "../utils/api";
 import noimagePlaceholder from "../assets/200x200_image_placeholder.png";
 import { useAuth } from "./Auth";
 import { SHOW_IMAGES } from "../featureFlags";
+import { NavigateFunction } from "react-router-dom";
 
 interface CreatePlantProps {
   plant: NewPlant;
@@ -14,12 +15,17 @@ interface CreatePlantProps {
 interface PlantContextType {
   plants: Plant[];
   isLoading: boolean;
-  fetchPlants: (queryID: string) => Promise<void>;
   createPlant: (props: CreatePlantProps) => Promise<ApiResponse<Plant>>;
   nextPlantId: number;
   forceReloadPlants: () => void;
   plantImages: Record<string, string>;
   plantGridIsLoading: boolean;
+  navigateWithQueryID: (
+    queryID: string,
+    navigate: NavigateFunction,
+  ) => Promise<void>;
+  lastQueryID: string | null;
+  fetchPlants: (queryID: string | null, forced?: boolean) => Promise<void>;
 }
 
 export const PlantContext = createContext<PlantContextType>(
@@ -57,11 +63,37 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
   const [plantGridIsLoading, setPlantGridIsLoading] = useState<boolean>(false);
   const [plantImages, setPlantImages] = useState<Record<string, string>>({});
 
+  const { userId } = useAuth();
+
   const { showAlert } = useAlert();
   const { callApi } = useApi();
   const { isAuthenticated } = useAuth();
 
-  const fetchPlants = async (queryID: string, forced: boolean = false) => {
+  const navigateWithQueryID = async (
+    queryID: string | null,
+    navigate: NavigateFunction,
+  ) => {
+    if (queryID === "me" || queryID === null) {
+      queryID = userId;
+    }
+    // Check if the queryID is different from the lastQueryID before fetching new data
+    if (queryID !== lastQueryID) {
+      setIsLoading(true);
+      setPlants([]);
+
+      await fetchPlants(queryID);
+    } else {
+      setIsLoading(false);
+    }
+
+    // Perform navigation
+    navigate(`/plants/user/${queryID}`);
+  };
+
+  const fetchPlants = async (
+    queryID: string | null,
+    forced: boolean = false,
+  ) => {
     if (!forced) {
       if (queryID === lastQueryID || !queryID) {
         return;
@@ -176,12 +208,14 @@ export const PlantProvider: React.FC<PlantProviderProps> = ({ children }) => {
       value={{
         plants,
         isLoading,
-        fetchPlants,
         createPlant,
         nextPlantId,
         forceReloadPlants,
         plantImages,
         plantGridIsLoading,
+        navigateWithQueryID,
+        lastQueryID,
+        fetchPlants,
       }}
     >
       {children}

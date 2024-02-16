@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useApi } from "../utils/api";
 import { FaProjectDiagram, FaSeedling } from "react-icons/fa";
 import { timeAgoFromTimestamp } from "../utils/utils";
+import { usePlants } from "../context/Plants";
 
 export const PlaceholderCard: React.FC = () => (
   <ListGroup.Item as="li" className="mb-2">
@@ -97,6 +98,7 @@ type UserCardProps = {
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const navigate = useNavigate();
+  const { navigateWithQueryID } = usePlants();
 
   console.log("UserCard user:", user);
   return (
@@ -114,7 +116,7 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
         disabled={!user.is_public_profile}
         className={"mb-2"}
         onClick={() => {
-          navigate(`/plants/user/${user.google_id}`);
+          navigateWithQueryID(user.google_id, navigate);
         }}
       >
         <FaSeedling className={"me-2"} /> Plants

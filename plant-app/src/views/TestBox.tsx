@@ -29,7 +29,7 @@ const testCookieReadFromApi = async () => {
 
 const testGetLineage = async (
   callApi: (url: string, options?: RequestInit) => Promise<Response>,
-  userId: string | undefined,
+  userId: string | null,
 ) => {
   const res = await callApi(BASE_API_URL + `/lineages/user/${userId}`, {
     headers: {
