@@ -43,7 +43,7 @@ export function PlantGrid({
               className="m-1 clickable-item card-hoverable"
               onClick={() => handlePlantClick(plant.plant_id, navigate)}
             >
-              {plantGridIsLoading ? (
+              {plantGridIsLoading || !plantImages[plant.plant_id] ? (
                 // Render placeholder image if still loading
                 <Card.Img
                   src={loadingImagePlaceholder}
