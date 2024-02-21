@@ -92,7 +92,7 @@ export const TangledTree = () => {
         <Card.Header as="h4">Lineages</Card.Header>
         <Card.Body>
           {/* Legend */}
-          <div className="text-end" style={{ marginBottom: "10px" }}>
+          <div className="text-end mb-1">
             <span className="legend-item">
               <strong>S</strong> = Source
             </span>
