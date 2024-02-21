@@ -1,7 +1,7 @@
 import logging
 from collections import Counter, defaultdict
 from datetime import date
-from typing import Annotated, Optional, Sequence
+from typing import Annotated, Literal, Optional, Sequence
 
 from plant_api.constants import ACCESS_NOT_ALLOWED_EXCEPTION
 from plant_api.routers.common import BaseRouter
@@ -32,6 +32,8 @@ class PlantLineageNode(BaseModel):
     source: Optional[str] = None
     source_date: Optional[date] = None
     sink: Optional[str] = None
+
+    node_type: Literal["source", "sink", "plant"]
     # Graph building properties
     generation: int = -1  # -1 is placeholder generation value
     parents: Optional[Sequence[int | str]] = None
@@ -46,7 +48,7 @@ def create_nodes_for_sources(plants: list[PlantItem]) -> list[PlantLineageNode]:
             source_ids.append(plant.source)
     # Dedeplicate sources and create a new plant node for each source
     source_ids = list(set(source_ids))
-    return [PlantLineageNode(id=source_id, node_name=source_id) for source_id in source_ids]
+    return [PlantLineageNode(id=source_id, node_name=f"S: {source_id}", node_type="source") for source_id in source_ids]
 
 
 def create_nodes_for_sinks(plants: list[PlantItem]) -> list[PlantLineageNode]:
@@ -59,7 +61,7 @@ def create_nodes_for_sinks(plants: list[PlantItem]) -> list[PlantLineageNode]:
     for plant in plants:
         if plant.sink is not None:
             sinks[plant.sink].append(plant.human_id)
-    return [PlantLineageNode(id=sink, node_name=sink, parents=sinks[sink]) for sink in sinks]
+    return [PlantLineageNode(id=sink, node_name=f"Sk: {sink}", parents=sinks[sink], node_type="sink") for sink in sinks]
 
 
 def create_nodes_for_plants(plants: list[PlantItem]) -> list[PlantLineageNode]:
@@ -72,6 +74,7 @@ def create_nodes_for_plants(plants: list[PlantItem]) -> list[PlantLineageNode]:
             source=plant.source,
             source_date=plant.source_date,
             parents=plant.parent_id,
+            node_type="plant",
         )
         for plant in plants
     ]
