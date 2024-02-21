@@ -30,7 +30,7 @@ router = BaseRouter(
 
 def read_all_plants_for_user(user_id: str) -> list[PlantItem]:
     pk_value = f"USER#{user_id}"
-    sk_value = f"PLANT#"
+    sk_value = "PLANT#"
     table = get_db_table()
 
     response = table.query(KeyConditionExpression=Key("PK").eq(pk_value) & Key("SK").begins_with(sk_value))

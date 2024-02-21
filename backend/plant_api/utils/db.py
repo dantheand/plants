@@ -12,7 +12,6 @@ from plant_api.schema import ItemKeys, UserItem
 
 from pydantic import TypeAdapter
 
-from plant_api.schema import User
 
 logger = getLogger(__name__)
 
