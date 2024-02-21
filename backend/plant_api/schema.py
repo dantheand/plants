@@ -1,8 +1,8 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, Generic, Optional, TypeVar, Union
+from typing import Any, Dict, Optional, Union
 
-from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from plant_api.constants import UNSET
 

@@ -7,6 +7,14 @@ import { useEffect, useMemo, useRef } from "react";
 const color = d3.scaleOrdinal(d3.schemeDark2);
 const background_color = "white";
 
+function truncateText(text, maxLength = 18) {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + "...";
+  } else {
+    return text;
+  }
+}
+
 export const TangledTreeVisualization = ({ data, clickNode }) => {
   const svgRef = useRef(null);
   const tangleLayout = useMemo(
@@ -113,7 +121,7 @@ export const TangledTreeVisualization = ({ data, clickNode }) => {
               stroke={background_color}
               strokeWidth="2"
             >
-              {n.id}
+              {truncateText(n.node_name)}
             </text>
             {/*Actual text*/}
             <text
@@ -121,7 +129,7 @@ export const TangledTreeVisualization = ({ data, clickNode }) => {
               y={n.y - n.height / 2 - 4}
               style={{ pointerEvents: "none" }}
             >
-              {n.id}
+              {truncateText(n.node_name)}
             </text>
           </g>
         ))}
@@ -221,7 +229,7 @@ const constructTangleLayout = (levels, options = {}) => {
   // layout
   const padding = 8;
   const node_height = 22;
-  const node_width = 70;
+  const node_width = 110;
   const bundle_width = 14;
   const level_y_padding = 16;
   const metro_d = 4;

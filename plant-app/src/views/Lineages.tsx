@@ -91,6 +91,16 @@ export const TangledTree = () => {
       <Card className="top-level-card" style={{ height: "100%" }}>
         <Card.Header as="h4">Lineages</Card.Header>
         <Card.Body>
+          {/* Legend */}
+          <div className="text-end mb-1">
+            <span className="legend-item">
+              <strong>Src</strong> = Source
+            </span>
+            {/*<span className="legend-item" style={{ marginLeft: "15px" }}>*/}
+            {/*  <strong>Sk</strong> = Sink*/}
+            {/*</span>*/}
+          </div>
+
           {isLoading ? (
             <div className="text-center">
               <Spinner animation="border" className="my-5" />
