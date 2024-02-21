@@ -48,7 +48,9 @@ def create_nodes_for_sources(plants: list[PlantItem]) -> list[PlantLineageNode]:
             source_ids.append(plant.source)
     # Dedeplicate sources and create a new plant node for each source
     source_ids = list(set(source_ids))
-    return [PlantLineageNode(id=source_id, node_name=f"S: {source_id}", node_type="source") for source_id in source_ids]
+    return [
+        PlantLineageNode(id=source_id, node_name=f"Src: {source_id}", node_type="source") for source_id in source_ids
+    ]
 
 
 def create_nodes_for_sinks(plants: list[PlantItem]) -> list[PlantLineageNode]:
@@ -176,9 +178,10 @@ async def get_plant_lineage_graph(user_id: str, user: Annotated[User, Depends(ge
     plants = read_all_plants_for_user(user_id)
     plant_nodes = create_nodes_for_plants(plants)
     source_nodes = create_nodes_for_sources(plants)
-    sink_nodes = create_nodes_for_sinks(plants)
+    # sink_nodes = create_nodes_for_sinks(plants)
 
-    all_plant_nodes = plant_nodes + source_nodes + sink_nodes
+    # all_plant_nodes = plant_nodes + source_nodes + sink_nodes
+    all_plant_nodes = plant_nodes + source_nodes
     assign_generations_and_source_parents(all_plant_nodes)
     levels = assign_levels_to_generations(all_plant_nodes)
 

@@ -229,7 +229,7 @@ const constructTangleLayout = (levels, options = {}) => {
   // layout
   const padding = 8;
   const node_height = 22;
-  const node_width = 90;
+  const node_width = 110;
   const bundle_width = 14;
   const level_y_padding = 16;
   const metro_d = 4;

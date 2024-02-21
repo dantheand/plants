@@ -96,7 +96,7 @@ class TestPlantLineages:
         assert response.status_code == 200
         parsed_response = TypeAdapter(list[list[PlantLineageNode]]).validate_python(response.json())
         print(parsed_response)
-        assert len(parsed_response) == 4
+        assert len(parsed_response) == 3
         for level in parsed_response:
             assert len(level) == 1
         assert parsed_response[0][0].id == root_plant.source

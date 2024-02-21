@@ -94,11 +94,11 @@ export const TangledTree = () => {
           {/* Legend */}
           <div className="text-end mb-1">
             <span className="legend-item">
-              <strong>S</strong> = Source
+              <strong>Src</strong> = Source
             </span>
-            <span className="legend-item" style={{ marginLeft: "15px" }}>
-              <strong>Sk</strong> = Sink
-            </span>
+            {/*<span className="legend-item" style={{ marginLeft: "15px" }}>*/}
+            {/*  <strong>Sk</strong> = Sink*/}
+            {/*</span>*/}
           </div>
 
           {isLoading ? (
