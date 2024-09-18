@@ -17,7 +17,7 @@ A plant tracking app meant to make it easy to track your plants' growth and line
 - aws credentials set up (use a profile)
 
 ## Services used
-The AWS infrastructure is currently an artisinal, hand-crafted set of services. In the future, I will make it reproducible with some sort of IaC approach. 
+The AWS infrastructure is an artisinal, hand-crafted set of services made through the AWS console. It would greatly benefit from some sort of IaC approach to reproducibility. 
 
 ### AWS 
 - AWS Amplify for front-end builds and deployment
@@ -75,6 +75,8 @@ https://github.com/dantheand/plants/assets/16441200/55bba3f2-f8d4-4017-8ddf-87b1
 ### Plant Lineage Visualizations
 <img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/be2d0efb-b9bf-4717-991f-f6f7218a9049">
 
+### Multi-User Authentication and Sharing
+<img width="504" alt="image" src="https://github.com/user-attachments/assets/81d94d1d-4ce7-4af1-b53a-e227a101125c">
 
 ## Upcoming Feature ideas
 In rough order of decreasing priority:
