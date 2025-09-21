@@ -27,6 +27,7 @@ jobs:
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
+          plugins: poetry-plugin-export
       # Installed to local folder so it can be zipped with source code
       - name: Package dependencies
         working-directory: backend/
