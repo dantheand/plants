@@ -1,14 +1,15 @@
-![plant_logo_leaf_only_small](https://github.com/dantheand/plants/assets/16441200/a2ef5002-8abb-4f2c-81ba-9bb8575df8bd)
-# Plant App
+![plantopticon2_large_no_shadow 9a4acea00bd4a90a9da6](https://github.com/dantheand/plants/assets/16441200/b75e7d6c-a066-4d4b-af6e-58211b3c4251)
 
-A plant tracking app meant to make it easy to track plant growth and lineages.
+# PLANTOPTICON
+
+A plant tracking app meant to make it easy to track your plants' growth and lineages.
 
 - `backend` is the FastAPI backend (Python)
 - `plant-app` is the React frontend (Typescript)
 
 ## Development environment setup
 ### Dependencies
-- Python 3.9+
+- Python 3.11+
 - Node v20.10.0
 
 ### AWS stuff
@@ -16,7 +17,7 @@ A plant tracking app meant to make it easy to track plant growth and lineages.
 - aws credentials set up (use a profile)
 
 ## Services used
-The AWS infrastructure is currently an artisinal, hand-crafted set of services. In the future, I will make it reproducible with some sort of IaC approach. 
+The AWS infrastructure is an artisinal, hand-crafted set of services made through the AWS console. It would greatly benefit from some sort of IaC approach to reproducibility. 
 
 ### AWS 
 - AWS Amplify for front-end builds and deployment
@@ -48,34 +49,39 @@ On pushes to `master`:
 ## Screenshots
 
 ### Google SSO
-<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/0be0a861-7d87-4ba3-81f7-452753dc1608">
+
+<img width="409" alt="image" src="https://github.com/dantheand/plants/assets/16441200/d2a5a293-1e19-427d-ac2b-73652ad85382">
 
 ### Plant List
-<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/866ca19b-d628-443a-9e0f-6578e4bb420a">
+
+<img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/e7693f4b-e8b4-427b-8e3a-e459608e2052">
+
+
+### Plant Grid View
+<img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/74d0121b-64a6-44be-a6b8-186514403fc2">
 
 ### Create New Plants
-<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/6b0af217-2f15-4925-b411-e8fc84055852">
+<img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/b21ac886-f306-4121-a70b-a0615349b2cb">
 
 ### Edit Existing Plants
-<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/11c49463-2f22-408e-b2d7-8fca5f19ad79">
+<img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/7484b06b-5833-4a20-b19a-a0ac25e06c23">
 
 ### Upload Images
-<img width="1178" alt="image" src="https://github.com/dantheand/plants/assets/16441200/83b4bad2-806d-46db-9ba3-64f82c153ef4">
+<img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/d298c15a-6f8c-4302-90f8-06a4a22a451e">
 
-### Timeline View of Images
-https://github.com/dantheand/plants/assets/16441200/4888f693-cb10-490a-9b87-25aa4097205f
+### Timeline View of Plant Images
+https://github.com/dantheand/plants/assets/16441200/55bba3f2-f8d4-4017-8ddf-87b1e8f72366
 
+### Plant Lineage Visualizations
+<img width="554" alt="image" src="https://github.com/dantheand/plants/assets/16441200/be2d0efb-b9bf-4717-991f-f6f7218a9049">
 
+### Multi-User Authentication and Sharing
+<img width="504" alt="image" src="https://github.com/user-attachments/assets/81d94d1d-4ce7-4af1-b53a-e227a101125c">
 
 ## Upcoming Feature ideas
 In rough order of decreasing priority:
-- View other User's plants
-  - list of all Users (for now), ability to navigate to their plants
 - Improving plant view
-  - grid view
   - Filter by "current" or not (e.g. has the plant died or been given away)
-- lineage visualization and traversing
-  - [Tangled tree](https://observablehq.com/@nitaku/tangled-tree-visualization-ii) vizualization of plant lineages
 - personal data export:
   - ability for users to export their plant data so they can analyze it or migrate it
 - timelapse views
